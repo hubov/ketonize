@@ -19,6 +19,8 @@ Route::get('/', function () {
 });
 
 Route::get('/ingredients', [IngredientController::class, 'index']);
+Route::get('/ingredient/{id}', [IngredientController::class, 'edit'])->whereNumber('id');
+Route::post('/ingredient/{id}', [IngredientController::class, 'update'])->whereNumber('id');
 Route::post('/ingredients', [IngredientController::class, 'store']);
 Route::get('/dashboard', function () {
     return view('dashboard');
