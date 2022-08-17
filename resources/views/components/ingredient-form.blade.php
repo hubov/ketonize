@@ -30,5 +30,20 @@
             {{ $errors->first('kcal') }}
         </div>
     @endif
+    <div>Measure unit: <select name="unit">
+        <option>Choose</option>
+        @foreach ($units as $u)
+            <option value="{{ $u->id }}" 
+            @if ($unit_id == $u->id)
+                selected
+            @endif
+            >{{ $u->name }} ({{ $u->symbol }})</option>
+        @endforeach
+    </select></div>
+    @if ($errors->has('unit'))
+        <div class="error">
+            {{ $errors->first('unit') }}
+        </div>
+    @endif
     <div><input type="submit" name="save" value="Save" id="save"></div>
 </form>

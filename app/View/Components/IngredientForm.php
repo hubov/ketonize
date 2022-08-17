@@ -3,6 +3,7 @@
 namespace App\View\Components;
 
 use Illuminate\View\Component;
+use Illuminate\Database\Eloquent\Collection;
 
 class IngredientForm extends Component
 {
@@ -42,6 +43,20 @@ class IngredientForm extends Component
     public $kcal;
 
     /**
+     * The ingredient's measure unit.
+     *
+     * @var integer
+     */
+    public $unit_id;
+
+    /**
+     * The list of measure unit.
+     *
+     * @var \Illuminate\Database\Eloquent\Collection
+     */
+    public $units;
+
+    /**
      * Create a new component instance.
      *
      * @param string name
@@ -49,17 +64,21 @@ class IngredientForm extends Component
      * @param integer fat
      * @param integer carbohydrate
      * @param integer kcal
+     * @param integer unit
+     * @param \Illuminate\Database\Eloquent\Collection units
      * @return void
      */
 
 
-    public function __construct($name = '', $protein = '', $fat = '', $carbohydrate = '', $kcal = '')
+    public function __construct($name = '', $protein = '', $fat = '', $carbohydrate = '', $kcal = '', $unit = '', $units = [])
     {
         $this->name = $name;
         $this->protein = $protein;
         $this->fat = $fat;
         $this->carbohydrate = $carbohydrate;
         $this->kcal = $kcal;
+        $this->unit_id = $unit;
+        $this->units = $units;
     }
 
     /**

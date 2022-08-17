@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Ingredient;
+use App\Models\Unit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\View;
 
@@ -33,7 +34,8 @@ class IngredientController extends Controller
         }
 
         return View::make('ingredient.listing', [
-            'ingredients' => $ingredients
+            'ingredients' => $ingredients,
+            'units' => Unit::all()
         ]);
     }
 
@@ -92,7 +94,8 @@ class IngredientController extends Controller
         $ingredient->carbohydrate /= 10;
 
         return View::make('ingredient.edit', [
-            'ingredient' => $ingredient
+            'ingredient' => $ingredient,
+            'units' => Unit::all()
         ]);
     }
 
@@ -115,6 +118,7 @@ class IngredientController extends Controller
         $ingredient->fat = $request->fat * 10;
         $ingredient->carbohydrate = $request->carbohydrate * 10;
         $ingredient->kcal = $request->kcal;
+        $ingredient->unit_id = $request->unit;
 
         $ingredient->save();
 
@@ -130,5 +134,20 @@ class IngredientController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    public function search(Request $request)
+    {
+        $ingredients = Ingredient::where('name', 'like', '%'.$request->input('name').'%')->limit(5)->get();
+
+        if (count($ingredients) > 0)
+            foreach ($ingredients as $ingredient)
+                $result[] = ['id' => $ingredient->id, 'name' => $ingredient->name];
+        else
+            $result = [];
+
+        // dd($result);
+
+        return response()->json($result);
     }
 }
