@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\IngredientController;
+use App\Http\Controllers\RecipeController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -18,6 +19,7 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::get('/recipes', [RecipeController::class, 'index']);
 Route::get('/ingredients', [IngredientController::class, 'index']);
 Route::get('/ingredient/{id}', [IngredientController::class, 'edit'])->whereNumber('id');
 Route::post('/ingredient/{id}', [IngredientController::class, 'update'])->whereNumber('id');

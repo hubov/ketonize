@@ -12,8 +12,10 @@
 
         <!-- Scripts -->
         <script src="{{ asset('build/assets/app.51a3adcd.js') }}" defer></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" ></script>
         <!-- Styles -->
         <link href="{{ asset('build/assets/app.45719a2b.css') }}" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.9.1/font/bootstrap-icons.css">
     </head>
     <body>
         <div class="font-sans text-gray-900 antialiased">
