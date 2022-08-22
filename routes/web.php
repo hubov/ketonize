@@ -24,7 +24,8 @@ Route::get('/ingredients', [IngredientController::class, 'index']);
 Route::get('/ingredient-autocomplete', [IngredientController::class, 'search']);
 Route::get('/ingredient/{id}', [IngredientController::class, 'edit'])->whereNumber('id');
 Route::post('/ingredient/{id}', [IngredientController::class, 'update'])->whereNumber('id');
-Route::post('/ingredients', [IngredientController::class, 'store']);
+Route::post('/ingredient/new', [IngredientController::class, 'ajaxStore']);
+Route::post('/ingredients', [IngredientController::class, 'store']); // old store
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth'])->name('dashboard');

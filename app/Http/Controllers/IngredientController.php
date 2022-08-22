@@ -19,7 +19,8 @@ class IngredientController extends Controller
         'protein' => 'required|regex:/^[0-9]+(\.[0-9])?$/',
         'fat' => 'required|regex:/^[0-9]+(\.[0-9])?$/',
         'carbohydrate' => 'required|regex:/^[0-9]+(\.[0-9])?$/',
-        'kcal' => 'required|numeric'
+        'kcal' => 'required|numeric',
+        'unit_id' => 'required|numeric'
     ];
 
     public function index()
@@ -67,6 +68,20 @@ class IngredientController extends Controller
         $ingredient = Ingredient::create($request->all());
 
         return redirect('/ingredient/'.$ingredient->id);
+    }
+
+    public function ajaxStore(Request $request)
+    {
+        $validated = $request->validate(array_merge([
+            'name' => 'required|unique:ingredients,name'], $this->formValidation));
+
+        $request->protein *= 10;
+        $request->fat *= 10;
+        $request->carbohydrate *= 10;
+
+        $ingredient = Ingredient::create($request->all());
+
+        return response()->json(['id' => $ingredient->id]);
     }
 
     /**
@@ -142,7 +157,17 @@ class IngredientController extends Controller
 
         if (count($ingredients) > 0)
             foreach ($ingredients as $ingredient)
-                $result[] = ['id' => $ingredient->id, 'name' => $ingredient->name];
+            {
+                $result[] = [
+                    'id' => $ingredient->id, 
+                    'name' => $ingredient->name, 
+                    'unit' => $ingredient->unit->symbol, 
+                    'protein' => $ingredient->protein, 
+                    'fat' => $ingredient->fat, 
+                    'carbohydrate' => $ingredient->carbohydrate,
+                    'kcal' => $ingredient->kcal
+                ];
+            }
         else
             $result = [];
 

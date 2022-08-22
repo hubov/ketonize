@@ -14,13 +14,23 @@ class RecipeForm extends Component
     public $name;
 
     /**
+     * The list of measure unit.
+     *
+     * @var \Illuminate\Database\Eloquent\Collection
+     */
+    public $units;
+
+    /**
      * Create a new component instance.
      *
+     * @param string name
+     * @param \Illuminate\Database\Eloquent\Collection units
      * @return void
      */
-    public function __construct($name = '')
+    public function __construct($name = '', $units = '')
     {
         $this->name = $name;
+        $this->units = $units;
     }
 
     /**

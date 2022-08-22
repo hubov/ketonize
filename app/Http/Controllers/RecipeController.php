@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Recipe;
+use App\Models\Unit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\View;
 
@@ -19,7 +20,8 @@ class RecipeController extends Controller
                     ->sortBy('name');
 
         return View::make('recipe.listing', [
-            'recipes' => $recipes
+            'recipes' => $recipes,
+            'units' => Unit::all()
         ]);
     }
 
