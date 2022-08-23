@@ -1,0 +1,9 @@
+.form-control:read-only {
+	background-color: #e9ecef;
+	color: #6c757d;
+}
+
+.form-control:read-only:focus {
+	background-color: #e9ecef;
+	color: #6c757d;
+}

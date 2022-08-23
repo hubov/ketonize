@@ -20,7 +20,7 @@
     </div>
     <div class="mb-3">
         <label for="protein" class="form-label">Proteins</label>
-        <input type="text" name="protein" id="recipe-protein" class="form-control" disabled value="{{ $protein ?? '0' }}">
+        <input type="text" name="protein" id="recipe-protein" class="form-control" readonly="readonly" value="{{ $protein ?? '0' }}">
         @if ($errors->has('protein'))
             <div class="invalid-feedback">
                 {{ $errors->first('protein') }}
@@ -29,7 +29,7 @@
     </div>
     <div class="mb-3">
         <label for="fat" class="form-label">Fats</label>
-        <input type="text" name="fat" id="recipe-fat" class="form-control" disabled value="{{ $fat ?? '0' }}">
+        <input type="text" name="fat" id="recipe-fat" class="form-control" readonly="readonly" value="{{ $fat ?? '0' }}">
         @if ($errors->has('fat'))
             <div class="invalid-feedback">
                 {{ $errors->first('fat') }}
@@ -38,7 +38,7 @@
     </div>
     <div class="mb-3">
         <label for="carbohydrate" class="form-label">Carbohydrates</label>
-        <input type="text" name="carbohydrate" id="recipe-carbohydrate" class="form-control" disabled value="{{ $carbohydrate ?? '0' }}">
+        <input type="text" name="carbohydrate" id="recipe-carbohydrate" class="form-control" readonly="readonly" value="{{ $carbohydrate ?? '0' }}">
         @if ($errors->has('carbohydrate'))
             <div class="invalid-feedback">
                 {{ $errors->first('carbohydrate') }}
@@ -47,7 +47,7 @@
     </div>
     <div class="mb-3">
         <label for="kcal">Kcal</label>
-        <input type="text" name="kcal" id="recipe-kcal" class="form-control" disabled value="{{ $kcal ?? '0' }}">
+        <input type="text" name="kcal" id="recipe-kcal" class="form-control" readonly="readonly" value="{{ $kcal ?? '0' }}">
         @if ($errors->has('kcal'))
             <div class="invalid-feedback">
                 {{ $errors->first('kcal') }}
@@ -237,7 +237,7 @@
         $("#addIngredient").click(function () {
             var html = '';
             html += '<div class="row mb-3 inputFormRow">';
-            html += '<div class="input-group"><input type="text" name="name[]" id="ingredient' + ingredientsCount + '" class="form-control typeahead" placeholder="Name" autocomplete="off">';
+            html += '<div class="input-group"><input type="text" id="ingredient' + ingredientsCount + '" class="form-control typeahead" placeholder="Name" autocomplete="off">';
             html += '<input type="text" name="quantity[]" id="ingredient_q_' + ingredientsCount + '" class="form-control quantity" placeholder="Quantity">';
             html += '<span class="input-group-text" id="ingredient' + ingredientsCount + '_unit"></span>';
             html += '<button type="button" id="ingredient_r_' + ingredientsCount + '" class="btn btn-danger removeRow"><i class="bi-x-lg"></i></button>';
