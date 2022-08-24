@@ -7,3 +7,16 @@
 	background-color: #e9ecef;
 	color: #6c757d;
 }
+
+.macros {
+	padding-bottom: 20px;
+}
+
+.macros span.label {
+	font-size: 0.8em;
+	color: #6c757d;
+}
+
+.ingredients {
+	padding-bottom: 20px;
+}

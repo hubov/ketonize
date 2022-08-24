@@ -15,7 +15,7 @@
 			<tbody>
 		@foreach ($recipes as $recipe)
 				<tr>
-					<td><a href="/recipe/{{ $recipe->id }}">{{ $recipe->name }}</a></td>
+					<td><a href="/recipe/{{ $recipe->slug }}">{{ $recipe->name }}</a></td>
 					<td>{{ $recipe->protein }}</td>
 					<td>{{ $recipe->fat }}</td>
 					<td>{{ $recipe->carbohydrate }}</td>

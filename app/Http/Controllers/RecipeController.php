@@ -6,6 +6,7 @@ use App\Models\Recipe;
 use App\Models\Unit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\View;
+use Illuminate\Support\Str;
 
 class RecipeController extends Controller
 {
@@ -54,6 +55,7 @@ class RecipeController extends Controller
 
         $recipe = new Recipe;
         $recipe->name = $request->name;
+        $recipe->slug = Str::of($request->name)->slug('-');
         if ($request->image == NULL)
             $recipe->image = 'default';
         else
@@ -70,7 +72,7 @@ class RecipeController extends Controller
         foreach ($request->ids as $i => $id)
             $recipe->ingredients()->attach($id, ['amount' => $request->quantity[$i]]);
 
-        return redirect('/recipe/'.$recipe->id);
+        return redirect('/recipe/'.$recipe->slug);
     }
 
     /**
@@ -79,9 +81,19 @@ class RecipeController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show($slug)
     {
-        //
+        $recipe = Recipe::where('slug', $slug)->firstOrFail();
+
+        return View::make('recipe.single', [
+            'name' => $recipe->name,
+            'protein' => $recipe->protein,
+            'fat' => $recipe->fat,
+            'carbohydrate' => $recipe->carbohydrate,
+            'kcal' => $recipe->kcal,
+            'ingredients' => $recipe->ingredients,
+            'description' => $recipe->description
+        ]);
     }
 
     /**
