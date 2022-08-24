@@ -71,6 +71,24 @@
             </div>
         @endif
     </div>
+    <div class="mb-3">
+        <label for="preparation_time">Preparation time</label>
+        <input type="text" name="preparation_time" id="recipe-preparation_time" class="form-control" value="{{ $preparation_time ?? '' }}">
+        @if ($errors->has('preparation_time'))
+            <div class="invalid-feedback">
+                {{ $errors->first('preparation_time') }}
+            </div>
+        @endif
+    </div>
+    <div class="mb-3">
+        <label for="cooking_time">Cooking time</label>
+        <input type="text" name="cooking_time" id="recipe-cooking_time" class="form-control" value="{{ $cooking_time ?? '' }}">
+        @if ($errors->has('cooking_time'))
+            <div class="invalid-feedback">
+                {{ $errors->first('cooking_time') }}
+            </div>
+        @endif
+    </div>
     <div><input type="submit" name="save" class="btn btn-primary" value="Save" id="save"></div>
 </form>
 

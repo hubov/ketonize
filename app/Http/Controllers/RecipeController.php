@@ -63,6 +63,9 @@ class RecipeController extends Controller
         $recipe->carbohydrate = $request->carbohydrate;
         $recipe->kcal = $request->kcal;
         $recipe->description = $request->description;
+        $recipe->preparation_time = $request->preparation_time;
+        $recipe->cooking_time = $request->cooking_time;
+        $recipe->total_time = $request->preparation_time + $request->cooking_time;
         $recipe->save();
         foreach ($request->ids as $i => $id)
             $recipe->ingredients()->attach($id, ['amount' => $request->quantity[$i]]);
