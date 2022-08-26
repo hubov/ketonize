@@ -85,6 +85,11 @@ class RecipeController extends Controller
     {
         $recipe = Recipe::where('slug', $slug)->firstOrFail();
 
+        $weightTotal = 0;
+        foreach  ($recipe->ingredients as $ingredient) {
+            $weightTotal += $ingredient->pivot->amount;
+        }
+
         return View::make('recipe.single', [
             'name' => $recipe->name,
             'protein' => $recipe->protein,
@@ -92,7 +97,8 @@ class RecipeController extends Controller
             'carbohydrate' => $recipe->carbohydrate,
             'kcal' => $recipe->kcal,
             'ingredients' => $recipe->ingredients,
-            'description' => $recipe->description
+            'description' => $recipe->description,
+            'weightTotal' => $weightTotal
         ]);
     }
 
@@ -102,9 +108,14 @@ class RecipeController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit($slug)
     {
-        //
+        $recipe = Recipe::where('slug', $slug)->firstOrFail();
+
+        return View::make('recipe.edit', [
+            'recipe' => $recipe,
+            'units' => Unit::all()
+        ]);
     }
 
     /**
@@ -114,9 +125,41 @@ class RecipeController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, $slug)
     {
-        //
+        $validated = $request->validate([
+            'name' => 'required',
+            'ids' => 'required|array|min:1',
+            'ids.*' => 'required|numeric|min:1',
+            'quantity' => 'required|array|min:1',
+            'quantity.*' => 'required|numeric|min:1',
+            'description' => 'required|string',
+            'preparation_time' => 'required|numeric',
+            'cooking_time' => 'required|numeric'
+        ]);
+
+        $recipe = Recipe::where('slug', $slug)->firstOrFail();
+
+        $recipe->name = $request->name;
+        $recipe->slug = Str::of($request->name)->slug('-');
+        if ($request->image == NULL)
+            $recipe->image = 'default';
+        else
+            $recipe->image = $request->image;
+        $recipe->protein = $request->protein;
+        $recipe->fat = $request->fat;
+        $recipe->carbohydrate = $request->carbohydrate;
+        $recipe->kcal = $request->kcal;
+        $recipe->description = $request->description;
+        $recipe->preparation_time = $request->preparation_time;
+        $recipe->cooking_time = $request->cooking_time;
+        $recipe->total_time = $request->preparation_time + $request->cooking_time;
+        $recipe->save();
+        foreach ($request->ids as $i => $id)
+            $ingredientsCurrent[$id] = ['amount' => $request->quantity[$i]];
+        $recipe->ingredients()->sync($ingredientsCurrent);
+
+        return redirect('/recipe/'.$recipe->slug);
     }
 
     /**

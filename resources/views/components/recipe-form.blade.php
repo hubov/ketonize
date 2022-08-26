@@ -64,7 +64,7 @@
     <div id="rows"></div>
     <div class="mb-3">
         <label for="description" class="form-label">Description</label>
-        <textarea name="description" class="form-control" id="description"></textarea>
+        <textarea name="description" class="form-control" id="description">{{ $description ?? '' }}</textarea>
         @if ($errors->has('description'))
             <div class="error">
                 {{ $errors->first('description') }}
@@ -73,7 +73,7 @@
     </div>
     <div class="mb-3">
         <label for="preparation_time">Preparation time</label>
-        <input type="text" name="preparation_time" id="recipe-preparation_time" class="form-control" value="{{ $preparation_time ?? '' }}">
+        <input type="text" name="preparation_time" id="recipe-preparation_time" class="form-control" value="{{ $preparationTime ?? '' }}">
         @if ($errors->has('preparation_time'))
             <div class="invalid-feedback">
                 {{ $errors->first('preparation_time') }}
@@ -82,7 +82,7 @@
     </div>
     <div class="mb-3">
         <label for="cooking_time">Cooking time</label>
-        <input type="text" name="cooking_time" id="recipe-cooking_time" class="form-control" value="{{ $cooking_time ?? '' }}">
+        <input type="text" name="cooking_time" id="recipe-cooking_time" class="form-control" value="{{ $cookingTime ?? '' }}">
         @if ($errors->has('cooking_time'))
             <div class="invalid-feedback">
                 {{ $errors->first('cooking_time') }}
@@ -126,6 +126,23 @@
         var kcal = new Array();
         var route = "{{ url('ingredient-autocomplete') }}";
         var ingredientFormValidation = ['name', 'protein', 'fat', 'carbohydrate', 'kcal', 'unit_id'];
+
+        @if (isset($ingredients))
+            @php
+                $i = 0;
+            @endphp
+            @foreach ($ingredients as $ingredient)
+                addIngredientRow('{{ $ingredient->name }}', {{ $ingredient->pivot->amount }}, '{{ $ingredient->unit->symbol }}', {{ $ingredient->id }});
+                setIngredientsArray({{ $i }}, {{ $ingredient->protein }}, {{ $ingredient->fat }}, {{ $ingredient->carbohydrate }}, {{ $ingredient->kcal }});
+                setResultArray({{ $i }}, {{ $ingredient->pivot->amount }}, {{ $ingredient->protein }}, {{ $ingredient->fat }}, {{ $ingredient->carbohydrate }}, {{ $ingredient->kcal }});
+                @php
+                    $i++;
+                @endphp
+            @endforeach
+            typeaheadInitialize();
+            calculateMacro();
+        @endif
+
         $.ajax({
             url: route,
             type: 'GET',
@@ -161,6 +178,13 @@
             ingredientsArray[id][1] = fat;
             ingredientsArray[id][2] = carbohydrate;
             ingredientsArray[id][3] = kcal;
+        }
+
+        function setResultArray(id, quantity, protein, fat, carbohydrate, calories) {
+            proteins[id] = protein * quantity / 100;
+            fats[id] = fat * quantity / 100;
+            carbohydrates[id] = carbohydrate * quantity / 100;
+            kcal[id] = calories * quantity / 100;
         }
 
         function typeaheadInitialize(){
@@ -205,7 +229,12 @@
                     }
                 });
                 $('.quantity').on('input', function() {
+                    // console.log(ingredientsArray);
+                    // console.log(proteins);
                     var id = $(this).prop('id').substring(13);
+                    // console.log($(this));
+                    // console.log(id);
+                    // console.log('-------');
 
                     proteins[id] = ingredientsArray[id][0]/100 * $(this).val();
                     fats[id] = ingredientsArray[id][1]/100 * $(this).val();
@@ -234,6 +263,8 @@
             for (var i=proteins.length; i--;) {
                 sum+=proteins[i];
             }
+            // console.log(proteins);
+            // console.log(sum);
             $('#recipe-protein').val(Math.round(sum * 10) / 10);
             var sum = 0;
             for (var i=fats.length; i--;) {
@@ -249,21 +280,26 @@
             for (var i=kcal.length; i--;) {
                 sum+=kcal[i];
             }
-            $('#recipe-kcal').val(sum);
+            $('#recipe-kcal').val(Math.round(sum));
         }
 
-        $("#addIngredient").click(function () {
+        function addIngredientRow(name = '', quantity = '', unit = '', id = '') {
             var html = '';
             html += '<div class="row mb-3 inputFormRow">';
-            html += '<div class="input-group"><input type="text" id="ingredient' + ingredientsCount + '" class="form-control typeahead" placeholder="Name" autocomplete="off">';
-            html += '<input type="text" name="quantity[]" id="ingredient_q_' + ingredientsCount + '" class="form-control quantity" placeholder="Quantity">';
-            html += '<span class="input-group-text" id="ingredient' + ingredientsCount + '_unit"></span>';
+            html += '<div class="input-group"><input type="text" id="ingredient' + ingredientsCount + '" class="form-control typeahead" placeholder="Name" autocomplete="off" value="' + name + '">';
+            html += '<input type="text" name="quantity[]" id="ingredient_q_' + ingredientsCount + '" class="form-control quantity" placeholder="Quantity" value="' + quantity + '">';
+            html += '<span class="input-group-text" id="ingredient' + ingredientsCount + '_unit">' + unit + '</span>';
             html += '<button type="button" id="ingredient_r_' + ingredientsCount + '" class="btn btn-danger removeRow"><i class="bi-x-lg"></i></button>';
-            html += '</div><input type="hidden" name="ids[]" id="ingredient' + ingredientsCount + '_id" value=""></div>';
+            html += '</div><input type="hidden" name="ids[]" id="ingredient' + ingredientsCount + '_id" value="' + id + '"></div>';
 
             $('.typeahead').typeahead('destroy','NoCached')
             $('#rows').append(html);
+
             ingredientsCount++;
+        }
+
+        $("#addIngredient").click(function () {
+            addIngredientRow();
             typeaheadInitialize();
         });
 
