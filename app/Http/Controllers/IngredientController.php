@@ -16,9 +16,9 @@ class IngredientController extends Controller
      */
 
     protected $formValidation = [
-        'protein' => 'required|regex:/^[0-9]+(\.[0-9])?$/',
-        'fat' => 'required|regex:/^[0-9]+(\.[0-9])?$/',
-        'carbohydrate' => 'required|regex:/^[0-9]+(\.[0-9])?$/',
+        'protein' => 'required|regex:/^[0-9]+(\.[0-9]+)?$/',
+        'fat' => 'required|regex:/^[0-9]+(\.[0-9]+)?$/',
+        'carbohydrate' => 'required|regex:/^[0-9]+(\.[0-9]+)?$/',
         'kcal' => 'required|numeric',
         'unit_id' => 'required|numeric'
     ];
@@ -27,12 +27,6 @@ class IngredientController extends Controller
     {
         $ingredients = Ingredient::all()
                                 ->sortBy('name');
-        foreach ($ingredients as $ingredient)
-        {
-            $ingredient->protein /= 10;
-            $ingredient->fat /= 10;
-            $ingredient->carbohydrate /= 10;
-        }
 
         return View::make('ingredient.listing', [
             'ingredients' => $ingredients,
@@ -61,10 +55,6 @@ class IngredientController extends Controller
         $validated = $request->validate(array_merge([
             'name' => 'required|unique:ingredients,name'], $this->formValidation));
 
-        $request->protein *= 10;
-        $request->fat *= 10;
-        $request->carbohydrate *= 10;
-
         $ingredient = Ingredient::create($request->all());
 
         return redirect('/ingredient/'.$ingredient->id);
@@ -74,10 +64,6 @@ class IngredientController extends Controller
     {
         $validated = $request->validate(array_merge([
             'name' => 'required|unique:ingredients,name'], $this->formValidation));
-
-        $request->protein *= 10;
-        $request->fat *= 10;
-        $request->carbohydrate *= 10;
 
         $ingredient = Ingredient::create($request->all());
 
@@ -104,9 +90,6 @@ class IngredientController extends Controller
     public function edit($id)
     {
         $ingredient = Ingredient::find($id);
-        $ingredient->protein /= 10;
-        $ingredient->fat /= 10;
-        $ingredient->carbohydrate /= 10;
 
         return View::make('ingredient.edit', [
             'ingredient' => $ingredient,
@@ -123,18 +106,16 @@ class IngredientController extends Controller
      */
     public function update(Request $request, $id)
     {
-        // $validated = $request->validated();
         $validated = $request->validate(array_merge([
             'name' => 'required'], $this->formValidation));
 
         $ingredient = Ingredient::find($id);
         $ingredient->name = $request->name;
-        $ingredient->protein = $request->protein * 10;
-        $ingredient->fat = $request->fat * 10;
-        $ingredient->carbohydrate = $request->carbohydrate * 10;
+        $ingredient->protein = $request->protein;
+        $ingredient->fat = $request->fat;
+        $ingredient->carbohydrate = $request->carbohydrate;
         $ingredient->kcal = $request->kcal;
-        $ingredient->unit_id = $request->unit;
-
+        $ingredient->unit_id = $request->unit_id;
         $ingredient->save();
 
         return redirect('/ingredient/'.$ingredient->id);
@@ -170,8 +151,6 @@ class IngredientController extends Controller
             }
         else
             $result = [];
-
-        // dd($result);
 
         return response()->json($result);
     }
