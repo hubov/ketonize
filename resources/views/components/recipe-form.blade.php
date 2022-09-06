@@ -330,6 +330,7 @@
                 setIngredientsArray(rowId, $('#ingredient-protein').val(), $('#ingredient-fat').val(), $('#ingredient-carbohydrate').val(), $('#ingredient-kcal').val());
                 $('#ingredient-form').trigger('reset');
                 ingredientModal.hide();
+                $('#ingredient_q_' + rowId).focus();
             }) .fail(function(data) {
                     console.log('fail');
                     if (data.responseJSON.errors != undefined) {

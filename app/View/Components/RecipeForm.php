@@ -90,7 +90,7 @@ class RecipeForm extends Component
      * @param \Illuminate\Database\Eloquent\Collection units
      * @return void
      */
-    public function __construct($name = '', $units = '', $image = '',  $protein = '', $fat = '', $carbohydrate = '', $kcal = '', $ingredients = '', $description = '', $preparationTime = '', $cookingTime = '')
+    public function __construct($name = '', $units = '', $image = '',  $protein = '', $fat = '', $carbohydrate = '', $kcal = '', $ingredients = [], $description = '', $preparationTime = '', $cookingTime = '')
     {
         $this->name = $name;
         $this->units = $units;

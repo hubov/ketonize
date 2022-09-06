@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Ingredient;
 use App\Models\Recipe;
 use App\Models\Unit;
 use Illuminate\Http\Request;
@@ -15,6 +16,17 @@ class RecipeController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+
+    protected $formValidation = [
+        'ids' => 'required|array|min:1',
+        'ids.*' => 'required|numeric|min:1',
+        'quantity' => 'required|array|min:1',
+        'quantity.*' => 'required|numeric|min:1',
+        'description' => 'required|string',
+        'preparation_time' => 'required|numeric',
+        'cooking_time' => 'required|numeric'
+    ];
+
     public function index()
     {
         $recipes = Recipe::all()
@@ -44,14 +56,8 @@ class RecipeController extends Controller
      */
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'name' => 'required|unique:recipes,name',
-            'ids' => 'required|array|min:1',
-            'ids.*' => 'required|numeric|min:1',
-            'quantity' => 'required|array|min:1',
-            'quantity.*' => 'required|numeric|min:1',
-            'description' => 'required|string'
-        ]);
+        $validated = $request->validate(array_merge([
+            'name' => 'required|unique:recipes,name'], $this->formValidation));
 
         $recipe = new Recipe;
         $recipe->name = $request->name;
@@ -60,17 +66,26 @@ class RecipeController extends Controller
             $recipe->image = 'default';
         else
             $recipe->image = $request->image;
-        $recipe->protein = $request->protein;
-        $recipe->fat = $request->fat;
-        $recipe->carbohydrate = $request->carbohydrate;
-        $recipe->kcal = $request->kcal;
+        $recipe->protein = 0;
+        $recipe->fat = 0;
+        $recipe->carbohydrate = 0;
+        $recipe->kcal = 0;
         $recipe->description = $request->description;
         $recipe->preparation_time = $request->preparation_time;
         $recipe->cooking_time = $request->cooking_time;
         $recipe->total_time = $request->preparation_time + $request->cooking_time;
         $recipe->save();
+
+        $ingredients = Ingredient::whereIn('id', $request->ids)->get();
         foreach ($request->ids as $i => $id)
+        {
             $recipe->ingredients()->attach($id, ['amount' => $request->quantity[$i]]);
+            $recipe->protein += $request->quantity[$i] * $ingredients->find($id)->protein / 100;
+            $recipe->fat += $request->quantity[$i] * $ingredients->find($id)->fat / 100;
+            $recipe->carbohydrate += $request->quantity[$i] * $ingredients->find($id)->carbohydrate / 100;
+            $recipe->kcal += $request->quantity[$i] * $ingredients->find($id)->kcal / 100;
+        }
+        $recipe->save();
 
         return redirect('/recipe/'.$recipe->slug);
     }
@@ -127,18 +142,22 @@ class RecipeController extends Controller
      */
     public function update(Request $request, $slug)
     {
-        $validated = $request->validate([
-            'name' => 'required',
-            'ids' => 'required|array|min:1',
-            'ids.*' => 'required|numeric|min:1',
-            'quantity' => 'required|array|min:1',
-            'quantity.*' => 'required|numeric|min:1',
-            'description' => 'required|string',
-            'preparation_time' => 'required|numeric',
-            'cooking_time' => 'required|numeric'
-        ]);
+        $validated = $request->validate(array_merge([
+            'name' => 'required'], $this->formValidation));
 
         $recipe = Recipe::where('slug', $slug)->firstOrFail();
+
+        $recipe->protein = 0;
+        $recipe->fat = 0;
+        $recipe->carbohydrate = 0;
+        $recipe->kcal = 0;
+        $ingredients = Ingredient::whereIn('id', $request->ids)->get();
+        foreach  ($request->ids as $i => $id) {
+            $recipe->protein += $request->quantity[$i] * $ingredients->find($id)->protein / 100;
+            $recipe->fat += $request->quantity[$i] * $ingredients->find($id)->fat / 100;
+            $recipe->carbohydrate += $request->quantity[$i] * $ingredients->find($id)->carbohydrate / 100;
+            $recipe->kcal += $request->quantity[$i] * $ingredients->find($id)->kcal / 100;
+        }
 
         $recipe->name = $request->name;
         $recipe->slug = Str::of($request->name)->slug('-');
@@ -146,10 +165,6 @@ class RecipeController extends Controller
             $recipe->image = 'default';
         else
             $recipe->image = $request->image;
-        $recipe->protein = $request->protein;
-        $recipe->fat = $request->fat;
-        $recipe->carbohydrate = $request->carbohydrate;
-        $recipe->kcal = $request->kcal;
         $recipe->description = $request->description;
         $recipe->preparation_time = $request->preparation_time;
         $recipe->cooking_time = $request->cooking_time;

@@ -57,7 +57,7 @@
 		</div>
 		<div class="row">
 			<div class="col">
-				{{ $description }}
+				{!! nl2br($description) !!}
 			</div>
 		</div>
 	</div>
