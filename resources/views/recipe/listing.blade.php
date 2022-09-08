@@ -1,4 +1,4 @@
-<x-layout>
+<x-app-layout>
 	<x-recipe-form :units="$units" />
 
 	@if (count($recipes) > 0)
@@ -27,4 +27,4 @@
 	@else
 		The are no recipes!
 	@endif
-</x-layout>
+</x-app-layout>
