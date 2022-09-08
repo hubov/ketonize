@@ -19,17 +19,19 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/recipe/{slug}/edit', [RecipeController::class, 'edit'])->where('slug', '[0-9a-z\-]+');
-Route::post('/recipe/{slug}/edit', [RecipeController::class, 'update'])->where('slug', '[0-9a-z\-]+');
+Route::middleware('role:admin')->group(function() {
+    Route::get('/recipe/{slug}/edit', [RecipeController::class, 'edit'])->where('slug', '[0-9a-z\-]+');
+    Route::post('/recipe/{slug}/edit', [RecipeController::class, 'update'])->where('slug', '[0-9a-z\-]+');
+    Route::get('/ingredient/{id}', [IngredientController::class, 'edit'])->whereNumber('id');
+    Route::post('/ingredient/{id}', [IngredientController::class, 'update'])->whereNumber('id');
+    Route::post('/ingredient/new', [IngredientController::class, 'ajaxStore']);
+    Route::post('/ingredients', [IngredientController::class, 'store']); // old store
+});
 Route::get('/recipe/{slug}', [RecipeController::class, 'show'])->where('slug', '[0-9a-z\-]+');
 Route::get('/recipes', [RecipeController::class, 'index'])->middleware(['auth']);
 Route::post('/recipes', [RecipeController::class, 'store']);
 Route::get('/ingredients', [IngredientController::class, 'index']);
 Route::get('/ingredient-autocomplete', [IngredientController::class, 'search']);
-Route::get('/ingredient/{id}', [IngredientController::class, 'edit'])->whereNumber('id');
-Route::post('/ingredient/{id}', [IngredientController::class, 'update'])->whereNumber('id');
-Route::post('/ingredient/new', [IngredientController::class, 'ajaxStore']);
-Route::post('/ingredients', [IngredientController::class, 'store']); // old store
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth'])->name('dashboard');
