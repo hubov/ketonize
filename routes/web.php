@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\DietPlanController;
 use App\Http\Controllers\IngredientController;
 use App\Http\Controllers\RecipeController;
 use Illuminate\Support\Facades\Route;
@@ -26,15 +27,15 @@ Route::middleware('role:admin')->group(function() {
     Route::post('/ingredient/{id}', [IngredientController::class, 'update'])->whereNumber('id');
     Route::post('/ingredient/new', [IngredientController::class, 'ajaxStore']);
     Route::post('/ingredients', [IngredientController::class, 'store']); // old store
+    Route::post('/recipes', [RecipeController::class, 'store']);
 });
-Route::get('/recipe/{slug}', [RecipeController::class, 'show'])->where('slug', '[0-9a-z\-]+');
-Route::get('/recipes', [RecipeController::class, 'index'])->middleware(['auth']);
-Route::post('/recipes', [RecipeController::class, 'store']);
-Route::get('/ingredients', [IngredientController::class, 'index']);
-Route::get('/ingredient-autocomplete', [IngredientController::class, 'search']);
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth'])->name('dashboard');
+Route::middleware('auth')->group(function() {
+    Route::get('/dashboard', [DietPlanController::class, 'index'])->name('dashboard');
+    Route::get('/recipe/{slug}', [RecipeController::class, 'show'])->where('slug', '[0-9a-z\-]+');
+    Route::get('/recipes', [RecipeController::class, 'index'])->middleware(['auth']);
+    Route::get('/ingredients', [IngredientController::class, 'index']);
+    Route::get('/ingredient-autocomplete', [IngredientController::class, 'search']);
+});
 
 require __DIR__.'/auth.php';
 
