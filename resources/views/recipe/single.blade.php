@@ -1,4 +1,4 @@
-<x-layout>
+<x-app-layout>
 	<div class="container">
 		<div class="row">
 			<div class="col">
@@ -61,7 +61,7 @@
 			</div>
 		</div>
 	</div>
-</x-layout>
+</x-app-layout>
 
 <script type="text/javascript">
 	$(document).ready(function(){
