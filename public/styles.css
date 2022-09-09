@@ -20,3 +20,14 @@
 .ingredients {
 	padding-bottom: 20px;
 }
+
+input[type=date].form-control {
+	display: inline-block;
+	width: 70%;
+}
+
+span.date-navigate {
+	line-height: inherit;
+	vertical-align: middle;
+	font-size: 2rem;
+}

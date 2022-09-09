@@ -30,6 +30,7 @@ Route::middleware('role:admin')->group(function() {
     Route::post('/recipes', [RecipeController::class, 'store']);
 });
 Route::middleware('auth')->group(function() {
+    Route::get('/dashboard/{date}', [DietPlanController::class, 'index'])->where('date', '202[0-9]\-(0[1-9]|1[0-2])\-[0-3][0-9]');
     Route::get('/dashboard', [DietPlanController::class, 'index'])->name('dashboard');
     Route::get('/recipe/{slug}', [RecipeController::class, 'show'])->where('slug', '[0-9a-z\-]+');
     Route::get('/recipes', [RecipeController::class, 'index'])->middleware(['auth']);
