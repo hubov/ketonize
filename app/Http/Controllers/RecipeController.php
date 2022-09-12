@@ -96,21 +96,32 @@ class RecipeController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($slug)
+    public function show($slug, $modifier = NULL)
     {
         $recipe = Recipe::where('slug', $slug)->firstOrFail();
 
         $weightTotal = 0;
         foreach  ($recipe->ingredients as $ingredient) {
+            if ($modifier !== NULL)
+                $ingredient->pivot->amount = round($ingredient->pivot->amount * $modifier / 100);
+
             $weightTotal += $ingredient->pivot->amount;
+        }
+
+        if ($modifier !== NULL)
+        {
+            $recipe->protein *= $modifier / 100;
+            $recipe->fat *= $modifier / 100;
+            $recipe->carbohydrate *= $modifier / 100;
+            $recipe->kcal *= $modifier / 100;
         }
 
         return View::make('recipe.single', [
             'name' => $recipe->name,
-            'protein' => $recipe->protein,
-            'fat' => $recipe->fat,
-            'carbohydrate' => $recipe->carbohydrate,
-            'kcal' => $recipe->kcal,
+            'protein' => round($recipe->protein),
+            'fat' => round($recipe->fat),
+            'carbohydrate' => round($recipe->carbohydrate),
+            'kcal' => round($recipe->kcal),
             'ingredients' => $recipe->ingredients,
             'description' => $recipe->description,
             'weightTotal' => $weightTotal

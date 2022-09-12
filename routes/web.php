@@ -32,6 +32,7 @@ Route::middleware('role:admin')->group(function() {
 Route::middleware('auth')->group(function() {
     Route::get('/dashboard/{date}', [DietPlanController::class, 'index'])->where('date', '202[0-9]\-(0[1-9]|1[0-2])\-[0-3][0-9]');
     Route::get('/dashboard', [DietPlanController::class, 'index'])->name('dashboard');
+    Route::get('/recipe/{slug}/{modifier}', [RecipeController::class, 'show'])->where('slug', '[0-9a-z\-]+')->where('modifier', '[0-9]+');
     Route::get('/recipe/{slug}', [RecipeController::class, 'show'])->where('slug', '[0-9a-z\-]+');
     Route::get('/recipes', [RecipeController::class, 'index'])->middleware(['auth']);
     Route::get('/ingredients', [IngredientController::class, 'index']);
