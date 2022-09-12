@@ -31,3 +31,16 @@ span.date-navigate {
 	vertical-align: middle;
 	font-size: 2rem;
 }
+
+.inline-icon {
+   vertical-align: middle;
+   /*font-size: 18px !important;*/
+}
+
+.scale {
+	cursor: pointer;
+}
+
+.remover {
+	cursor: pointer;
+}
