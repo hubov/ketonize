@@ -4,9 +4,11 @@
 		@csrf
 		<div class="row">
 			<div class="col">
+				<label for="date_from" class="form-label">Start date</label>
 				<input type="date" class="form-control" id="date_from" name="date_from" value="{{ $date_from }}">
 			</div>
 			<div class="col">
+				<label for="date_to" class="form-label">End date</label>
 				<input type="date" class="form-control" id="date_to" name="date_to" value="{{ $date_to }}">
 			</div>
 			<div class="col">
