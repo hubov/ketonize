@@ -12,13 +12,14 @@ class DietPlanController extends Controller
 {
     public function index(Request $request, $date = NULL)
     {
+        $user = Auth::user();
         if ($date === NULL)
             $date = date("Y-m-d");
         $dateUnix = strtotime($date);
         $dateNext = date('Y-m-d', strtotime('+1 day', $dateUnix));
         $datePrev = date('Y-m-d', strtotime('-1 day', $dateUnix));
 
-        $meals = DietPlan::where('user_id', Auth::user()->id)
+        $meals = DietPlan::where('user_id', $user->id)
                                 ->where('date_on', $date)
                                 ->orderBy('meal')
                                 ->get();
@@ -72,7 +73,15 @@ class DietPlanController extends Controller
             'total_time' => $totalTime,
             'shareProtein' => $shareProtein,
             'shareFat' => $shareFat,
-            'shareCarbohydrate' => $shareCarbohydrate
+            'shareCarbohydrate' => $shareCarbohydrate,
+            'diet' => $user->userDiet->diet->name,
+            'dietKcal' => $user->userDiet->kcal,
+            'dietProtein' => $user->userDiet->protein,
+            'dietFat' => $user->userDiet->fat,
+            'dietCarbohydrate' => $user->userDiet->carbohydrate,
+            'dietProteinShare' => $user->userDiet->diet->protein,
+            'dietFatShare' => $user->userDiet->diet->fat,
+            'dietCarbohydrateShare' => $user->userDiet->diet->carbohydrate
         ]); 
     }
 }

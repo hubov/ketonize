@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\DietPlanController;
 use App\Http\Controllers\IngredientController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RecipeController;
 use App\Http\Controllers\ShoppingListController;
 use Illuminate\Support\Facades\Route;
@@ -42,6 +43,10 @@ Route::middleware('auth')->group(function() {
     Route::get('/recipes', [RecipeController::class, 'index'])->middleware(['auth']);
     Route::get('/ingredients', [IngredientController::class, 'index']);
     Route::get('/ingredient-autocomplete', [IngredientController::class, 'search']);
+    Route::get('/profile/new', [ProfileController::class, 'create']);
+    Route::post('/profile/new', [ProfileController::class, 'store']);
+    Route::get('/profile', [ProfileController::class, 'edit']);
+    Route::post('/profile', [ProfileController::class, 'update']);
 });
 
 require __DIR__.'/auth.php';

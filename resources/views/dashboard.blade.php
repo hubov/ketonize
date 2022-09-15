@@ -18,7 +18,7 @@
             <div class="mb-3 p-0">
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-3 bg-white border-b border-gray-200">
-                        Your diet: ketogenic vegan 2200 kcal Fats: 70-80% Proteins: 10-15% Carbs: 5-10%<br />
+                        Your diet: {{ $diet }} {{ $dietKcal }} kcal Fats: {{ $dietFat }}g ({{ $dietFatShare }}%) Proteins: {{ $dietProtein }}g ({{ $dietProteinShare }}%) Carbs: {{ $dietCarbohydrate }}g ({{ $dietCarbohydrateShare }}%)<br />
                         Proteins: {{ $protein }}g ({{ $shareProtein}}%) | Fats: {{ $fat }}g ({{ $shareFat }}%) | Carbs: {{ $carbohydrate }}g ({{ $shareCarbohydrate }}%) | Kcal: {{ $kcal }} | Preparation time: {{ $preparation_time }}min | Total time: {{ $total_time }}min
                     </div>
                 </div>
