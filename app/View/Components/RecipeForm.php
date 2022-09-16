@@ -56,6 +56,27 @@ class RecipeForm extends Component
     public $kcal;
 
     /**
+     * The recipe proteins ratio.
+     *
+     * @var integer
+     */
+    public $proteinRatio;
+
+    /**
+     * The recipe fats ratio.
+     *
+     * @var integer
+     */
+    public $fatRatio;
+
+    /**
+     * The recipe carbohydrates ratio.
+     *
+     * @var integer
+     */
+    public $carbohydrateRatio;
+
+    /**
      * The recipe ingredients.
      *
      * @var @var \Illuminate\Database\Eloquent\Collection

@@ -70,6 +70,9 @@ class RecipeController extends Controller
         $recipe->fat = 0;
         $recipe->carbohydrate = 0;
         $recipe->kcal = 0;
+        $recipe->protein_ratio = 0;
+        $recipe->fat_ratio = 0;
+        $recipe->carbohydrate_ratio = 0;
         $recipe->description = $request->description;
         $recipe->preparation_time = $request->preparation_time;
         $recipe->cooking_time = $request->cooking_time;
@@ -85,6 +88,11 @@ class RecipeController extends Controller
             $recipe->carbohydrate += $request->quantity[$i] * $ingredients->find($id)->carbohydrate / 100;
             $recipe->kcal += $request->quantity[$i] * $ingredients->find($id)->kcal / 100;
         }
+        $macros = $recipe->protein + $recipe->fat + $recipe->carbohydrate;
+        $recipe->protein_ratio = round($recipe->protein / $macros * 100);
+        $recipe->fat_ratio = round($recipe->fat / $macros * 100);
+        $recipe->carbohydrate_ratio = round($recipe->carbohydrate / $macros * 100);
+
         $recipe->save();
 
         return redirect('/recipe/'.$recipe->slug);
@@ -157,11 +165,14 @@ class RecipeController extends Controller
             'name' => 'required'], $this->formValidation));
 
         $recipe = Recipe::where('slug', $slug)->firstOrFail();
-
         $recipe->protein = 0;
         $recipe->fat = 0;
         $recipe->carbohydrate = 0;
         $recipe->kcal = 0;
+        $recipe->protein_ratio = 0;
+        $recipe->fat_ratio = 0;
+        $recipe->carbohydrate_ratio = 0;
+
         $ingredients = Ingredient::whereIn('id', $request->ids)->get();
         foreach  ($request->ids as $i => $id) {
             $recipe->protein += $request->quantity[$i] * $ingredients->find($id)->protein / 100;
@@ -170,6 +181,10 @@ class RecipeController extends Controller
             $recipe->kcal += $request->quantity[$i] * $ingredients->find($id)->kcal / 100;
         }
 
+        $macros = $recipe->protein + $recipe->fat + $recipe->carbohydrate;
+        $recipe->protein_ratio = round($recipe->protein / $macros * 100);
+        $recipe->fat_ratio = round($recipe->fat / $macros * 100);
+        $recipe->carbohydrate_ratio = round($recipe->carbohydrate / $macros * 100);
         $recipe->name = $request->name;
         $recipe->slug = Str::of($request->name)->slug('-');
         if ($request->image == NULL)
