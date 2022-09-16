@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\GenerateDietPlan;
 use App\Models\DietPlan;
 use App\Models\Unit;
 use Illuminate\Http\Request;
@@ -83,5 +84,18 @@ class DietPlanController extends Controller
             'dietFatShare' => $user->userDiet->diet->fat,
             'dietCarbohydrateShare' => $user->userDiet->diet->carbohydrate
         ]); 
+    }
+
+    public function generate(Request $request, $date)
+    {
+        $plan = new GenerateDietPlan($date);
+        $plan->handle(Auth::user());
+
+        if ($date == date('Y-m-d'))
+            $url = '/dashboard';
+        else
+            $url = '/dashboard/'.$date;
+        
+        return redirect($url);
     }
 }

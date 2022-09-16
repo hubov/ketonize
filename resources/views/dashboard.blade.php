@@ -44,7 +44,8 @@
                 </div>
             @endforeach
         @else
-            You have no meals planned!
+            <p>You have no meals planned!</p>
+            <p><a href="/dashboard/generate/{{ $date }}" class="btn btn-primary" name="plan" id="plan">PLAN NOW</a></p>
         @endif
     </div>
 </x-app-layout>

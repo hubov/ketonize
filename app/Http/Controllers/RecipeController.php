@@ -6,6 +6,7 @@ use App\Models\Ingredient;
 use App\Models\Recipe;
 use App\Models\Unit;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Str;
 
@@ -124,6 +125,9 @@ class RecipeController extends Controller
             $recipe->kcal *= $modifier / 100;
         }
 
+        $user = Auth::user();
+        $isAdmin = $user->is('admin');
+
         return View::make('recipe.single', [
             'name' => $recipe->name,
             'protein' => round($recipe->protein),
@@ -132,7 +136,8 @@ class RecipeController extends Controller
             'kcal' => round($recipe->kcal),
             'ingredients' => $recipe->ingredients,
             'description' => $recipe->description,
-            'weightTotal' => $weightTotal
+            'weightTotal' => $weightTotal,
+            'admin' => $isAdmin
         ]);
     }
 
@@ -180,7 +185,6 @@ class RecipeController extends Controller
             $recipe->carbohydrate += $request->quantity[$i] * $ingredients->find($id)->carbohydrate / 100;
             $recipe->kcal += $request->quantity[$i] * $ingredients->find($id)->kcal / 100;
         }
-
         $macros = $recipe->protein + $recipe->fat + $recipe->carbohydrate;
         $recipe->protein_ratio = round($recipe->protein / $macros * 100);
         $recipe->fat_ratio = round($recipe->fat / $macros * 100);

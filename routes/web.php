@@ -34,6 +34,7 @@ Route::middleware('role:admin')->group(function() {
 Route::middleware('auth')->group(function() {
     Route::get('/dashboard/{date}', [DietPlanController::class, 'index'])->where('date', '202[0-9]\-(0[1-9]|1[0-2])\-[0-3][0-9]');
     Route::get('/dashboard', [DietPlanController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard/generate/{date}', [DietPlanController::class, 'generate'])->where('date', '202[0-9]\-(0[1-9]|1[0-2])\-[0-3][0-9]');
     Route::get('/shopping-list', [ShoppingListController::class, 'index']);
     Route::post('/shopping-list', [ShoppingListController::class, 'update']);
     Route::post('/shopping-list/update', [ShoppingListController::class, 'edit']);

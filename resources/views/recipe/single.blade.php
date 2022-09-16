@@ -2,7 +2,11 @@
 	<div class="container">
 		<div class="row">
 			<div class="col">
-				<h1>{{ $name }} <a href="{!! url()->current() !!}/edit"><i class="bi-palette"></i></a></h1>
+				<h1>{{ $name }}
+					@if ($admin)
+						<a href="{!! url()->current() !!}/edit"><span class="material-icons material-icons-outlined">edit</span></a>
+					@endif
+				</h1>
 			</div>
 		</div>
 		<div class="row macros">
