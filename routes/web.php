@@ -28,8 +28,9 @@ Route::middleware('role:admin')->group(function() {
     Route::get('/ingredient/{id}', [IngredientController::class, 'edit'])->whereNumber('id');
     Route::post('/ingredient/{id}', [IngredientController::class, 'update'])->whereNumber('id');
     Route::post('/ingredient/new', [IngredientController::class, 'ajaxStore']);
+    Route::post('/ingredients/bulk', [IngredientController::class, 'upload']);
     Route::post('/ingredients', [IngredientController::class, 'store']); // old store
-    Route::post('/recipes', [RecipeController::class, 'store']);
+    Route::post('/recipes', [RecipeController::class, 'store']);    
 });
 Route::middleware('auth')->group(function() {
     Route::get('/dashboard/{date}', [DietPlanController::class, 'index'])->where('date', '202[0-9]\-(0[1-9]|1[0-2])\-[0-3][0-9]');

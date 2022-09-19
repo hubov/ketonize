@@ -158,4 +158,53 @@ class IngredientController extends Controller
 
         return response()->json($result);
     }
+
+    public function upload(Request $request)
+    {
+        if ($request->file('bulk_upload')->isValid())
+        {
+            $file = fopen($request->file('bulk_upload')->path(), 'r');
+            $head = fgetcsv($file, 4096, ',', '"');
+
+            while (($data = fgetcsv($file, 4096, ",")) !== FALSE)
+            {
+                $ingredient = new Ingredient;
+                $ingredient->name = $data[0];
+
+                for ($i = 3; $i <= 33; $i++)
+                    if ($data[$i][0] == '<')
+                        $data[$i] = substr($data[$i], 1);
+                    else
+                    if (($data[$i] == 'n.d.') || ($data[$i] == 'tr.'))
+                        $data[$i] = 0;
+
+                $ingredient->protein = $data[13];
+                $ingredient->fat = $data[4];
+                $ingredient->carbohydrate = $data[9];
+                $ingredient->kcal = $data[3];
+                $category = IngredientCategory::where('name', $data[2])->first();
+                $ingredient->ingredient_category_id = $category->id;
+                $ingredient->unit_id = $data[1];
+                $ingredient->save();
+
+                unset($data[0]);
+                unset($data[1]);
+                unset($data[2]);
+                unset($data[3]);
+                unset($data[4]);
+                unset($data[9]);
+                unset($data[13]);
+                $data = array_values($data);
+
+                foreach ($data as $i => $value)
+                {
+                    if ($value > 0)
+                        $ingredient->nutrients()->attach(($i + 1), ['amount' => $value]);
+                }
+            }
+
+
+            dd($file);
+        }
+    }
 }
