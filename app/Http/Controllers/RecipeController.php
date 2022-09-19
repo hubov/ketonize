@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Ingredient;
+use App\Models\IngredientCategory;
 use App\Models\Recipe;
 use App\Models\Unit;
 use Illuminate\Http\Request;
@@ -35,7 +36,8 @@ class RecipeController extends Controller
 
         return View::make('recipe.listing', [
             'recipes' => $recipes,
-            'units' => Unit::all()
+            'units' => Unit::all(),
+            'categories' => IngredientCategory::orderBy('name')->get()
         ]);
     }
 
@@ -153,7 +155,8 @@ class RecipeController extends Controller
 
         return View::make('recipe.edit', [
             'recipe' => $recipe,
-            'units' => Unit::all()
+            'units' => Unit::all(),
+            'categories' => IngredientCategory::orderBy('name')->get()
         ]);
     }
 

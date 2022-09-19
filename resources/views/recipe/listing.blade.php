@@ -1,5 +1,5 @@
 <x-app-layout>
-	<x-recipe-form :units="$units" />
+	<x-recipe-form :categories="$categories" :units="$units" />
 
 	@if (count($recipes) > 0)
 		<table class="table">

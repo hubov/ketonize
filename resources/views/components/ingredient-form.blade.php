@@ -10,6 +10,22 @@
         @endif
     </div>
     <div class="mb-3">
+        <label for="ingredient-category" class="form-label">Category</label>
+        <select name="ingredient_category_id" id="ingredient-category" class="form-control">
+            <option>Choose</option>
+            @if (count($categories) > 0)
+                @foreach ($categories as $category)
+                    <option value="{{ $category->id }}">{{ $category->name }}</option>
+                @endforeach
+            @endif
+        </select>
+        @if ($errors->has('ingredient_category_id'))
+            <div class="error">
+                {{ $errors->first('ingredient_category_id') }}
+            </div>
+        @endif
+    </div>
+    <div class="mb-3">
         <label for="ingredient-protein" class="form-label">Proteins</label>
         <input type="text" name="protein" id="ingredient-protein" class="form-control" value="{{ $protein ?? '' }}">
         @if ($errors->has('protein'))

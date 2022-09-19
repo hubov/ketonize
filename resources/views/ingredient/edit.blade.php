@@ -1,1 +1,1 @@
-<x-ingredient-form :name="$ingredient->name" :protein="$ingredient->protein" :fat="$ingredient->fat" :carbohydrate="$ingredient->carbohydrate" :kcal="$ingredient->kcal" :unit="$ingredient->unit_id" :units="$units" />
+<x-ingredient-form :name="$ingredient->name" :category="$ingredient->category" :protein="$ingredient->protein" :fat="$ingredient->fat" :carbohydrate="$ingredient->carbohydrate" :kcal="$ingredient->kcal" :unit="$ingredient->unit_id" :units="$units" :categories="$categories" />

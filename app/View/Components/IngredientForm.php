@@ -15,6 +15,13 @@ class IngredientForm extends Component
     public $name;
 
     /**
+     * The ingredient's category.
+     *
+     * @var integer
+     */
+    public $category;
+
+    /**
      * The ingredient's protein inhalt.
      *
      * @var integer
@@ -57,28 +64,39 @@ class IngredientForm extends Component
     public $units;
 
     /**
+     * The list of ingredient categories.
+     *
+     * @var \Illuminate\Database\Eloquent\Collection
+     */
+    public $categories;
+
+    /**
      * Create a new component instance.
      *
      * @param string name
+     * @param integer category
      * @param integer protein
      * @param integer fat
      * @param integer carbohydrate
      * @param integer kcal
      * @param integer unit
      * @param \Illuminate\Database\Eloquent\Collection units
+     * @param \Illuminate\Database\Eloquent\Collection categories
      * @return void
      */
 
 
-    public function __construct($name = '', $protein = '', $fat = '', $carbohydrate = '', $kcal = '', $unit = '', $units = [])
+    public function __construct($name = '', $category = 0, $protein = '', $fat = '', $carbohydrate = '', $kcal = '', $unit = '', $units = [], $categories = [])
     {
         $this->name = $name;
+        $this->category = $category;
         $this->protein = $protein;
         $this->fat = $fat;
         $this->carbohydrate = $carbohydrate;
         $this->kcal = $kcal;
         $this->unit_id = $unit;
         $this->units = $units;
+        $this->categories = $categories;
     }
 
     /**
