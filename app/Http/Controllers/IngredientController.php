@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Ingredient;
 use App\Models\IngredientCategory;
+use App\Models\Nutrient;
 use App\Models\Unit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\View;

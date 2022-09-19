@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\IngredientCategory;
+use App\Models\Nutrient;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -24,5 +25,10 @@ class Ingredient extends Model
     public function category()
     {
         return $this->hasOne(IngredientCategory::class);
+    }
+
+    public function nutrients()
+    {
+        return $this->belongsToMany(Nutrient::class)->withPivot('amount');
     }
 }
