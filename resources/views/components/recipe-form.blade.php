@@ -206,9 +206,10 @@
                 {
                     name: 'ingredients',
                     displayKey: 'name',
+                    limit: 10,
                     source: ingredients,
                     templates: function(data) {
-                        return '<div>' + data + '</div>';
+                        return '<p">' + data + '</p>';
                     }
                 });
                 $('.typeahead').bind('typeahead:select', function(ev, suggestion) {
@@ -263,8 +264,6 @@
             for (var i=proteins.length; i--;) {
                 sum+=proteins[i];
             }
-            // console.log(proteins);
-            // console.log(sum);
             $('#recipe-protein').val(Math.round(sum * 10) / 10);
             var sum = 0;
             for (var i=fats.length; i--;) {
@@ -289,7 +288,7 @@
             html += '<div class="input-group"><input type="text" id="ingredient' + ingredientsCount + '" class="form-control typeahead" placeholder="Name" autocomplete="off" value="' + name + '">';
             html += '<input type="text" name="quantity[]" id="ingredient_q_' + ingredientsCount + '" class="form-control quantity" placeholder="Quantity" value="' + quantity + '">';
             html += '<span class="input-group-text" id="ingredient' + ingredientsCount + '_unit">' + unit + '</span>';
-            html += '<button type="button" id="ingredient_r_' + ingredientsCount + '" class="btn btn-danger removeRow"><i class="bi-x-lg"></i></button>';
+            html += '<button type="button" id="ingredient_r_' + ingredientsCount + '" class="btn btn-danger removeRow"><span class="material-icons material-icons-outline inline-icon" style="font-size: 1.2em">close</span></button>';
             html += '</div><input type="hidden" name="ids[]" id="ingredient' + ingredientsCount + '_id" value="' + id + '"></div>';
 
             $('.typeahead').typeahead('destroy','NoCached')
