@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\DietPlan;
+use App\Models\IngredientCategory;
 use App\Models\ShoppingList;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -12,14 +13,20 @@ class ShoppingListController extends Controller
 {
     public function index()
     {
-        $list = ShoppingList::join('ingredients', 'shopping_lists.ingredient_id', '=', 'ingredients.id')->where('user_id', Auth::user()->id)->select('shopping_lists.*')->orderBy('ingredients.name')->get();
+        $list = ShoppingList::join('ingredients', 'shopping_lists.ingredient_id', '=', 'ingredients.id')->where('user_id', Auth::user()->id)->select('shopping_lists.*')->orderBy('ingredients.ingredient_category_id')->orderBy('ingredients.name')->get();
+
+        foreach ($list as $l)
+        {
+            $category = IngredientCategory::find($l->ingredient->ingredient_category_id)->name;
+            $categorisedList[$category][] = $l;
+        }
 
         $date = date("Y-m-d");
 
         return View::make('shopping-list', [
-            'list' => $list,
+            'list' => $categorisedList,
             'date_from' => $date,
-            'date_to' => $date
+            'date_to' => $date,
         ]); 
     }
 

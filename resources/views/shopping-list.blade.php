@@ -29,9 +29,19 @@
 						</thead>
 						<tbody>
 					@php
+						$categoriesCount = 0;
 						$scalablesCount = 0;
 					@endphp
-			        @foreach ($list as $element)
+			        @foreach ($list as $group => $elements)
+			        	@php
+			        		$categoriesCount++;
+			        	@endphp
+			        	<tr class="table-primary" cat-id="{{ $categoriesCount }}">
+			        		<td colspan="3">
+			        			<b>{{ $group }}</b>
+			        		</td>
+			        	</tr>
+			        	@foreach ($elements as $element)
 			        		<tr>
 			        			<td scope="row">{{ $element->ingredient->name }}</td>
 			        			<td>
@@ -46,11 +56,12 @@
 			        					add
 			        				</span>
 			        			</td>
-			        			<td><span class="material-icons material-icons-outlined text-danger inline-icon remover">clear</span></td>
+			        			<td><span class="material-icons material-icons-outlined text-danger inline-icon remover" cat-id="{{ $categoriesCount }}">clear</span></td>
 			        		</tr>
 			        		@php
 								$scalablesCount++;
 							@endphp
+						@endforeach
 					@endforeach
 						</tbody>
 					</table>
@@ -67,6 +78,7 @@
 <script type="text/javascript">
     $(document).ready(function(){
     	$('.remover').on('click', function () {
+    		var el = $(this);
     		var row = $(this).closest('tr');
     		var removedId = row.find('.scalable').attr('ingredient-id');
     		var formData = {
@@ -82,8 +94,11 @@
                 encode: true,
             }).done(function (data) {
                 console.log('success');
+           		var catId = el.attr('cat-id');
                 row.remove();
-                originals[removedId] = 0;
+                if ($('.remover[cat-id=' + catId + ']').length == 0) {
+                	$('tr[cat-id=' + catId + ']').remove();
+                }
             }) .fail(function(data) {
                 console.log('fail');
             });
