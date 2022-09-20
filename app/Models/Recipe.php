@@ -13,4 +13,16 @@ class Recipe extends Model
     public function ingredients() {
         return $this->belongsToMany(Ingredient::class)->withPivot('amount');
     }
+
+    public function tags() {
+        return $this->belongsToMany(Tag::class);
+    }
+
+    public function tagsIds() {
+        $result = NULL;
+        foreach ($this->tags as $tag)
+            $result[$tag->id] = true;
+
+        return $result;
+    }
 }

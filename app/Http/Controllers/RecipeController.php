@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Ingredient;
 use App\Models\IngredientCategory;
 use App\Models\Recipe;
+use App\Models\Tag;
 use App\Models\Unit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -37,7 +38,8 @@ class RecipeController extends Controller
         return View::make('recipe.listing', [
             'recipes' => $recipes,
             'units' => Unit::all(),
-            'categories' => IngredientCategory::orderBy('name')->get()
+            'categories' => IngredientCategory::orderBy('name')->get(),
+            'tagsList' => Tag::orderBy('name')->get()
         ]);
     }
 
@@ -96,6 +98,9 @@ class RecipeController extends Controller
         $recipe->fat_ratio = round($recipe->fat / $macros * 100);
         $recipe->carbohydrate_ratio = round($recipe->carbohydrate / $macros * 100);
 
+        foreach ($request->tags as $tag)
+            $recipe->tags()->attach($tag);
+        
         $recipe->save();
 
         return redirect('/recipe/'.$recipe->slug);
@@ -157,7 +162,8 @@ class RecipeController extends Controller
         return View::make('recipe.edit', [
             'recipe' => $recipe,
             'units' => Unit::all(),
-            'categories' => IngredientCategory::orderBy('name')->get()
+            'categories' => IngredientCategory::orderBy('name')->get(),
+            'tagsList' => Tag::orderBy('name')->get()
         ]);
     }
 
@@ -207,6 +213,7 @@ class RecipeController extends Controller
         foreach ($request->ids as $i => $id)
             $ingredientsCurrent[$id] = ['amount' => $request->quantity[$i]];
         $recipe->ingredients()->sync($ingredientsCurrent);
+        $recipe->tags()->sync($request->tags);
 
         return redirect('/recipe/'.$recipe->slug);
     }

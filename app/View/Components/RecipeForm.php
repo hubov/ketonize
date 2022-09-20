@@ -98,6 +98,20 @@ class RecipeForm extends Component
     public $description;
 
     /**
+     * The list of available tags.
+     *
+     * @var @var \Illuminate\Database\Eloquent\Collection
+     */
+    public $tagsList;
+
+    /**
+     * The list of recipe's tags.
+     *
+     * @var @var \Illuminate\Database\Eloquent\Collection
+     */
+    public $tags;
+
+    /**
      * The recipe preparation time.
      *
      * @var integer
@@ -118,7 +132,7 @@ class RecipeForm extends Component
      * @param \Illuminate\Database\Eloquent\Collection units
      * @return void
      */
-    public function __construct($name = '', $units = [], $categories = [], $image = '',  $protein = '', $fat = '', $carbohydrate = '', $kcal = '', $ingredients = [], $description = '', $preparationTime = '', $cookingTime = '')
+    public function __construct($name = '', $units = [], $categories = [], $image = '',  $protein = '', $fat = '', $carbohydrate = '', $kcal = '', $ingredients = [], $description = '', $tagsList = [], $tags = [], $preparationTime = '', $cookingTime = '')
     {
         $this->name = $name;
         $this->units = $units;
@@ -130,6 +144,8 @@ class RecipeForm extends Component
         $this->kcal = $kcal;
         $this->ingredients = $ingredients;
         $this->description = $description;
+        $this->tagsList = $tagsList;
+        $this->tags = $tags;
         $this->preparationTime = $preparationTime;
         $this->cookingTime = $cookingTime;
     }

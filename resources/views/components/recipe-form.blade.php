@@ -72,6 +72,23 @@
         @endif
     </div>
     <div class="mb-3">
+        <label for="tags">Tags</label>
+        <select name="tags[]" multiple class="form-select" aria-label="multiple select">
+            @foreach ($tagsList as $tag)
+                <option value="{{ $tag->id }}"
+                    @if (isset($tags[$tag->id]))
+                        selected
+                    @endif
+                >{{ $tag->name }}</option>
+            @endforeach
+        </select> 
+        @if ($errors->has('tags'))
+            <div class="invalid-feedback">
+                {{ $errors->first('tags') }}
+            </div>
+        @endif
+    </div>
+    <div class="my-3">
         <label for="preparation_time">Preparation time</label>
         <input type="text" name="preparation_time" id="recipe-preparation_time" class="form-control" value="{{ $preparationTime ?? '' }}">
         @if ($errors->has('preparation_time'))
@@ -89,7 +106,7 @@
             </div>
         @endif
     </div>
-    <div><input type="submit" name="save" class="btn btn-primary" value="Save" id="save"></div>
+    <div class="mt-3"><input type="submit" name="save" class="btn btn-primary" value="Save" id="save"></div>
 </form>
 
 <div id="ingredientModal" class="modal" tabindex="-1">
