@@ -135,7 +135,17 @@ class IngredientController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $ingredient = Ingredient::find($id);
+        if (count($ingredient->recipes) > 0)
+        {
+            foreach ($ingredient->recipes as $recipe)
+                $results[] = $recipe->slug;
+            return response()->json(['error' => TRUE, 'recipes' => $results], 403);
+        }
+
+        Ingredient::destroy($id);
+
+        return response()->json(TRUE);
     }
 
     public function search(Request $request)

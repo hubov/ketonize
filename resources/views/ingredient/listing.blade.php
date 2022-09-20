@@ -31,12 +31,13 @@
 			</thead>
 			<tbody>
 		@foreach ($ingredients as $ingredient)
-				<tr>
+				<tr id="row{{ $ingredient->id }}">
 					<td><a href="/ingredient/{{ $ingredient->id }}">{{ $ingredient->name }}</a></td>
 					<td>{{ $ingredient->protein }}</td>
 					<td>{{ $ingredient->fat }}</td>
 					<td>{{ $ingredient->carbohydrate }}</td>
 					<td>{{ $ingredient->kcal }}</td>
+					<td><span class="material-icons material-icons-outlined text-danger remover" delete-id="{{ $ingredient->id }}">delete</span></td>
 				</tr>
 		@endforeach
 			</tbody>
@@ -44,4 +45,52 @@
 	@else
 		The are no ingredients!
 	@endif
-</x-layout>
+
+<div id="ingredientModal" class="modal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Ingredient present in recipes</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Save changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript">
+	ingredientModal = new bootstrap.Modal(document.getElementById('ingredientModal'));
+
+	$(document).ready(function() {
+		$('span.remover').on('click', function() {
+			var deleteId = $(this).attr('delete-id');
+			console.log(deleteId);
+			formData = {
+				'_token': '{{ csrf_token() }}'
+			}
+			$.ajax({
+				type: "POST",
+            	url: "/ingredient/" + deleteId + "/delete",
+            	data: formData,
+            	dataType: "json",
+            	encode: true,
+            }).done(function (data) {
+            	$('#row' + deleteId).remove();
+            }) .fail(function(data) {
+            	$('#ingredientModal div.modal-body').text('');
+            	var recipes = data.responseJSON.recipes;
+            	recipes.forEach(function(recipe) {
+            		$('#ingredientModal div.modal-body').append('<p><a href="/recipe/' + recipe + '/edit">' + recipe + '</a></p>');
+            	});
+            	ingredientModal.show();
+			});
+		});
+	});
+</script>
+</x-app-layout>
