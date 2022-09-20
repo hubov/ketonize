@@ -100,7 +100,7 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <p><x-ingredient-form :units="$units" /></p>
+        <p><x-ingredient-form :categories="$categories" :units="$units" /></p>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -305,6 +305,7 @@
         $("#ingredient-form").submit(function (event) {
         var formData = {
                 name: $('#ingredient-name').val(),
+                ingredient_category_id: $('#ingredient-category').val(),
                 protein: $('#ingredient-protein').val(),
                 fat: $('#ingredient-fat').val(),
                 carbohydrate: $('#ingredient-carbohydrate').val(),

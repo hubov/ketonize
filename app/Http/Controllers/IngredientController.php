@@ -18,6 +18,7 @@ class IngredientController extends Controller
      */
 
     protected $formValidation = [
+        'ingredient_category_id' => 'required|numeric',
         'protein' => 'required|regex:/^[0-9]+(\.[0-9]+)?$/',
         'fat' => 'required|regex:/^[0-9]+(\.[0-9]+)?$/',
         'carbohydrate' => 'required|regex:/^[0-9]+(\.[0-9]+)?$/',
@@ -115,6 +116,7 @@ class IngredientController extends Controller
 
         $ingredient = Ingredient::find($id);
         $ingredient->name = $request->name;
+        $ingredient->ingredient_category_id = $request->ingredient_category_id;
         $ingredient->protein = $request->protein;
         $ingredient->fat = $request->fat;
         $ingredient->carbohydrate = $request->carbohydrate;

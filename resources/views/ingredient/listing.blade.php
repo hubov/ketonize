@@ -1,5 +1,5 @@
-<x-layout>
-	<x-ingredient-form :units="$units" />
+<x-app-layout>
+	<x-ingredient-form :units="$units" :categories="$categories" />
 	<div class="row">
 		<div class="col">
 			<h4>BULK upload</h4>
@@ -18,7 +18,7 @@
 	</div>
 
 	@if (count($ingredients) > 0)
-		<table class="table">
+		<table class="table table-striped">
 			<thead>
 				<tr>
 					<th>Name</th>
@@ -26,6 +26,7 @@
 					<th>Fats</th>
 					<th>Carbohydrates</th>
 					<th>Calories (kcal)</th>
+					<th></th>
 				</tr>
 			</thead>
 			<tbody>

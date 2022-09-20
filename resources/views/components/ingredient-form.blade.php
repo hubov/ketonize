@@ -14,8 +14,12 @@
         <select name="ingredient_category_id" id="ingredient-category" class="form-control">
             <option>Choose</option>
             @if (count($categories) > 0)
-                @foreach ($categories as $category)
-                    <option value="{{ $category->id }}">{{ $category->name }}</option>
+                @foreach ($categories as $cat)
+                    <option value="{{ $cat->id }}"
+                        @if ($category == $cat->id)
+                            selected
+                        @endif
+                        >{{ $cat->name }}</option>
                 @endforeach
             @endif
         </select>

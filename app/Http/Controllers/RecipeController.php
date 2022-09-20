@@ -139,7 +139,8 @@ class RecipeController extends Controller
             'ingredients' => $recipe->ingredients,
             'description' => $recipe->description,
             'weightTotal' => $weightTotal,
-            'admin' => $isAdmin
+            'admin' => $isAdmin,
+            'categories' => IngredientCategory::orderBy('name')->get()
         ]);
     }
 

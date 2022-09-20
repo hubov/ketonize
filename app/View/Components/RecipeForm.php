@@ -21,6 +21,13 @@ class RecipeForm extends Component
     public $units;
 
     /**
+     * The list of ingredient categories.
+     *
+     * @var \Illuminate\Database\Eloquent\Collection
+     */
+    public $categories;
+
+    /**
      * The recipe image.
      *
      * @var string
@@ -111,10 +118,11 @@ class RecipeForm extends Component
      * @param \Illuminate\Database\Eloquent\Collection units
      * @return void
      */
-    public function __construct($name = '', $units = '', $image = '',  $protein = '', $fat = '', $carbohydrate = '', $kcal = '', $ingredients = [], $description = '', $preparationTime = '', $cookingTime = '')
+    public function __construct($name = '', $units = [], $categories = [], $image = '',  $protein = '', $fat = '', $carbohydrate = '', $kcal = '', $ingredients = [], $description = '', $preparationTime = '', $cookingTime = '')
     {
         $this->name = $name;
         $this->units = $units;
+        $this->categories = $categories;
         $this->image = $image;
         $this->protein = $protein;
         $this->fat = $fat;

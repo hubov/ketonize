@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 class Ingredient extends Model
 {
     use HasFactory;
-    protected $fillable = ['name', 'category', 'protein', 'fat', 'carbohydrate', 'kcal', 'unit_id'];
+    protected $fillable = ['name', 'ingredient_category_id', 'protein', 'fat', 'carbohydrate', 'kcal', 'unit_id'];
 
     public function unit()
     {
@@ -24,7 +24,7 @@ class Ingredient extends Model
 
     public function category()
     {
-        return $this->hasOne(IngredientCategory::class);
+        return $this->belongsTo(IngredientCategory::class);
     }
 
     public function nutrients()
