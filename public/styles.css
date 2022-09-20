@@ -1,3 +1,17 @@
+nav.navbar {
+	background-color: #ffc93c;
+}
+
+a {
+	color: #155263;
+	text-decoration: none;
+}
+
+.btn-primary {
+	background-color: #155263;
+	border-color: #155263;
+}
+
 .form-control:read-only {
 	background-color: #e9ecef;
 	color: #6c757d;

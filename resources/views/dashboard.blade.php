@@ -30,14 +30,14 @@
                 <div class="row my-3">
                     <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                         <div class="p-3 bg-white border-b border-gray-200">
-                            <h2>Meal {{ $meal->meal }}</h2>
                             <a href="
                             @if ($meal->modifier != 100)
                                 /recipe/{{ $meal->recipe->slug }}/{{ $meal->modifier }}
                             @else
                                 /recipe/{{ $meal->recipe->slug }}
                             @endif
-                            "><h3>{{ $meal->recipe->name }}</h3></a>
+                            "><h2>Meal {{ $meal->meal }}</h2>
+                            <h3>{{ $meal->recipe->name }}</h3></a>
                             Proteins: {{ $meal->recipe->protein }}g ({{ $meal->shareProtein }}%) | Fats: {{ $meal->recipe->fat }}g ({{ $meal->shareFat }}%) | Carbs: {{ $meal->recipe->carbohydrate }}g ({{ $meal->shareCarbohydrate }}%) | Kcal: {{ $meal->recipe->kcal }} | Time: {{ $meal->recipe->total_time }} min
                         </div>
                     </div>
