@@ -1,0 +1,122 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\UserDiet;
+use App\Models\Profile;
+use App\Http\Controllers\UserDietController;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\View;
+
+class ProfileController extends Controller
+{
+    protected $formValidation = [
+        'diet_type' => 'required|integer',
+        'diet_target' => 'required|integer',
+        'gender' => 'required|integer',
+        'birthday' => 'required|date',
+        'weight' => 'required|integer',
+        'height' => 'required|integer',
+        'target_weight' => 'required|integer',
+        'basic_activity' => 'required|integer',
+        'sport_activity' => 'required|integer'];
+
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create()
+    {
+        return View::make('profile.new');
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(Request $request)
+    {
+        $validated = $request->validate($this->formValidation);
+
+        $user = Auth::user();
+
+        $profile = new Profile;
+        $profile->user_id = $user->id;
+        $profile->height = $request->height;
+        $profile->weight = $request->weight;
+        $profile->target_weight = $request->target_weight;
+        $profile->gender = $request->gender;
+        $profile->diet_target = $request->diet_target;
+        $profile->basic_activity = $request->basic_activity;
+        $profile->sport_activity = $request->sport_activity;
+        $profile->birthday = $request->birthday;
+        $profile->save();
+
+        $userDiet = (new UserDietController)
+                    ->create($profile, $request->diet_type);
+
+        return response()->json(TRUE);
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function show()
+    {
+        //
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function edit()
+    {
+        $user = Auth::user();
+
+        $profile = $user->profile;
+
+        return View::make('profile.edit', [
+            'profile' => $profile
+        ]);
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Request $request)
+    {
+        $validated = $request->validate($this->formValidation);
+
+        $user = Auth::user();
+
+        $profile = $profile = $user->profile;
+        $profile->height = $request->height;
+        $profile->weight = $request->weight;
+        $profile->target_weight = $request->target_weight;
+        $profile->gender = $request->gender;
+        $profile->diet_target = $request->diet_target;
+        $profile->basic_activity = $request->basic_activity;
+        $profile->sport_activity = $request->sport_activity;
+        $profile->birthday = $request->birthday;
+        $profile->save();
+
+        $userDiet = (new UserDietController)
+                    ->update($profile, $request->diet_type);
+
+        return response()->json(TRUE);
+    }
+}

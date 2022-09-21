@@ -1,0 +1,67 @@
+nav.navbar {
+	background-color: #ffc93c;
+}
+
+a {
+	color: #155263;
+	text-decoration: none;
+}
+
+.btn-primary {
+	background-color: #155263;
+	border-color: #155263;
+}
+
+.form-control:read-only {
+	background-color: #e9ecef;
+	color: #6c757d;
+}
+
+.form-control:read-only:focus {
+	background-color: #e9ecef;
+	color: #6c757d;
+}
+
+.macros {
+	padding-bottom: 20px;
+}
+
+.macros span.label {
+	font-size: 0.8em;
+	color: #6c757d;
+}
+
+.ingredients {
+	padding-bottom: 20px;
+}
+
+input[type=date].form-control {
+	display: inline-block;
+	width: 70%;
+}
+
+span.date-navigate {
+	line-height: inherit;
+	vertical-align: middle;
+	font-size: 2rem;
+}
+
+.inline-icon {
+   vertical-align: middle;
+   /*font-size: 18px !important;*/
+}
+
+.scale {
+	cursor: pointer;
+}
+
+.remover {
+	cursor: pointer;
+}
+
+
+
+.tt-suggestion {
+	border: 1px solid black;
+	background-color: #fff;
+}
