@@ -47,7 +47,7 @@ jobs:
       - name: Build Vite for tests
         run: |
           npm install
-          npm run build
+          npm run dev
 
       - name: Execute tests
         run: vendor/bin/phpunit
