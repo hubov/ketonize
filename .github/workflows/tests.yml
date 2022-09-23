@@ -44,5 +44,10 @@ jobs:
       - name: Do migrations
         run: php artisan migrate
 
+      - name: Build Vite for tests
+        run: |
+          npm install
+          npm run build
+
       - name: Execute tests
         run: vendor/bin/phpunit
