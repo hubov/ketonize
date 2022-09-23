@@ -8,12 +8,12 @@ jobs:
 
     services:
       mysql:
-        image: mysql:8.0
+        image: mysql:8.0.30
         env:
           MYSQL_ROOT_PASSWORD: password
           MYSQL_DATABASE: test
         ports:
-          - 33306:3306
+          - 33306:33306
         options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
 
     steps:
@@ -35,6 +35,11 @@ jobs:
 
       - name: Generate app key
         run: php artisan key:generate
+
+      - name: Verify MySQL connection from host
+        run: |
+          sudo apt-get install -y mysql-client
+          mysql --host 127.0.0.1 --port 33306 -uroot -ppassword -e "SHOW DATABASES"
 
       - name: Do migrations
         run: php artisan migrate
