@@ -6,6 +6,16 @@ jobs:
   tests:
     runs-on: ubuntu-latest
 
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: password
+          MYSQL_DATABASE: test
+        ports:
+          - 33306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -21,7 +31,7 @@ jobs:
         run: composer install --prefer-dist --no-interaction
 
       - name: Copy environment file
-        run: cp .env.example .env
+        run: cp .env.ci .env
 
       - name: Generate app key
         run: php artisan key:generate
