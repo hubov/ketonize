@@ -21,9 +21,14 @@ class GenerateDietPlan implements ShouldQueue
      *
      * @return void
      */
-    public function __construct($date)
+    public function __construct($date = NULL)
     {
-        $this->date = $date;
+        if  (is_null($date))
+        {
+            $this->date = ((new \DateTime())->modify('+28 days'))->format('Y-m-d');
+        }
+        else
+            $this->date = $date;
     }
 
     /**
@@ -33,7 +38,7 @@ class GenerateDietPlan implements ShouldQueue
      */
     public function handle(User $user = NULL)
     {
-        if ($user === NULL)
+        if (is_null($user))
         {
             foreach (User::all() as $user)
             {
