@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use DateTime;
+use App\Jobs\GenerateDietPlan;
 use App\Models\Diet;
+use App\Models\DietPlan;
 use App\Models\Profile;
 use App\Models\UserDiet;
 use Illuminate\Support\Facades\Auth;
@@ -23,6 +25,8 @@ class UserDietController extends Controller
         $userDiet->fat = round(($kcalTotal * $diet->fat / 100) / 9);
         $userDiet->carbohydrate = round(($kcalTotal * $diet->carbohydrate / 100) / 4);
         $userDiet->save();
+        
+        $this->newDietPlan();
     }
 
     public function update(Profile $profile, $dietId) {
@@ -36,6 +40,8 @@ class UserDietController extends Controller
         $userDiet->fat = round(($kcalTotal * $diet->fat / 100) / 9);
         $userDiet->carbohydrate = round(($kcalTotal * $diet->carbohydrate / 100) / 4);
         $userDiet->save();
+
+        $this->newDietPlan();
     }
 
     protected function kcal(Profile $profile) {
@@ -78,4 +84,21 @@ class UserDietController extends Controller
 
         return round($kcalTotal / 50) * 50;
     }
+
+    protected function newDietPlan() {
+        $dateStart = new \DateTime();
+        $interval = new \DateInterval('P1D'); 
+        $period = new \DatePeriod($dateStart, $interval, 28);
+        foreach ($period as $date)
+        {
+            $currentPlan = Dietplan::where('user_id', '=', Auth::user()->id)
+                                    ->where('date_on', '=', $date->format('Y-m-d'))->get();
+            if (count($currentPlan) > 0)
+                foreach ($currentPlan as $meal)
+                    $meal->delete();
+            $plan = new GenerateDietPlan($date->format('Y-m-d'));
+            $plan->handle(Auth::user());
+        }
+    }
+
 }
