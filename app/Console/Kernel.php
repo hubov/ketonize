@@ -16,7 +16,9 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->call((new GenerateDietPlan)->handle())->daily();
+        $schedule->call(function() {
+            (new GenerateDietPlan)->handle();
+        })->daily();
     }
 
     /**
