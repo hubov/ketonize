@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Ingredient;
 use App\Models\IngredientCategory;
-use App\Models\Nutrient;
 use App\Models\Unit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\View;
@@ -52,7 +51,7 @@ class IngredientController extends Controller
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
      */
     public function store(Request $request)
     {
@@ -89,7 +88,7 @@ class IngredientController extends Controller
      * Show the form for editing the specified resource.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Contracts\View\View
      */
     public function edit($id)
     {
@@ -107,7 +106,7 @@ class IngredientController extends Controller
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
      */
     public function update(Request $request, $id)
     {
@@ -131,7 +130,7 @@ class IngredientController extends Controller
      * Remove the specified resource from storage.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function destroy($id)
     {
@@ -156,11 +155,11 @@ class IngredientController extends Controller
             foreach ($ingredients as $ingredient)
             {
                 $result[] = [
-                    'id' => $ingredient->id, 
-                    'name' => $ingredient->name, 
-                    'unit' => $ingredient->unit->symbol, 
-                    'protein' => $ingredient->protein, 
-                    'fat' => $ingredient->fat, 
+                    'id' => $ingredient->id,
+                    'name' => $ingredient->name,
+                    'unit' => $ingredient->unit->symbol,
+                    'protein' => $ingredient->protein,
+                    'fat' => $ingredient->fat,
                     'carbohydrate' => $ingredient->carbohydrate,
                     'kcal' => $ingredient->kcal
                 ];

@@ -5,6 +5,7 @@ namespace App\Jobs;
 use App\Models\DietPlan;
 use App\Models\User;
 use App\Models\Recipe;
+use App\Models\Tag;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;

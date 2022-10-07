@@ -57,7 +57,7 @@ class RecipeController extends Controller
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
      */
     public function store(Request $request)
     {
@@ -100,7 +100,7 @@ class RecipeController extends Controller
 
         foreach ($request->tags as $tag)
             $recipe->tags()->attach($tag);
-        
+
         $recipe->save();
 
         return redirect('/recipe/'.$recipe->slug);

@@ -2,14 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use DateTime;
 use App\Jobs\GenerateDietPlan;
 use App\Models\Diet;
 use App\Models\DietPlan;
 use App\Models\Profile;
 use App\Models\UserDiet;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Http\Request;
 
 class UserDietController extends Controller
 {
@@ -25,7 +23,7 @@ class UserDietController extends Controller
         $userDiet->fat = round(($kcalTotal * $diet->fat / 100) / 9);
         $userDiet->carbohydrate = round(($kcalTotal * $diet->carbohydrate / 100) / 4);
         $userDiet->save();
-        
+
         $this->newDietPlan();
     }
 
@@ -87,7 +85,7 @@ class UserDietController extends Controller
 
     protected function newDietPlan() {
         $dateStart = new \DateTime();
-        $interval = new \DateInterval('P1D'); 
+        $interval = new \DateInterval('P1D');
         $period = new \DatePeriod($dateStart, $interval, 28);
         foreach ($period as $date)
         {

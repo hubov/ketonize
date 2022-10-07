@@ -27,7 +27,7 @@ class ShoppingListController extends Controller
             'list' => $categorisedList,
             'date_from' => $date,
             'date_to' => $date,
-        ]); 
+        ]);
     }
 
     public function update(Request $request)
@@ -55,11 +55,7 @@ class ShoppingListController extends Controller
             }
         }
 
-        $oldList = ShoppingList::where('user_id', Auth::user()->id)->get();
-        foreach ($oldList as $list)
-        {
-            $list->delete();
-        }
+        $oldList = ShoppingList::where('user_id', Auth::user()->id)->delete();
 
         foreach ($ingredients as $id => $ingredient)
         {
@@ -75,7 +71,8 @@ class ShoppingListController extends Controller
 
     public function edit(Request $request)
     {
-        $list = ShoppingList::find($request->id);
+        $list = ShoppingList::where('id', $request->id)
+                    ->where('user_id', Auth::user()->id);
         $list->amount = $request->amount;
         $list->save();
 
@@ -84,8 +81,9 @@ class ShoppingListController extends Controller
 
     public function destroy(Request $request)
     {
-        $list = ShoppingList::find($request->id);
-        $list->delete();
+        $list = ShoppingList::where('id', $request->id)
+                    ->where('user_id', Auth::user()->id)
+                    ->delete();
 
         return response()->json(TRUE);
     }

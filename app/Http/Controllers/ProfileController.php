@@ -25,7 +25,7 @@ class ProfileController extends Controller
     /**
      * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Contracts\View\View
      */
     public function create()
     {
@@ -36,7 +36,7 @@ class ProfileController extends Controller
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function store(Request $request)
     {
@@ -77,7 +77,7 @@ class ProfileController extends Controller
      * Show the form for editing the specified resource.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Contracts\View\View
      */
     public function edit()
     {
@@ -95,7 +95,7 @@ class ProfileController extends Controller
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function update(Request $request)
     {
@@ -103,7 +103,7 @@ class ProfileController extends Controller
 
         $user = Auth::user();
 
-        $profile = $profile = $user->profile;
+        $profile = $user->profile;
         $profile->height = $request->height;
         $profile->weight = $request->weight;
         $profile->target_weight = $request->target_weight;
