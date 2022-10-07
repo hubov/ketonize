@@ -85,10 +85,9 @@ class UserDietController extends Controller
         foreach ($period as $date)
         {
             $currentPlan = Dietplan::where('user_id', '=', Auth::user()->id)
-                                    ->where('date_on', '=', $date->format('Y-m-d'))->get();
-            if (count($currentPlan) > 0)
-                foreach ($currentPlan as $meal)
-                    $meal->delete();
+                                    ->where('date_on', '=', $date->format('Y-m-d'))
+                                    ->delete();
+
             $plan = new GenerateDietPlan($date->format('Y-m-d'));
             $plan->handle(Auth::user());
         }
