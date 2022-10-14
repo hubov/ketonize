@@ -18,7 +18,7 @@ class IngredientTest extends TestCase
     {
         $response = $this->get('/ingredients');
 
-        $response->assertStatus(302);
+        $response->assertRedirect('/login');
     }
 
     public function test_ingredient_listing_screen_can_be_rendered_with_user()
