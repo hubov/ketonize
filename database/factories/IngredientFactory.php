@@ -2,6 +2,8 @@
 
 namespace Database\Factories;
 
+use App\Models\IngredientCategory;
+use App\Models\Unit;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -17,7 +19,14 @@ class IngredientFactory extends Factory
     public function definition()
     {
         return [
-            //
-        ];
+            'name' => fake()->word(),
+            'protein' => 15,
+            'fat' => 50,
+            'carbohydrate' => 5,
+            'kcal' => 60,
+            'ingredient_category_id' => IngredientCategory::factory(),
+            'unit_id' => Unit::factory()
+         ];
+
     }
 }
