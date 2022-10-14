@@ -57,11 +57,18 @@ class DietPlanTest extends TestCase
     public function test_diet_plan_generate_user_signed_in()
     {
         $user = User::factory()->create();
+        Tag::factory()->create(['id' => 1]);
+        Tag::factory()->create(['id' => 2]);
+        Tag::factory()->create(['id' => 3]);
+        Tag::factory()->create(['id' => 4]);
         $recipes = Recipe::factory()->has(Tag::factory())->count(4)->create();
+        foreach ($recipes as $recipe) {
+            $recipe->tags()->attach([1, 2, 3, 4]);
+        }
 
         $response = $this->actingAs($user)->get('/dashboard/generate/2022-09-30');
 
-        $response->assertStatus(302);
+        $response->assertRedirect('/dashboard/2022-09-30');
     }
 
     public function test_diet_plan_generate_user_not_signed_in()

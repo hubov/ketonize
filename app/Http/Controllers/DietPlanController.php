@@ -107,6 +107,18 @@ class DietPlanController extends Controller
             $this->shareFat = round($this->totalFat / $macros * 100);
             $this->shareCarbohydrate = round($this->totalCarbohydrate / $macros * 100);
         }
+
+        return [
+            'totalProtein' => $this->totalProtein,
+            'totalFat' => $this->totalFat,
+            'totalCarbohydrate' => $this->totalCarbohydrate,
+            'totalKcal' => $this->totalKcal,
+            'totalPreparation' => $this->totalPreparation,
+            'totalTime' => $this->totalTime,
+            'shareProtein' => $this->shareProtein,
+            'shareFat' => $this->shareFat,
+            'shareCarbohydrate' => $this->shareCarbohydrate
+        ];
     }
 
     public function generate(Request $request, $date)
