@@ -49,7 +49,7 @@ class UserDietController extends Controller
             case 2: { $genderModifier = 5; break; }
         }
 
-        $kcalBasic = round(9.99 * $profile->weight + 6.25 * $profile->height - 4.92 * $profile->age + $genderModifier);
+        $kcalBasic = round(9.99 * $profile->weight + 6.25 * $profile->height - 4.92 * $profile->age() + $genderModifier);
 
         switch ($profile->basic_activity)
         {

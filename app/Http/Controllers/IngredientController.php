@@ -135,10 +135,10 @@ class IngredientController extends Controller
     public function destroy($id)
     {
         $ingredient = Ingredient::find($id);
-        if (count($ingredient->recipes) > 0)
-        {
-            foreach ($ingredient->recipes as $recipe)
+        if (count($ingredient->recipes) > 0) {
+            foreach ($ingredient->recipes as $recipe) {
                 $results[] = $recipe->slug;
+            }
             return response()->json(['error' => TRUE, 'recipes' => $results], 403);
         }
 
@@ -151,9 +151,8 @@ class IngredientController extends Controller
     {
         $ingredients = Ingredient::where('name', 'like', '%'.$request->input('name').'%')->limit(5)->get();
 
-        if (count($ingredients) > 0)
-            foreach ($ingredients as $ingredient)
-            {
+        if (count($ingredients) > 0) {
+            foreach ($ingredients as $ingredient) {
                 $result[] = [
                     'id' => $ingredient->id,
                     'name' => $ingredient->name,
@@ -164,30 +163,32 @@ class IngredientController extends Controller
                     'kcal' => $ingredient->kcal
                 ];
             }
-        else
+        } else {
             $result = [];
+        }
 
         return response()->json($result);
     }
 
     public function upload(Request $request)
     {
-        if ($request->file('bulk_upload')->isValid())
-        {
+        if ($request->file('bulk_upload')->isValid()) {
             $file = fopen($request->file('bulk_upload')->path(), 'r');
             $head = fgetcsv($file, 4096, ',', '"');
 
-            while (($data = fgetcsv($file, 4096, ",")) !== FALSE)
-            {
+            while (($data = fgetcsv($file, 4096, ",")) !== FALSE) {
                 $ingredient = new Ingredient;
                 $ingredient->name = $data[0];
 
-                for ($i = 3; $i <= 33; $i++)
-                    if ($data[$i][0] == '<')
+                for ($i = 3; $i <= 33; $i++) {
+                    if ($data[$i][0] == '<') {
                         $data[$i] = substr($data[$i], 1);
-                    else
-                    if (($data[$i] == 'n.d.') || ($data[$i] == 'tr.'))
-                        $data[$i] = 0;
+                    } else {
+                        if (($data[$i] == 'n.d.') || ($data[$i] == 'tr.')) {
+                            $data[$i] = 0;
+                        }
+                    }
+                }
 
                 $ingredient->protein = $data[13];
                 $ingredient->fat = $data[4];
@@ -207,15 +208,12 @@ class IngredientController extends Controller
                 unset($data[13]);
                 $data = array_values($data);
 
-                foreach ($data as $i => $value)
-                {
-                    if ($value > 0)
+                foreach ($data as $i => $value) {
+                    if ($value > 0) {
                         $ingredient->nutrients()->attach(($i + 1), ['amount' => $value]);
+                    }
                 }
             }
-
-
-            dd($file);
         }
     }
 }

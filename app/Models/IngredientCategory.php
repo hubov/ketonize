@@ -9,7 +9,8 @@ class IngredientCategory extends Model
 {
     use HasFactory;
 
-    public function ingredient() {
+    public function ingredient()
+    {
         return $this->belongsToMany(Ingredient::class);
     }
 }

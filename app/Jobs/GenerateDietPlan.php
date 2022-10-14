@@ -24,12 +24,11 @@ class GenerateDietPlan implements ShouldQueue
      */
     public function __construct($date = NULL)
     {
-        if  (is_null($date))
-        {
+        if  (is_null($date)) {
             $this->date = ((new \DateTime())->modify('+28 days'))->format('Y-m-d');
-        }
-        else
+        } else {
             $this->date = $date;
+        }
     }
 
     /**
@@ -39,15 +38,11 @@ class GenerateDietPlan implements ShouldQueue
      */
     public function handle(User $user = NULL)
     {
-        if (is_null($user))
-        {
-            foreach (User::all() as $user)
-            {
+        if (is_null($user)) {
+            foreach (User::all() as $user) {
                 $this->task($user);
             }
-        }
-        else
-        {
+        } else {
             $this->task($user);
         }
     }

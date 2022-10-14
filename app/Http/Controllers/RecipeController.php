@@ -67,9 +67,9 @@ class RecipeController extends Controller
         $recipe = new Recipe;
         $recipe->name = $request->name;
         $recipe->slug = Str::of($request->name)->slug('-');
-        if ($request->image == NULL)
+        if ($request->image == NULL) {
             $recipe->image = 'default';
-        else
+        } else {
             $recipe->image = $request->image;
         $recipe->protein = 0;
         $recipe->fat = 0;
@@ -78,6 +78,8 @@ class RecipeController extends Controller
         $recipe->protein_ratio = 0;
         $recipe->fat_ratio = 0;
         $recipe->carbohydrate_ratio = 0;
+        }
+
         $recipe->description = $request->description;
         $recipe->preparation_time = $request->preparation_time;
         $recipe->cooking_time = $request->cooking_time;
@@ -98,8 +100,9 @@ class RecipeController extends Controller
         $recipe->fat_ratio = round($recipe->fat / $macros * 100);
         $recipe->carbohydrate_ratio = round($recipe->carbohydrate / $macros * 100);
 
-        foreach ($request->tags as $tag)
+        foreach ($request->tags as $tag) {
             $recipe->tags()->attach($tag);
+        }
 
         $recipe->save();
 
@@ -118,14 +121,14 @@ class RecipeController extends Controller
 
         $weightTotal = 0;
         foreach  ($recipe->ingredients as $ingredient) {
-            if ($modifier !== NULL)
+            if ($modifier !== NULL) {
                 $ingredient->pivot->amount = round($ingredient->pivot->amount * $modifier / 100);
+            }
 
             $weightTotal += $ingredient->pivot->amount;
         }
 
-        if ($modifier !== NULL)
-        {
+        if ($modifier !== NULL) {
             $recipe->protein *= $modifier / 100;
             $recipe->fat *= $modifier / 100;
             $recipe->carbohydrate *= $modifier / 100;
@@ -201,10 +204,11 @@ class RecipeController extends Controller
         $recipe->carbohydrate_ratio = round($recipe->carbohydrate / $macros * 100);
         $recipe->name = $request->name;
         $recipe->slug = Str::of($request->name)->slug('-');
-        if ($request->image == NULL)
+        if ($request->image == NULL) {
             $recipe->image = 'default';
-        else
+        } else {
             $recipe->image = $request->image;
+        }
         $recipe->description = $request->description;
         $recipe->preparation_time = $request->preparation_time;
         $recipe->cooking_time = $request->cooking_time;

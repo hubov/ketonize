@@ -42,11 +42,13 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-    public function roles() {
+    public function roles()
+    {
         return $this->belongsToMany(Role::class);
     }
 
-    public function is($roleName) {
+    public function is($roleName)
+    {
         foreach ($this->roles()->get() as $role)
         {
             if ($role->name == $roleName)
@@ -56,11 +58,13 @@ class User extends Authenticatable
         return FALSE;
     }
 
-    public function profile() {
+    public function profile()
+    {
         return $this->hasOne(Profile::class);
     }
 
-    public function userDiet() {
+    public function userDiet()
+    {
         return $this->hasOne(UserDiet::class);
     }
 }

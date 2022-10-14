@@ -59,10 +59,11 @@ class DietPlanController extends Controller
 
     public function setDate($date)
     {
-        if ($date === NULL)
+        if ($date === NULL) {
             $this->date = date("Y-m-d");
-        else
+        } else {
             $this->date = $date;
+        }
 
         $this->dates();
     }
@@ -84,13 +85,12 @@ class DietPlanController extends Controller
 
     public function sumUp()
     {
-        if ($this->meals === NULL)
+        if ($this->meals === NULL) {
             $this->getMeals();
+        }
 
-        if (count($this->meals) > 0)
-        {
-            foreach ($this->meals as $key => $meal)
-            {
+        if (count($this->meals) > 0) {
+            foreach ($this->meals as $meal) {
                 $meal->scale();
                 $meal->shares();
 
@@ -114,10 +114,11 @@ class DietPlanController extends Controller
         $plan = new GenerateDietPlan($date);
         $plan->handle(Auth::user());
 
-        if ($date == date('Y-m-d'))
+        if ($date == date('Y-m-d')) {
             $url = '/dashboard';
-        else
-            $url = '/dashboard/'.$date;
+        } else {
+            $url = '/dashboard/' . $date;
+        }
 
         return redirect($url);
     }

@@ -15,13 +15,18 @@ class Recipe extends Model
     }
 
     public function tags() {
+    public function tags()
+    {
         return $this->belongsToMany(Tag::class);
     }
 
     public function tagsIds() {
+    public function tagsIds()
+    {
         $result = NULL;
-        foreach ($this->tags as $tag)
+        foreach ($this->tags as $tag) {
             $result[$tag->id] = true;
+        }
 
         return $result;
     }
