@@ -10,17 +10,16 @@ class Recipe extends Model
     use HasFactory;
     protected $fillable = ['name', 'image', 'protein', 'fat', 'carbohydrate', 'kcal', 'description', 'preparation_time', 'cooking_time'];
 
-    public function ingredients() {
+    public function ingredients()
+    {
         return $this->belongsToMany(Ingredient::class)->withPivot('amount');
     }
 
-    public function tags() {
     public function tags()
     {
         return $this->belongsToMany(Tag::class);
     }
 
-    public function tagsIds() {
     public function tagsIds()
     {
         $result = NULL;

@@ -2,9 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\UserDiet;
 use App\Models\Profile;
-use App\Http\Controllers\UserDietController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\View;
@@ -40,7 +38,7 @@ class ProfileController extends Controller
      */
     public function store(Request $request)
     {
-        $validated = $request->validate($this->formValidation);
+        $request->validate($this->formValidation);
 
         $user = Auth::user();
 
@@ -56,8 +54,7 @@ class ProfileController extends Controller
         $profile->birthday = $request->birthday;
         $profile->save();
 
-        $userDiet = (new UserDietController)
-                    ->create($profile, $request->diet_type);
+        (new UserDietController)->create($profile, $request->diet_type);
 
         return response()->json(TRUE);
     }
@@ -99,7 +96,7 @@ class ProfileController extends Controller
      */
     public function update(Request $request)
     {
-        $validated = $request->validate($this->formValidation);
+        $request->validate($this->formValidation);
 
         $user = Auth::user();
 
@@ -114,8 +111,7 @@ class ProfileController extends Controller
         $profile->birthday = $request->birthday;
         $profile->save();
 
-        $userDiet = (new UserDietController)
-                    ->update($profile, $request->diet_type);
+        (new UserDietController)->update($profile, $request->diet_type);
 
         return response()->json(TRUE);
     }

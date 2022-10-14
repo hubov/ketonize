@@ -6,9 +6,7 @@ use App\Models\DietPlan;
 use App\Models\Recipe;
 use App\Models\Tag;
 use App\Models\User;
-use App\Providers\RouteServiceProvider;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
 class DietPlanTest extends TestCase

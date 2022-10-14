@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Ingredient;
 use App\Models\IngredientCategory;
 use App\Models\Recipe;
 use App\Models\Tag;
@@ -61,7 +60,7 @@ class RecipeController extends Controller
      */
     public function store(Request $request)
     {
-        $validated = $request->validate(array_merge([
+        $request->validate(array_merge([
             'name' => 'required|unique:recipes,name'], $this->formValidation));
 
         $recipe = new Recipe;
@@ -179,7 +178,7 @@ class RecipeController extends Controller
      */
     public function update(Request $request, $slug)
     {
-        $validated = $request->validate(array_merge([
+        $request->validate(array_merge([
             'name' => 'required'], $this->formValidation));
 
         $recipe = Recipe::where('slug', $slug)->firstOrFail();

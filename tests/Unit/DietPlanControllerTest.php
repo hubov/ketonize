@@ -4,10 +4,7 @@ namespace Tests\Unit;
 
 use App\Http\Controllers\DietPlanController;
 use App\Models\DietPlan;
-use App\Models\User;
-use Database\Factories\DietPlanFactory;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Mockery\MockInterface;
 use Tests\TestCase;
 
 class DietPlanControllerTest extends TestCase

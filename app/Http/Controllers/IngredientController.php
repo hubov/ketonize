@@ -55,7 +55,7 @@ class IngredientController extends Controller
      */
     public function store(Request $request)
     {
-        $validated = $request->validate(array_merge([
+        $request->validate(array_merge([
             'name' => 'required|unique:ingredients,name'], $this->formValidation));
 
         $ingredient = Ingredient::create($request->all());
@@ -65,7 +65,7 @@ class IngredientController extends Controller
 
     public function ajaxStore(Request $request)
     {
-        $validated = $request->validate(array_merge([
+        $request->validate(array_merge([
             'name' => 'required|unique:ingredients,name'], $this->formValidation));
 
         $ingredient = Ingredient::create($request->all());
@@ -110,7 +110,7 @@ class IngredientController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $validated = $request->validate(array_merge([
+        $request->validate(array_merge([
             'name' => 'required'], $this->formValidation));
 
         $ingredient = Ingredient::find($id);

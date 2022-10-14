@@ -55,7 +55,7 @@ class ShoppingListController extends Controller
             }
         }
 
-        $oldList = ShoppingList::where('user_id', Auth::user()->id)->delete();
+        ShoppingList::where('user_id', Auth::user()->id)->delete();
 
         foreach ($ingredients as $id => $ingredient)
         {
@@ -81,7 +81,7 @@ class ShoppingListController extends Controller
 
     public function destroy(Request $request)
     {
-        $list = ShoppingList::where('id', $request->id)
+        ShoppingList::where('id', $request->id)
                     ->where('user_id', Auth::user()->id)
                     ->delete();
 
