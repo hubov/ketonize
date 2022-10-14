@@ -4,10 +4,13 @@ namespace Tests\Unit;
 
 use App\Models\DietPlan;
 use App\Models\Recipe;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class DietPlanTest extends TestCase
 {
+    use RefreshDatabase;
+
     /**
      * A basic unit test example.
      *

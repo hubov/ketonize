@@ -3,10 +3,13 @@
 namespace Tests\Unit;
 
 use App\Models\Diet;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\TestCase;
 
 class DietTest extends TestCase
 {
+    use RefreshDatabase;
+
     /**
      * A basic unit test example.
      *

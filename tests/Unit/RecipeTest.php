@@ -10,6 +10,7 @@ use Tests\TestCase;
 class RecipeTest extends TestCase
 {
     use RefreshDatabase;
+
     /**
      * A basic unit test example.
      *

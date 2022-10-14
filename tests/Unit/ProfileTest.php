@@ -3,10 +3,13 @@
 namespace Tests\Unit;
 
 use App\Models\Profile;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\TestCase;
 
 class ProfileTest extends TestCase
 {
+    use RefreshDatabase;
+
     /**
      * A basic unit test example.
      *
