@@ -70,13 +70,6 @@ class RecipeController extends Controller
             $recipe->image = 'default';
         } else {
             $recipe->image = $request->image;
-        $recipe->protein = 0;
-        $recipe->fat = 0;
-        $recipe->carbohydrate = 0;
-        $recipe->kcal = 0;
-        $recipe->protein_ratio = 0;
-        $recipe->fat_ratio = 0;
-        $recipe->carbohydrate_ratio = 0;
         }
 
         $recipe->description = $request->description;
@@ -85,19 +78,7 @@ class RecipeController extends Controller
         $recipe->total_time = $request->preparation_time + $request->cooking_time;
         $recipe->save();
 
-        $ingredients = Ingredient::whereIn('id', $request->ids)->get();
-        foreach ($request->ids as $i => $id)
-        {
-            $recipe->ingredients()->attach($id, ['amount' => $request->quantity[$i]]);
-            $recipe->protein += $request->quantity[$i] * $ingredients->find($id)->protein / 100;
-            $recipe->fat += $request->quantity[$i] * $ingredients->find($id)->fat / 100;
-            $recipe->carbohydrate += $request->quantity[$i] * $ingredients->find($id)->carbohydrate / 100;
-            $recipe->kcal += $request->quantity[$i] * $ingredients->find($id)->kcal / 100;
-        }
-        $macros = $recipe->protein + $recipe->fat + $recipe->carbohydrate;
-        $recipe->protein_ratio = round($recipe->protein / $macros * 100);
-        $recipe->fat_ratio = round($recipe->fat / $macros * 100);
-        $recipe->carbohydrate_ratio = round($recipe->carbohydrate / $macros * 100);
+        $recipe->setIngredients($request->ids, $request->quantity);
 
         foreach ($request->tags as $tag) {
             $recipe->tags()->attach($tag);
@@ -182,25 +163,8 @@ class RecipeController extends Controller
             'name' => 'required'], $this->formValidation));
 
         $recipe = Recipe::where('slug', $slug)->firstOrFail();
-        $recipe->protein = 0;
-        $recipe->fat = 0;
-        $recipe->carbohydrate = 0;
-        $recipe->kcal = 0;
-        $recipe->protein_ratio = 0;
-        $recipe->fat_ratio = 0;
-        $recipe->carbohydrate_ratio = 0;
 
-        $ingredients = Ingredient::whereIn('id', $request->ids)->get();
-        foreach  ($request->ids as $i => $id) {
-            $recipe->protein += $request->quantity[$i] * $ingredients->find($id)->protein / 100;
-            $recipe->fat += $request->quantity[$i] * $ingredients->find($id)->fat / 100;
-            $recipe->carbohydrate += $request->quantity[$i] * $ingredients->find($id)->carbohydrate / 100;
-            $recipe->kcal += $request->quantity[$i] * $ingredients->find($id)->kcal / 100;
-        }
-        $macros = $recipe->protein + $recipe->fat + $recipe->carbohydrate;
-        $recipe->protein_ratio = round($recipe->protein / $macros * 100);
-        $recipe->fat_ratio = round($recipe->fat / $macros * 100);
-        $recipe->carbohydrate_ratio = round($recipe->carbohydrate / $macros * 100);
+        $recipe->setIngredients($request->ids, $request->quantity);
         $recipe->name = $request->name;
         $recipe->slug = Str::of($request->name)->slug('-');
         if ($request->image == NULL) {
@@ -213,9 +177,6 @@ class RecipeController extends Controller
         $recipe->cooking_time = $request->cooking_time;
         $recipe->total_time = $request->preparation_time + $request->cooking_time;
         $recipe->save();
-        foreach ($request->ids as $i => $id)
-            $ingredientsCurrent[$id] = ['amount' => $request->quantity[$i]];
-        $recipe->ingredients()->sync($ingredientsCurrent);
         $recipe->tags()->sync($request->tags);
 
         return redirect('/recipe/'.$recipe->slug);
