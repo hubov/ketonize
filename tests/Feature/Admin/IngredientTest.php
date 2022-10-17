@@ -65,7 +65,8 @@ class IngredientTest extends TestCase
 
         $response = $this->actingAs($user)->post('/ingredients', $this->requestData);
 
-        $response->assertRedirect('/ingredient/1');
+
+        $response->assertRedirectContains('/ingredient/');
     }
 
     public function test_adding_new_ingredient_as_admin_with_incorrect_data()
@@ -93,7 +94,7 @@ class IngredientTest extends TestCase
 
         $response = $this->actingAs($user)->post('/ingredient/new', $this->requestData);
 
-        $response->assertJson(['id' => 2]);
+        $response->assertSee('id');
     }
 
     public function test_adding_new_ingredient_via_ajax_as_admin_with_incorrect_data()
