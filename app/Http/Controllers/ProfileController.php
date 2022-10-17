@@ -12,6 +12,7 @@ class ProfileController extends Controller
     protected $formValidation = [
         'diet_type' => 'required|integer',
         'diet_target' => 'required|integer',
+        'meals_count' => 'required|integer|min:3|max:5',
         'gender' => 'required|integer',
         'birthday' => 'required|date',
         'weight' => 'required|integer',
@@ -54,7 +55,7 @@ class ProfileController extends Controller
         $profile->birthday = $request->birthday;
         $profile->save();
 
-        (new UserDietController)->create($profile, $request->diet_type);
+        (new UserDietController)->create($profile, $request->diet_type, $request->meals_count);
 
         return response()->json(TRUE);
     }
@@ -83,7 +84,8 @@ class ProfileController extends Controller
         $profile = $user->profile;
 
         return View::make('profile.edit', [
-            'profile' => $profile
+            'profile' => $profile,
+            'meals_count' => $user->userDiet->meals_count
         ]);
     }
 
@@ -111,7 +113,7 @@ class ProfileController extends Controller
         $profile->birthday = $request->birthday;
         $profile->save();
 
-        (new UserDietController)->update($profile, $request->diet_type);
+        (new UserDietController)->update($profile, $request->diet_type, $request->meals_count);
 
         return response()->json(TRUE);
     }

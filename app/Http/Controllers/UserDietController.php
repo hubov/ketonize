@@ -11,13 +11,14 @@ use Illuminate\Support\Facades\Auth;
 
 class UserDietController extends Controller
 {
-    public function create(Profile $profile, $dietId) {
+    public function create(Profile $profile, $dietId, $mealsCount) {
         $kcalTotal = $this->kcal($profile);
 
         $diet = Diet::find($dietId);
         $userDiet = new UserDiet;
         $userDiet->user_id = Auth::user()->id;
         $userDiet->diet_id = $diet->id;
+        $userDiet->meals_count = $mealsCount;
         $userDiet->kcal = $kcalTotal;
         $userDiet->protein = round(($kcalTotal * $diet->protein / 100) / 4);
         $userDiet->fat = round(($kcalTotal * $diet->fat / 100) / 9);
@@ -27,12 +28,13 @@ class UserDietController extends Controller
         $this->newDietPlan();
     }
 
-    public function update(Profile $profile, $dietId) {
+    public function update(Profile $profile, $dietId, $mealsCount) {
         $kcalTotal = $this->kcal($profile);
 
         $diet = Diet::find($dietId);
         $userDiet = UserDiet::where('user_id', Auth::user()->id)->first();
         $userDiet->diet_id = $diet->id;
+        $userDiet->meals_count = $mealsCount;
         $userDiet->kcal = $kcalTotal;
         $userDiet->protein = round(($kcalTotal * $diet->protein / 100) / 4);
         $userDiet->fat = round(($kcalTotal * $diet->fat / 100) / 9);
@@ -89,8 +91,8 @@ class UserDietController extends Controller
                     ->delete();
 
             $plan = new GenerateDietPlan($date->format('Y-m-d'));
-            $plan->handle(Auth::user());
+            $user = Auth::user()->fresh();
+            $plan->handle($user);
         }
     }
-
 }

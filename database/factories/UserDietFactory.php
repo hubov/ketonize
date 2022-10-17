@@ -21,6 +21,7 @@ class UserDietFactory extends Factory
         return [
             'user_id' => User::factory(),
             'diet_id' => Diet::factory(),
+            'meals_count' => 4,
             'kcal' => 1800,
             'protein' => 15,
             'fat' => 77,
