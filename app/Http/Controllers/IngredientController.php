@@ -55,8 +55,10 @@ class IngredientController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate(array_merge([
-            'name' => 'required|unique:ingredients,name'], $this->formValidation));
+        $request->validate(array_merge(
+            ['name' => 'required|unique:ingredients,name'],
+            $this->formValidation
+        ));
 
         $ingredient = Ingredient::create($request->all());
 
