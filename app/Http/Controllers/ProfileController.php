@@ -15,9 +15,9 @@ class ProfileController extends Controller
         'meals_count' => 'required|integer|min:3|max:5',
         'gender' => 'required|integer',
         'birthday' => 'required|date',
-        'weight' => 'required|integer',
-        'height' => 'required|integer',
-        'target_weight' => 'required|integer',
+        'weight' => 'required|integer|min:45|max:250',
+        'height' => 'required|integer|min:120|max:230',
+        'target_weight' => 'required|integer|min:45|max:250',
         'basic_activity' => 'required|integer',
         'sport_activity' => 'required|integer'];
 
