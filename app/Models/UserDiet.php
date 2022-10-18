@@ -2,8 +2,6 @@
 
 namespace App\Models;
 
-use App\Models\Diet;
-use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -19,5 +17,42 @@ class UserDiet extends Model
     public function diet()
     {
         return $this->belongsTo(Diet::class);
+    }
+
+    public function getMacros()
+    {
+        return $this->protein + $this->fat + $this->carbohydrate;
+    }
+
+    public function getProteinRatio()
+    {
+        return $this->protein / $this->getMacros() * 100;
+    }
+
+    public function getCarbohydrateRatio()
+    {
+        return $this->carbohydrate / $this->getMacros() * 100;
+    }
+
+    public function getMeals()
+    {
+        $this->meals = DietMealDivision::where('meals_count', $this->meals_count)->get();
+
+        return $this->meals;
+    }
+
+    public function mealsDivision()
+    {
+        $result = [];
+        if (isset($this->meals)) {
+            foreach ($this->meals as $meal) {
+                $result[$meal->meal_order] = [
+                    'tag' => $meal->tag,
+                    'kcal' => $this->kcal * $meal->kcal_share / 100
+                ];
+            }
+        }
+
+        return $result;
     }
 }

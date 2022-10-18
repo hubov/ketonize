@@ -6,7 +6,6 @@ use App\Models\DietPlan;
 use App\Models\User;
 use App\Models\Recipe;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
@@ -21,9 +20,13 @@ class GenerateDietPlan implements ShouldQueue
      *
      * @return void
      */
-    public function __construct($date)
+    public function __construct($date = NULL)
     {
-        $this->date = $date;
+        if  (is_null($date)) {
+            $this->date = ((new \DateTime())->modify('+28 days'))->format('Y-m-d');
+        } else {
+            $this->date = $date;
+        }
     }
 
     /**
@@ -33,53 +36,29 @@ class GenerateDietPlan implements ShouldQueue
      */
     public function handle(User $user = NULL)
     {
-        if ($user === NULL)
-        {
-            foreach (User::all() as $user)
-            {
+        if (is_null($user)) {
+            foreach (User::all() as $user) {
                 $this->task($user);
             }
-        }
-        else
-        {
+        } else {
             $this->task($user);
         }
     }
 
     protected function task(User $user)
     {
-        $mealsCount = 4;
-        $meals[1] = [
-            'tag' => 1,
-            'kcal' => $user->userDiet->kcal * 0.3
-        ];
-        $meals[2] = [
-            'tag' => 2,
-            'kcal' => $user->userDiet->kcal * 0.3
-        ];
-        $meals[3] = [
-            'tag' => 4,
-            'kcal' => $user->userDiet->kcal * 0.1
-        ];
-        $meals[4] = [
-            'tag' => 3,
-            'kcal' => $user->userDiet->kcal * 0.3
-        ];
-
-        $macro = $user->userDiet->protein + $user->userDiet->fat + $user->userDiet->carbohydrate;
-        $protein = $user->userDiet->protein / $macro * 100;
-        $fat = $user->userDiet->fat / $macro * 100;
-        $carbohydrate = $user->userDiet->carbohydrate / $macro * 100;
+        $protein = $user->userDiet->getProteinRatio();
+        $carbohydrate = $user->userDiet->getCarbohydrateRatio();
 
         $chosenRecipes = [];
 
-        foreach ($meals as $key => $meal)
-        {
+        $user->userDiet->getMeals();
+        $meals = $user->userDiet->mealsDivision();
+        foreach ($meals as $mealOrder => $meal) {
             $recipe = Recipe::join('recipe_tag', 'recipes.id', '=', 'recipe_id')
                     ->select('recipes.*')
-                    ->where('tag_id', $meal['tag'])
+                    ->where('tag_id', $meal['tag']->id)
                     ->whereBetween('protein_ratio', [$protein*0.5, $protein*1.5])
-                    // ->whereBetween('fat_ratio', [$fat*0.5, $fat*1.5])
                     ->whereBetween('carbohydrate_ratio', [0, $carbohydrate*1.5])
                     ->whereNotIn('recipes.id', $chosenRecipes)
                     ->inRandomOrder()
@@ -91,7 +70,7 @@ class GenerateDietPlan implements ShouldQueue
             $dietPlan->user_id = $user->id;
             $dietPlan->modifier = $modifier;
             $dietPlan->recipe_id = $recipe->id;
-            $dietPlan->meal = $key;
+            $dietPlan->meal = $mealOrder;
             $dietPlan->date_on = $this->date;
             $dietPlan->save();
             $chosenRecipes[] = $recipe->id;

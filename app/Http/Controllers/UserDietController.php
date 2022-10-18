@@ -2,40 +2,46 @@
 
 namespace App\Http\Controllers;
 
-use DateTime;
+use App\Jobs\GenerateDietPlan;
 use App\Models\Diet;
+use App\Models\DietPlan;
 use App\Models\Profile;
 use App\Models\UserDiet;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Http\Request;
 
 class UserDietController extends Controller
 {
-    public function create(Profile $profile, $dietId) {
+    public function create(Profile $profile, $dietId, $mealsCount) {
         $kcalTotal = $this->kcal($profile);
 
         $diet = Diet::find($dietId);
         $userDiet = new UserDiet;
         $userDiet->user_id = Auth::user()->id;
         $userDiet->diet_id = $diet->id;
+        $userDiet->meals_count = $mealsCount;
         $userDiet->kcal = $kcalTotal;
         $userDiet->protein = round(($kcalTotal * $diet->protein / 100) / 4);
         $userDiet->fat = round(($kcalTotal * $diet->fat / 100) / 9);
         $userDiet->carbohydrate = round(($kcalTotal * $diet->carbohydrate / 100) / 4);
         $userDiet->save();
+
+        $this->newDietPlan();
     }
 
-    public function update(Profile $profile, $dietId) {
+    public function update(Profile $profile, $dietId, $mealsCount) {
         $kcalTotal = $this->kcal($profile);
 
         $diet = Diet::find($dietId);
         $userDiet = UserDiet::where('user_id', Auth::user()->id)->first();
         $userDiet->diet_id = $diet->id;
+        $userDiet->meals_count = $mealsCount;
         $userDiet->kcal = $kcalTotal;
         $userDiet->protein = round(($kcalTotal * $diet->protein / 100) / 4);
         $userDiet->fat = round(($kcalTotal * $diet->fat / 100) / 9);
         $userDiet->carbohydrate = round(($kcalTotal * $diet->carbohydrate / 100) / 4);
         $userDiet->save();
+
+        $this->newDietPlan();
     }
 
     protected function kcal(Profile $profile) {
@@ -45,12 +51,7 @@ class UserDietController extends Controller
             case 2: { $genderModifier = 5; break; }
         }
 
-        $birthday = new DateTime($profile->birthday);
-        $today = new DateTime(date("Y-m-d"));
-
-        $age = $today->diff($birthday)->y;
-
-        $kcalBasic = round(9.99 * $profile->weight + 6.25 * $profile->height - 4.92 * $age + $genderModifier);
+        $kcalBasic = round(9.99 * $profile->weight + 6.25 * $profile->height - 4.92 * $profile->age() + $genderModifier);
 
         switch ($profile->basic_activity)
         {
@@ -77,5 +78,21 @@ class UserDietController extends Controller
         }
 
         return round($kcalTotal / 50) * 50;
+    }
+
+    protected function newDietPlan() {
+        $dateStart = new \DateTime();
+        $interval = new \DateInterval('P1D');
+        $period = new \DatePeriod($dateStart, $interval, 28);
+        foreach ($period as $date)
+        {
+            Dietplan::where('user_id', '=', Auth::user()->id)
+                    ->where('date_on', '=', $date->format('Y-m-d'))
+                    ->delete();
+
+            $plan = new GenerateDietPlan($date->format('Y-m-d'));
+            $user = Auth::user()->fresh();
+            $plan->handle($user);
+        }
     }
 }

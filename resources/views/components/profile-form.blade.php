@@ -58,7 +58,28 @@
                             <input type="radio" class="form-check-input" name="physical_target" value="1" id="physical_target_muscles">
                             <label for="physical_target_muscles" class="form-check-label">Build muscles</label>
                         </div> -->
-
+                        <h6 class="card-subtitle mt-4 mb-2 text-muted">Meals per day</h6>
+                        <div class="form-check">
+                            <input type="radio" class="form-check-input" name="meals_count" value="3" id="meals_count_3"
+                                   @if ($mealsCount == 3)
+                                       checked
+                                @endif>
+                            <label for="meals_count_3" class="form-check-label">3</label>
+                        </div>
+                        <div class="form-check">
+                            <input type="radio" class="form-check-input" name="meals_count" value="4" id="meals_count_4"
+                                   @if ($mealsCount == 4)
+                                       checked
+                                @endif>
+                            <label for="meals_count_4" class="form-check-label">4</label>
+                        </div>
+                        <div class="form-check">
+                            <input type="radio" class="form-check-input" name="meals_count" value="5" id="meals_count_5"
+                                   @if ($mealsCount == 5)
+                                       checked
+                                @endif>
+                            <label for="meals_count_5" class="form-check-label">5</label>
+                        </div>
                         <h6 class="card-subtitle mt-4 mb-2 text-muted">Diet target</h6>
                         <div class="form-check">
                             <input type="radio" class="form-check-input" name="diet_target" value="1" id="diet_target_loose"
@@ -105,33 +126,36 @@
                             @endif>
                             <label for="diet_type_vegan_keto" class="form-check-label">Male</label>
                         </div>
+                        <label for="age" class="form-label text-muted mt-3">Birthday</label>
                         <div>
-                            <label for="age" class="form-label">Birthday</label>
-                            <input type="date" name="birthday" id="birthday"
+                            <input type="date" name="birthday" id="birthday" class="form-control"
                             @if ($birthday != NULL)
                                 value="{{ $birthday }}"
                             @endif>
                         </div>
-                        <div>
-                            <label for="weight" class="form-label">Weight</label>
-                            <input type="text" name="weight" id="weight"
+                        <label for="weight" class="form-label text-muted mt-3">Weight</label>
+                        <div class="input-group">
+                            <input type="text" name="weight" id="weight" class="form-control"
                             @if ($weight != NULL)
                                 value="{{ $weight }}"
-                            @endif> kg
+                            @endif>
+                            <span class="input-group-text">kg</span>
                         </div>
-                        <div>
-                            <label for="height" class="form-label">Height</label>
-                            <input type="text" name="weight" id="height"
+                        <label for="height" class="form-label text-muted mt-3">Height</label>
+                        <div class="input-group">
+                            <input type="text" name="weight" id="height" class="form-control"
                             @if ($height != NULL)
                                 value="{{ $height }}"
-                            @endif> cm
+                            @endif>
+                            <span class="input-group-text">cm</span>
                         </div>
-                        <div>
-                            <label for="target_weight" class="form-label">Target weight</label>
-                            <input type="text" name="weight" id="target_weight"
+                        <label for="target_weight" class="form-label text-muted mt-3">Target weight</label>
+                        <div class="input-group">
+                            <input type="text" name="weight" id="target_weight" class="form-control"
                             @if ($targetWeight != NULL)
                                 value="{{ $targetWeight }}"
-                            @endif> kg
+                            @endif>
+                            <span class="input-group-text">kg</span>
                         </div>
                         <input type="button" class="btn btn-primary mt-3" id="proceed2" value="Next">
                     </div>
@@ -238,6 +262,7 @@
             var formData = {
                 diet_type: $('input[name=diet_type]:checked').val(),
                 diet_target: $('input[name=diet_target]:checked').val(),
+                meals_count: $('input[name=meals_count]:checked').val(),
                 gender: $('input[name=gender]:checked').val(),
                 birthday: $('#birthday').val(),
                 weight: $('#weight').val(),
@@ -248,7 +273,6 @@
                 _token: '{{ csrf_token() }}'
             }
 
-            console.log(formData);
             $.ajax({
                 type: "POST",
                 url: url,
@@ -260,6 +284,24 @@
                 window.location = '/dashboard';
             }) .fail(function(data) {
                 console.log('fail');
+                var errors = data.responseJSON.errors;
+                if (errors != undefined) {
+                    var message = "";
+                    Object.keys(errors).forEach(element => {
+                        if ($('#' + element).length) {
+                            $('#' + element).addClass('is-invalid');
+                        } else {
+                            $('input[name=' + element + ']').addClass('is-invalid');
+                        }
+                        errors[element].forEach(function (errorMessage) {
+                            message += errorMessage + "\n";
+                        });
+                    });
+                    var tabSelect = document.querySelector('#diet-tab');
+                    var tab = new bootstrap.Tab(tabSelect);
+                    tab.show();
+                    alert(message);
+                }
             });
         });
     });

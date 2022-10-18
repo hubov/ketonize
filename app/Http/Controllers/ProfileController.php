@@ -2,9 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\UserDiet;
 use App\Models\Profile;
-use App\Http\Controllers\UserDietController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\View;
@@ -14,18 +12,19 @@ class ProfileController extends Controller
     protected $formValidation = [
         'diet_type' => 'required|integer',
         'diet_target' => 'required|integer',
+        'meals_count' => 'required|integer|min:3|max:5',
         'gender' => 'required|integer',
         'birthday' => 'required|date',
-        'weight' => 'required|integer',
-        'height' => 'required|integer',
-        'target_weight' => 'required|integer',
+        'weight' => 'required|integer|min:45|max:250',
+        'height' => 'required|integer|min:120|max:230',
+        'target_weight' => 'required|integer|min:45|max:250',
         'basic_activity' => 'required|integer',
         'sport_activity' => 'required|integer'];
 
     /**
      * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Contracts\View\View
      */
     public function create()
     {
@@ -36,11 +35,11 @@ class ProfileController extends Controller
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function store(Request $request)
     {
-        $validated = $request->validate($this->formValidation);
+        $request->validate($this->formValidation);
 
         $user = Auth::user();
 
@@ -56,8 +55,7 @@ class ProfileController extends Controller
         $profile->birthday = $request->birthday;
         $profile->save();
 
-        $userDiet = (new UserDietController)
-                    ->create($profile, $request->diet_type);
+        (new UserDietController)->create($profile, $request->diet_type, $request->meals_count);
 
         return response()->json(TRUE);
     }
@@ -77,7 +75,7 @@ class ProfileController extends Controller
      * Show the form for editing the specified resource.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Contracts\View\View
      */
     public function edit()
     {
@@ -86,7 +84,8 @@ class ProfileController extends Controller
         $profile = $user->profile;
 
         return View::make('profile.edit', [
-            'profile' => $profile
+            'profile' => $profile,
+            'meals_count' => $user->userDiet->meals_count
         ]);
     }
 
@@ -95,15 +94,15 @@ class ProfileController extends Controller
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function update(Request $request)
     {
-        $validated = $request->validate($this->formValidation);
+        $request->validate($this->formValidation);
 
         $user = Auth::user();
 
-        $profile = $profile = $user->profile;
+        $profile = $user->profile;
         $profile->height = $request->height;
         $profile->weight = $request->weight;
         $profile->target_weight = $request->target_weight;
@@ -114,8 +113,7 @@ class ProfileController extends Controller
         $profile->birthday = $request->birthday;
         $profile->save();
 
-        $userDiet = (new UserDietController)
-                    ->update($profile, $request->diet_type);
+        (new UserDietController)->update($profile, $request->diet_type, $request->meals_count);
 
         return response()->json(TRUE);
     }

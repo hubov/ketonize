@@ -5,6 +5,7 @@ use App\Http\Controllers\IngredientController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RecipeController;
 use App\Http\Controllers\ShoppingListController;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -34,22 +35,24 @@ Route::middleware('role:admin')->group(function() {
     Route::post('/recipes', [RecipeController::class, 'store']);
 });
 Route::middleware('auth')->group(function() {
-    Route::get('/dashboard/{date}', [DietPlanController::class, 'index'])->where('date', '202[0-9]\-(0[1-9]|1[0-2])\-[0-3][0-9]');
-    Route::get('/dashboard', [DietPlanController::class, 'index'])->name('dashboard');
-    Route::get('/dashboard/generate/{date}', [DietPlanController::class, 'generate'])->where('date', '202[0-9]\-(0[1-9]|1[0-2])\-[0-3][0-9]');
-    Route::get('/shopping-list', [ShoppingListController::class, 'index']);
-    Route::post('/shopping-list', [ShoppingListController::class, 'update']);
-    Route::post('/shopping-list/update', [ShoppingListController::class, 'edit']);
-    Route::post('/shopping-list/delete', [ShoppingListController::class, 'destroy']);
-    Route::get('/recipe/{slug}/{modifier}', [RecipeController::class, 'show'])->where('slug', '[0-9a-z\-]+')->where('modifier', '[0-9]+');
-    Route::get('/recipe/{slug}', [RecipeController::class, 'show'])->where('slug', '[0-9a-z\-]+');
-    Route::get('/recipes', [RecipeController::class, 'index'])->middleware(['auth']);
-    Route::get('/ingredients', [IngredientController::class, 'index']);
-    Route::get('/ingredient-autocomplete', [IngredientController::class, 'search']);
+    Route::middleware('profile.completeness')->group(function() {
+        Route::get('/dashboard/{date}', [DietPlanController::class, 'index'])->where('date', '202[0-9]\-(0[1-9]|1[0-2])\-[0-3][0-9]');
+        Route::get('/dashboard', [DietPlanController::class, 'index'])->name('dashboard');
+        Route::get('/dashboard/generate/{date}', [DietPlanController::class, 'generate'])->where('date', '202[0-9]\-(0[1-9]|1[0-2])\-[0-3][0-9]');
+        Route::get('/shopping-list', [ShoppingListController::class, 'index']);
+        Route::post('/shopping-list', [ShoppingListController::class, 'update']);
+        Route::post('/shopping-list/update', [ShoppingListController::class, 'edit']);
+        Route::post('/shopping-list/delete', [ShoppingListController::class, 'destroy']);
+        Route::get('/recipe/{slug}/{modifier}', [RecipeController::class, 'show'])->where('slug', '[0-9a-z\-]+')->where('modifier', '[0-9]+');
+        Route::get('/recipe/{slug}', [RecipeController::class, 'show'])->where('slug', '[0-9a-z\-]+');
+        Route::get('/recipes', [RecipeController::class, 'index'])->middleware(['auth']);
+        Route::get('/ingredients', [IngredientController::class, 'index']);
+        Route::get('/ingredient-autocomplete', [IngredientController::class, 'search']);
+        Route::get('/profile', [ProfileController::class, 'edit']);
+        Route::post('/profile', [ProfileController::class, 'update']);
+    });
     Route::get('/profile/new', [ProfileController::class, 'create']);
     Route::post('/profile/new', [ProfileController::class, 'store']);
-    Route::get('/profile', [ProfileController::class, 'edit']);
-    Route::post('/profile', [ProfileController::class, 'update']);
 });
 
 require __DIR__.'/auth.php';

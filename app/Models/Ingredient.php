@@ -2,8 +2,6 @@
 
 namespace App\Models;
 
-use App\Models\IngredientCategory;
-use App\Models\Nutrient;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 

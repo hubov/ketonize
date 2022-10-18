@@ -21,6 +21,13 @@ class ProfileForm extends Component
     public $dietTarget;
 
     /**
+     * The daily meals count.
+     *
+     * @var integer
+     */
+    public $mealsCount;
+
+    /**
      * The user's gender.
      *
      * @var integer
@@ -82,6 +89,7 @@ class ProfileForm extends Component
      *
      * @param integer dietType
      * @param integer dietTarget
+     * @param integer mealsCount
      * @param integer gender
      * @param string birthday
      * @param integer weight
@@ -98,10 +106,11 @@ class ProfileForm extends Component
      *
      * @return void
      */
-    public function __construct($dietType = NULL, $dietTarget = NULL, $gender = NULL, $birthday = NULL, $weight = NULL, $height = NULL, $targetWeight = NULL, $basicActivity = NULL, $sportActivity = NULL, $edit = 'false')
+    public function __construct($dietType = NULL, $dietTarget = NULL, $mealsCount = NULL, $gender = NULL, $birthday = NULL, $weight = NULL, $height = NULL, $targetWeight = NULL, $basicActivity = NULL, $sportActivity = NULL, $edit = 'false')
     {
         $this->dietType = $dietType;
         $this->dietTarget = $dietTarget;
+        $this->mealsCount = $mealsCount;
         $this->gender = $gender;
         $this->birthday = $birthday;
         $this->weight = $weight;

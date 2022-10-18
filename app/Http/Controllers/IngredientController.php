@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Ingredient;
 use App\Models\IngredientCategory;
-use App\Models\Nutrient;
 use App\Models\Unit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\View;
@@ -52,12 +51,14 @@ class IngredientController extends Controller
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
      */
     public function store(Request $request)
     {
-        $validated = $request->validate(array_merge([
-            'name' => 'required|unique:ingredients,name'], $this->formValidation));
+        $request->validate(array_merge(
+            ['name' => 'required|unique:ingredients,name'],
+            $this->formValidation
+        ));
 
         $ingredient = Ingredient::create($request->all());
 
@@ -66,7 +67,7 @@ class IngredientController extends Controller
 
     public function ajaxStore(Request $request)
     {
-        $validated = $request->validate(array_merge([
+        $request->validate(array_merge([
             'name' => 'required|unique:ingredients,name'], $this->formValidation));
 
         $ingredient = Ingredient::create($request->all());
@@ -89,7 +90,7 @@ class IngredientController extends Controller
      * Show the form for editing the specified resource.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Contracts\View\View
      */
     public function edit($id)
     {
@@ -107,11 +108,11 @@ class IngredientController extends Controller
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
      */
     public function update(Request $request, $id)
     {
-        $validated = $request->validate(array_merge([
+        $request->validate(array_merge([
             'name' => 'required'], $this->formValidation));
 
         $ingredient = Ingredient::find($id);
@@ -131,15 +132,15 @@ class IngredientController extends Controller
      * Remove the specified resource from storage.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function destroy($id)
     {
         $ingredient = Ingredient::find($id);
-        if (count($ingredient->recipes) > 0)
-        {
-            foreach ($ingredient->recipes as $recipe)
+        if (count($ingredient->recipes) > 0) {
+            foreach ($ingredient->recipes as $recipe) {
                 $results[] = $recipe->slug;
+            }
             return response()->json(['error' => TRUE, 'recipes' => $results], 403);
         }
 
@@ -152,43 +153,44 @@ class IngredientController extends Controller
     {
         $ingredients = Ingredient::where('name', 'like', '%'.$request->input('name').'%')->limit(5)->get();
 
-        if (count($ingredients) > 0)
-            foreach ($ingredients as $ingredient)
-            {
+        if (count($ingredients) > 0) {
+            foreach ($ingredients as $ingredient) {
                 $result[] = [
-                    'id' => $ingredient->id, 
-                    'name' => $ingredient->name, 
-                    'unit' => $ingredient->unit->symbol, 
-                    'protein' => $ingredient->protein, 
-                    'fat' => $ingredient->fat, 
+                    'id' => $ingredient->id,
+                    'name' => $ingredient->name,
+                    'unit' => $ingredient->unit->symbol,
+                    'protein' => $ingredient->protein,
+                    'fat' => $ingredient->fat,
                     'carbohydrate' => $ingredient->carbohydrate,
                     'kcal' => $ingredient->kcal
                 ];
             }
-        else
+        } else {
             $result = [];
+        }
 
         return response()->json($result);
     }
 
     public function upload(Request $request)
     {
-        if ($request->file('bulk_upload')->isValid())
-        {
+        if ($request->file('bulk_upload')->isValid()) {
             $file = fopen($request->file('bulk_upload')->path(), 'r');
             $head = fgetcsv($file, 4096, ',', '"');
 
-            while (($data = fgetcsv($file, 4096, ",")) !== FALSE)
-            {
+            while (($data = fgetcsv($file, 4096, ",")) !== FALSE) {
                 $ingredient = new Ingredient;
                 $ingredient->name = $data[0];
 
-                for ($i = 3; $i <= 33; $i++)
-                    if ($data[$i][0] == '<')
+                for ($i = 3; $i <= 33; $i++) {
+                    if ($data[$i][0] == '<') {
                         $data[$i] = substr($data[$i], 1);
-                    else
-                    if (($data[$i] == 'n.d.') || ($data[$i] == 'tr.'))
-                        $data[$i] = 0;
+                    } else {
+                        if (($data[$i] == 'n.d.') || ($data[$i] == 'tr.')) {
+                            $data[$i] = 0;
+                        }
+                    }
+                }
 
                 $ingredient->protein = $data[13];
                 $ingredient->fat = $data[4];
@@ -208,15 +210,12 @@ class IngredientController extends Controller
                 unset($data[13]);
                 $data = array_values($data);
 
-                foreach ($data as $i => $value)
-                {
-                    if ($value > 0)
+                foreach ($data as $i => $value) {
+                    if ($value > 0) {
                         $ingredient->nutrients()->attach(($i + 1), ['amount' => $value]);
+                    }
                 }
             }
-
-
-            dd($file);
         }
     }
 }
