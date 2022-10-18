@@ -71,8 +71,14 @@ class ShoppingListController extends Controller
     public function edit(Request $request)
     {
         $list = ShoppingList::where('id', $request->id)
-        $list->amount = $request->amount;
-        $list->save();
+                    ->where('user_id', Auth::user()->id)
+                    ->first();
+        if ($list !== NULL) {
+            $list->amount = $request->amount;
+            $list->save();
+        } else {
+            return response()->json(FALSE);
+        }
 
         return response()->json(TRUE);
     }
