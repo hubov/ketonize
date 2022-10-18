@@ -13,10 +13,14 @@ class ShoppingListController extends Controller
 {
     public function index()
     {
-        $list = ShoppingList::join('ingredients', 'shopping_lists.ingredient_id', '=', 'ingredients.id')->where('user_id', Auth::user()->id)->select('shopping_lists.*')->orderBy('ingredients.ingredient_category_id')->orderBy('ingredients.name')->get();
+        $list = ShoppingList::join('ingredients', 'shopping_lists.ingredient_id', '=', 'ingredients.id')
+                        ->where('user_id', Auth::user()->id)
+                        ->select('shopping_lists.*')
+                        ->orderBy('ingredients.ingredient_category_id')
+                        ->orderBy('ingredients.name')
+                        ->get();
 
-        foreach ($list as $l)
-        {
+        foreach ($list as $l) {
             $category = IngredientCategory::find($l->ingredient->ingredient_category_id)->name;
             $categorisedList[$category][] = $l;
         }
@@ -37,16 +41,11 @@ class ShoppingListController extends Controller
                                 ->where('date_on', '<=', $request->date_to)
                                 ->get();
         $ingredients = [];
-        foreach ($meals as $meal)
-        {
-            foreach ($meal->recipe->ingredients as $ingredient)
-            {
-                if (isset($ingredients[$ingredient->id]))
-                {
+        foreach ($meals as $meal) {
+            foreach ($meal->recipe->ingredients as $ingredient) {
+                if (isset($ingredients[$ingredient->id])) {
                     $ingredients[$ingredient->id]['amount'] += round($ingredient->pivot->amount * $meal->modifier / 100);
-                }
-                else
-                {
+                } else {
                     $ingredients[$ingredient->id] = [
                             'name' => $ingredient->name,
                             'amount' => round($ingredient->pivot->amount * $meal->modifier / 100)
@@ -57,8 +56,7 @@ class ShoppingListController extends Controller
 
         ShoppingList::where('user_id', Auth::user()->id)->delete();
 
-        foreach ($ingredients as $id => $ingredient)
-        {
+        foreach ($ingredients as $id => $ingredient) {
             $newList = new ShoppingList;
             $newList->user_id = Auth::user()->id;
             $newList->ingredient_id = $id;
@@ -72,7 +70,6 @@ class ShoppingListController extends Controller
     public function edit(Request $request)
     {
         $list = ShoppingList::where('id', $request->id)
-                    ->where('user_id', Auth::user()->id);
         $list->amount = $request->amount;
         $list->save();
 
