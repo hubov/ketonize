@@ -20,6 +20,7 @@ class ShoppingListController extends Controller
                         ->orderBy('ingredients.name')
                         ->get();
 
+        $categorisedList = [];
         foreach ($list as $l) {
             $category = IngredientCategory::find($l->ingredient->ingredient_category_id)->name;
             $categorisedList[$category][] = $l;
