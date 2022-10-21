@@ -150,7 +150,7 @@ class IngredientTest extends TestCase
         $user = User::factory()->has(Role::factory()->state(['name' => 'admin']))->create();
         $ingredient = Ingredient::factory()->create();
 
-        $response = $this->actingAs($user)->post('/ingredient/'.$ingredient->id, $this->requestData);
+        $response = $this->actingAs($user)->put('/ingredient/'.$ingredient->id, $this->requestData);
 
         $response->assertSessionHasNoErrors();
         $response->assertRedirect('/ingredient/'.$ingredient->id);
@@ -162,7 +162,7 @@ class IngredientTest extends TestCase
         $ingredient = Ingredient::factory()->create();
         $this->requestData['protein'] = NULL;
 
-        $response = $this->actingAs($user)->post('/ingredient/'.$ingredient->id, $this->requestData);
+        $response = $this->actingAs($user)->put('/ingredient/'.$ingredient->id, $this->requestData);
 
         $response->assertSessionHasErrors('protein');
     }
@@ -172,7 +172,7 @@ class IngredientTest extends TestCase
         $user = User::factory()->create();
         $ingredient = Ingredient::factory()->create();
 
-        $response = $this->actingAs($user)->post('/ingredient/'.$ingredient->id);
+        $response = $this->actingAs($user)->put('/ingredient/'.$ingredient->id);
 
         $response->assertStatus(403);
     }
@@ -182,7 +182,7 @@ class IngredientTest extends TestCase
         $user = User::factory()->has(Role::factory()->state(['name' => 'admin']))->create();
         $ingredient = Ingredient::factory()->create();
 
-        $response = $this->actingAs($user)->post('/ingredient/'.$ingredient->id.'/delete');
+        $response = $this->actingAs($user)->delete('/ingredient/'.$ingredient->id.'/delete');
 
         $this->assertModelMissing($ingredient);
         $response->assertSee('true');
@@ -195,7 +195,7 @@ class IngredientTest extends TestCase
         $recipe = Recipe::factory()->create();
         $recipe->ingredients()->attach($ingredient->id, ['amount' => 100]);
 
-        $response = $this->actingAs($user)->post('/ingredient/'.$ingredient->id.'/delete');
+        $response = $this->actingAs($user)->delete('/ingredient/'.$ingredient->id.'/delete');
 
         $this->assertModelExists($ingredient);
         $response->assertJson(['error' => TRUE]);
@@ -206,7 +206,7 @@ class IngredientTest extends TestCase
         $user = User::factory()->create();
         $ingredient = Ingredient::factory()->create();
 
-        $response = $this->actingAs($user)->post('/ingredient/'.$ingredient->id.'/delete');
+        $response = $this->actingAs($user)->delete('/ingredient/'.$ingredient->id.'/delete');
 
         $response->assertStatus(403);
     }

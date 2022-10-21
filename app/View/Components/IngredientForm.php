@@ -8,6 +8,13 @@ use Illuminate\Database\Eloquent\Collection;
 class IngredientForm extends Component
 {
     /**
+     * The form method.
+     *
+     * @var string
+     */
+    public $method;
+
+    /**
      * The ingredient name.
      *
      * @var string
@@ -86,8 +93,9 @@ class IngredientForm extends Component
      */
 
 
-    public function __construct($name = '', $category = 0, $protein = '', $fat = '', $carbohydrate = '', $kcal = '', $unit = '', $units = [], $categories = [])
+    public function __construct($method = 'POST', $name = '', $category = 0, $protein = '', $fat = '', $carbohydrate = '', $kcal = '', $unit = '', $units = [], $categories = [])
     {
+        $this->method = $method;
         $this->name = $name;
         $this->category = $category;
         $this->protein = $protein;

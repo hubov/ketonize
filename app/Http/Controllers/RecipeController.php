@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreRecipeRequest;
+use App\Http\Requests\UpdateRecipeRequest;
 use App\Models\IngredientCategory;
 use App\Models\Recipe;
 use App\Models\Tag;
@@ -16,19 +18,8 @@ class RecipeController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Contracts\View\View
      */
-
-    protected $formValidation = [
-        'ids' => 'required|array|min:1',
-        'ids.*' => 'required|numeric|min:1',
-        'quantity' => 'required|array|min:1',
-        'quantity.*' => 'required|numeric|min:1',
-        'description' => 'required|string',
-        'preparation_time' => 'required|numeric',
-        'cooking_time' => 'required|numeric'
-    ];
-
     public function index()
     {
         $recipes = Recipe::all()
@@ -58,14 +49,10 @@ class RecipeController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
      */
-    public function store(Request $request)
+    public function store(StoreRecipeRequest $request)
     {
-        $request->validate(array_merge([
-            'name' => 'required|unique:recipes,name'], $this->formValidation));
-
         $recipe = new Recipe;
         $recipe->name = $request->name;
-        $recipe->slug = Str::of($request->name)->slug('-');
         if ($request->image == NULL) {
             $recipe->image = 'default';
         } else {
@@ -157,16 +144,12 @@ class RecipeController extends Controller
      * @param  int  $id
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
      */
-    public function update(Request $request, $slug)
+    public function update(UpdateRecipeRequest $request, $slug)
     {
-        $request->validate(array_merge([
-            'name' => 'required'], $this->formValidation));
-
         $recipe = Recipe::where('slug', $slug)->firstOrFail();
 
         $recipe->setIngredients($request->ids, $request->quantity);
         $recipe->name = $request->name;
-        $recipe->slug = Str::of($request->name)->slug('-');
         if ($request->image == NULL) {
             $recipe->image = 'default';
         } else {

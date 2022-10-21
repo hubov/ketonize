@@ -7,6 +7,13 @@ use Illuminate\View\Component;
 class RecipeForm extends Component
 {
     /**
+     * The form method.
+     *
+     * @var string
+     */
+    public $method;
+
+    /**
      * The recipe name.
      *
      * @var string
@@ -132,8 +139,9 @@ class RecipeForm extends Component
      * @param \Illuminate\Database\Eloquent\Collection units
      * @return void
      */
-    public function __construct($name = '', $units = [], $categories = [], $image = '',  $protein = '', $fat = '', $carbohydrate = '', $kcal = '', $ingredients = [], $description = '', $tagsList = [], $tags = [], $preparationTime = '', $cookingTime = '')
+    public function __construct($method = 'POST', $name = '', $units = [], $categories = [], $image = '',  $protein = '', $fat = '', $carbohydrate = '', $kcal = '', $ingredients = [], $description = '', $tagsList = [], $tags = [], $preparationTime = '', $cookingTime = '')
     {
+        $this->method = $method;
         $this->name = $name;
         $this->units = $units;
         $this->categories = $categories;

@@ -1,5 +1,6 @@
 <form method="POST" class="col-3">
     @csrf
+    @method($method)
     <div class="mb-3">
         <label for="name" class="form-label">Name</label>
         <input type="text" name="name" id="recipe-name" class="form-control" value="{{ $name ?? '' }}">
@@ -81,7 +82,7 @@
                     @endif
                 >{{ $tag->name }}</option>
             @endforeach
-        </select> 
+        </select>
         @if ($errors->has('tags'))
             <div class="invalid-feedback">
                 {{ $errors->first('tags') }}

@@ -1,5 +1,5 @@
 <x-app-layout>
-	<x-ingredient-form :units="$units" :categories="$categories" />
+	<x-ingredient-form method="POST" :units="$units" :categories="$categories" />
 	<div class="row">
 		<div class="col">
 			<h4>BULK upload</h4>
@@ -54,7 +54,7 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        
+
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -75,7 +75,7 @@
 				'_token': '{{ csrf_token() }}'
 			}
 			$.ajax({
-				type: "POST",
+				type: "DELETE",
             	url: "/ingredient/" + deleteId + "/delete",
             	data: formData,
             	dataType: "json",
