@@ -1,5 +1,5 @@
 <x-app-layout>
-	<x-recipe-form :categories="$categories" :units="$units" :tagsList="$tagsList" />
+	<x-recipe-form method="POST" :categories="$categories" :units="$units" :tagsList="$tagsList" />
 
 	@if (count($recipes) > 0)
 		<table class="table">
@@ -19,7 +19,7 @@
 						<a href="/recipe/{{ $recipe->slug }}">{{ $recipe->name }}</a>
 						@if (count($recipe->tags) > 0)
 							@foreach ($recipe->tags as $tag)
-								<span class="badge bg-primary">{{ $tag->name }}</span> 
+								<span class="badge bg-primary">{{ $tag->name }}</span>
 							@endforeach
 						@endif
 					</td>

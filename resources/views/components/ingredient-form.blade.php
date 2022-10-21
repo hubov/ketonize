@@ -1,5 +1,6 @@
 <form method="POST" id="ingredient-form" action="{{ $action ?? '' }}" class="col-12">
     @csrf
+    @method($method)
     <div class="mb-3">
         <label for="ingredient-name" class="form-label">Name</label>
         <input type="text" name="name" id="ingredient-name" class="form-control" value="{{ $name ?? '' }}">
@@ -70,7 +71,7 @@
         <select name="unit_id" id="ingredient-unit_id" class="form-control">
         <option>Choose</option>
         @foreach ($units as $u)
-            <option value="{{ $u->id }}" 
+            <option value="{{ $u->id }}"
             @if ($unit_id == $u->id)
                 selected
             @endif
@@ -89,6 +90,6 @@
 
 <script>
     $(document).ready(function(){
-        
+
     });
 </script>
