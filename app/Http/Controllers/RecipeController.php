@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreRecipeRequest;
+use App\Http\Requests\UpdateRecipeRequest;
 use App\Models\IngredientCategory;
 use App\Models\Recipe;
 use App\Models\Tag;
@@ -58,10 +60,10 @@ class RecipeController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
      */
-    public function store(Request $request)
+    public function store(StoreRecipeRequest $request)
     {
-        $request->validate(array_merge([
-            'name' => 'required|unique:recipes,name'], $this->formValidation));
+//        $request->validate(array_merge([
+//            'name' => 'required|unique:recipes,name'], $this->formValidation));
 
         $recipe = new Recipe;
         $recipe->name = $request->name;
@@ -157,11 +159,8 @@ class RecipeController extends Controller
      * @param  int  $id
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
      */
-    public function update(Request $request, $slug)
+    public function update(UpdateRecipeRequest $request, $slug)
     {
-        $request->validate(array_merge([
-            'name' => 'required'], $this->formValidation));
-
         $recipe = Recipe::where('slug', $slug)->firstOrFail();
 
         $recipe->setIngredients($request->ids, $request->quantity);

@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreIngredientRequest;
+use App\Http\Requests\UpdateIngredientRequest;
 use App\Models\Ingredient;
 use App\Models\IngredientCategory;
 use App\Models\Unit;
@@ -13,17 +15,8 @@ class IngredientController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Contracts\View\View
      */
-
-    protected $formValidation = [
-        'ingredient_category_id' => 'required|numeric',
-        'protein' => 'required|regex:/^[0-9]+(\.[0-9]+)?$/',
-        'fat' => 'required|regex:/^[0-9]+(\.[0-9]+)?$/',
-        'carbohydrate' => 'required|regex:/^[0-9]+(\.[0-9]+)?$/',
-        'kcal' => 'required|numeric',
-        'unit_id' => 'required|numeric'
-    ];
 
     public function index()
     {
@@ -53,23 +46,15 @@ class IngredientController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
      */
-    public function store(Request $request)
+    public function store(StoreIngredientRequest $request)
     {
-        $request->validate(array_merge(
-            ['name' => 'required|unique:ingredients,name'],
-            $this->formValidation
-        ));
-
         $ingredient = Ingredient::create($request->all());
 
         return redirect('/ingredient/'.$ingredient->id);
     }
 
-    public function ajaxStore(Request $request)
+    public function ajaxStore(StoreIngredientRequest $request)
     {
-        $request->validate(array_merge([
-            'name' => 'required|unique:ingredients,name'], $this->formValidation));
-
         $ingredient = Ingredient::create($request->all());
 
         return response()->json(['id' => $ingredient->id]);
@@ -110,11 +95,8 @@ class IngredientController extends Controller
      * @param  int  $id
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
      */
-    public function update(Request $request, $id)
+    public function update(UpdateIngredientRequest $request, $id)
     {
-        $request->validate(array_merge([
-            'name' => 'required'], $this->formValidation));
-
         $ingredient = Ingredient::find($id);
         $ingredient->name = $request->name;
         $ingredient->ingredient_category_id = $request->ingredient_category_id;
