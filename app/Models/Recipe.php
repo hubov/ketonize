@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class Recipe extends Model
 {
@@ -18,6 +19,15 @@ class Recipe extends Model
     public function tags()
     {
         return $this->belongsToMany(Tag::class);
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+        static::saving(function($recipe) {
+            $recipe->slug = Str::of($recipe->name)->slug('-')->__toString();
+            $recipe->name = Str::of($recipe->name)->ucfirst()->__toString();
+        });
     }
 
     public function tagsIds()

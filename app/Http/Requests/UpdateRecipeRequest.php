@@ -16,7 +16,7 @@ class UpdateRecipeRequest extends StoreRecipeRequest
         $rules = parent::rules();
         $rules['name'] = [
             'required',
-            Rule::unique('recipes')->ignore($this->id)
+            Rule::unique('recipes')->ignore($this->slug, 'slug')
         ];
 
         return $rules;

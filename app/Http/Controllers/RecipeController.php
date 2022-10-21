@@ -18,19 +18,8 @@ class RecipeController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Contracts\View\View
      */
-
-    protected $formValidation = [
-        'ids' => 'required|array|min:1',
-        'ids.*' => 'required|numeric|min:1',
-        'quantity' => 'required|array|min:1',
-        'quantity.*' => 'required|numeric|min:1',
-        'description' => 'required|string',
-        'preparation_time' => 'required|numeric',
-        'cooking_time' => 'required|numeric'
-    ];
-
     public function index()
     {
         $recipes = Recipe::all()
@@ -62,12 +51,8 @@ class RecipeController extends Controller
      */
     public function store(StoreRecipeRequest $request)
     {
-//        $request->validate(array_merge([
-//            'name' => 'required|unique:recipes,name'], $this->formValidation));
-
         $recipe = new Recipe;
         $recipe->name = $request->name;
-        $recipe->slug = Str::of($request->name)->slug('-');
         if ($request->image == NULL) {
             $recipe->image = 'default';
         } else {
@@ -165,7 +150,6 @@ class RecipeController extends Controller
 
         $recipe->setIngredients($request->ids, $request->quantity);
         $recipe->name = $request->name;
-        $recipe->slug = Str::of($request->name)->slug('-');
         if ($request->image == NULL) {
             $recipe->image = 'default';
         } else {
