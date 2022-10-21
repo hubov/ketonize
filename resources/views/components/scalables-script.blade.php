@@ -44,7 +44,7 @@
                     }
 
                     $.ajax({
-                        type: "POST",
+                        type: "PUT",
                         url: "/shopping-list/update",
                         data: formData,
                         dataType: "json",

@@ -150,7 +150,7 @@ class RecipeTest extends TestCase
             'tags' => $tags
         ];
 
-        $request = $this->actingAs($user)->post('/recipe/'.$recipe->slug.'/edit', $requestData);
+        $request = $this->actingAs($user)->put('/recipe/'.$recipe->slug.'/edit', $requestData);
 
         $recipeIs = Recipe::where('slug', 'recipe-1')->first();
 

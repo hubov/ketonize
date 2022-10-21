@@ -101,7 +101,7 @@ class ShoppingListTest extends TestCase
             'amount' => 100
         ]);
 
-        $response = $this->actingAs($user)->post('shopping-list/update', ['id' => $shoppingList->id, 'amount' => 105]);
+        $response = $this->actingAs($user)->put('shopping-list/update', ['id' => $shoppingList->id, 'amount' => 105]);
 
         $response->assertSee('true');
         $shoppingList = $shoppingList->fresh();
@@ -112,14 +112,14 @@ class ShoppingListTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $response = $this->actingAs($user)->post('shopping-list/update', ['id' => 1, 'amount' => 105]);
+        $response = $this->actingAs($user)->put('shopping-list/update', ['id' => 1, 'amount' => 105]);
 
         $response->assertSee('false');
     }
 
     public function test_changing_ingredient_amount_on_shopping_list_by_guest_is_redirected()
     {
-        $response = $this->post('shopping-list/update');
+        $response = $this->put('shopping-list/update');
 
         $response->assertRedirect('/login');
     }
@@ -134,7 +134,7 @@ class ShoppingListTest extends TestCase
             'amount' => 100
         ]);
 
-        $response = $this->actingAs($user)->post('shopping-list/delete', ['id' => $shoppingList->id]);
+        $response = $this->actingAs($user)->delete('shopping-list/delete', ['id' => $shoppingList->id]);
 
         $response->assertSee('true');
         $this->assertModelMissing($shoppingList);
@@ -142,7 +142,7 @@ class ShoppingListTest extends TestCase
 
     public function test_removing_shopping_list_element_by_guest_is_redirected()
     {
-        $response = $this->post('shopping-list/delete');
+        $response = $this->delete('shopping-list/delete');
 
         $response->assertRedirect('/login');
     }

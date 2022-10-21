@@ -25,10 +25,10 @@ Route::get('/', function () {
 
 Route::middleware('role:admin')->group(function() {
     Route::get('/recipe/{slug}/edit', [RecipeController::class, 'edit'])->where('slug', '[0-9a-z\-]+');
-    Route::post('/recipe/{slug}/edit', [RecipeController::class, 'update'])->where('slug', '[0-9a-z\-]+');
-    Route::post('/ingredient/{id}/delete', [IngredientController::class, 'destroy'])->whereNumber('id');
+    Route::put('/recipe/{slug}/edit', [RecipeController::class, 'update'])->where('slug', '[0-9a-z\-]+');
+    Route::delete('/ingredient/{id}/delete', [IngredientController::class, 'destroy'])->whereNumber('id');
     Route::get('/ingredient/{id}', [IngredientController::class, 'edit'])->whereNumber('id');
-    Route::post('/ingredient/{id}', [IngredientController::class, 'update'])->whereNumber('id');
+    Route::put('/ingredient/{id}', [IngredientController::class, 'update'])->whereNumber('id');
     Route::post('/ingredient/new', [IngredientController::class, 'ajaxStore']);
     Route::post('/ingredients/bulk', [IngredientController::class, 'upload']);
     Route::post('/ingredients', [IngredientController::class, 'store']); // old store
@@ -41,8 +41,8 @@ Route::middleware('auth')->group(function() {
         Route::get('/dashboard/generate/{date}', [DietPlanController::class, 'generate'])->where('date', '202[0-9]\-(0[1-9]|1[0-2])\-[0-3][0-9]');
         Route::get('/shopping-list', [ShoppingListController::class, 'index']);
         Route::post('/shopping-list', [ShoppingListController::class, 'update']);
-        Route::post('/shopping-list/update', [ShoppingListController::class, 'edit']);
-        Route::post('/shopping-list/delete', [ShoppingListController::class, 'destroy']);
+        Route::put('/shopping-list/update', [ShoppingListController::class, 'edit']);
+        Route::delete('/shopping-list/delete', [ShoppingListController::class, 'destroy']);
         Route::get('/recipe/{slug}/{modifier}', [RecipeController::class, 'show'])->where('slug', '[0-9a-z\-]+')->where('modifier', '[0-9]+');
         Route::get('/recipe/{slug}', [RecipeController::class, 'show'])->where('slug', '[0-9a-z\-]+');
         Route::get('/recipes', [RecipeController::class, 'index'])->middleware(['auth']);

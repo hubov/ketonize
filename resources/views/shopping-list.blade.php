@@ -47,7 +47,7 @@
 			        			<td>
 			        				<span class="material-icons material-icons-outlined inline-icon scale" direction="down" scale="{{ $scalablesCount }}">
 			        					remove
-			        				</span> 
+			        				</span>
 			        				<span id="scalable{{ $scalablesCount }}" class="scalable" ingredient-id="{{ $element->id }}">
 			        					{{ $element->amount }}
 			        				</span>
@@ -87,7 +87,7 @@
             }
 
             $.ajax({
-                type: "POST",
+                type: "DELETE",
                 url: "/shopping-list/delete",
                 data: formData,
                 dataType: "json",
