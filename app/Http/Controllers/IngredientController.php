@@ -133,11 +133,12 @@ class IngredientController extends Controller
 
     public function search(Request $request)
     {
-        $ingredients = Ingredient::where('name', 'like', '%'.$request->input('name').'%')->limit(5)->get();
+        $ingredients = Ingredient::where('name', 'like', '%'.$request->input('name').'%')->limit(20)->get();
 
         if (count($ingredients) > 0) {
+            $i = 0;
             foreach ($ingredients as $ingredient) {
-                $result[] = [
+                $result[levenshtein($request->input('name'), $ingredient->name)*100+$i] = [
                     'id' => $ingredient->id,
                     'name' => $ingredient->name,
                     'unit' => $ingredient->unit->symbol,
@@ -146,6 +147,7 @@ class IngredientController extends Controller
                     'carbohydrate' => $ingredient->carbohydrate,
                     'kcal' => $ingredient->kcal
                 ];
+                $i++;
             }
         } else {
             $result = [];
