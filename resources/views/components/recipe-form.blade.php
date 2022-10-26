@@ -129,7 +129,7 @@
 </div>
 
 
-<script src="{{ asset('typeahead.bundle.min.js') }}" ></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/typeahead.js/0.11.1/typeahead.bundle.min.js"></script>
 <script type="text/javascript">
     ingredientModal = new bootstrap.Modal(document.getElementById('ingredientModal'));
 
