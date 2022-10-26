@@ -133,6 +133,10 @@
 <script type="text/javascript">
     ingredientModal = new bootstrap.Modal(document.getElementById('ingredientModal'));
 
+    $(document).on("keydown", ":input:not(textarea):not(:submit)", function(event) {
+        return event.key != "Enter";
+    });
+
     $(document).ready(function(){
         var typeahead = $.fn.typeahead;
         var ingredients = [];
