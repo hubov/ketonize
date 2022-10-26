@@ -1,3 +1,12 @@
+@font-face {
+    font-family: Roboto;
+    src: url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
+}
+
+body {
+    font-family: 'Roboto', sans-serif;
+}
+
 nav.navbar {
 	background-color: #ffc93c;
 }
@@ -59,9 +68,24 @@ span.date-navigate {
 	cursor: pointer;
 }
 
+.twitter-typeahead {
+    width: 60%;
+}
 
+.tt-input {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
 
 .tt-suggestion {
-	border: 1px solid black;
+    font-size: .9rem;
+	border: solid 1px #ced4da;
+    border-bottom: 0;
 	background-color: #fff;
+    padding: .375rem .75rem;
+}
+
+.tt-suggestion:last-child {
+    border-bottom: 1px solid #ced4da;
+    border-radius: 0 0 0.375rem 0.375rem;
 }
