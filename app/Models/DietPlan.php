@@ -9,6 +9,8 @@ class DietPlan extends Model
 {
     use HasFactory;
 
+    protected $fillable = ['user_id', 'modifier', 'recipe_id', 'meal', 'date_on'];
+
     public function recipe()
     {
         return $this->belongsTo(Recipe::class);

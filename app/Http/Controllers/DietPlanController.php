@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Jobs\GenerateDietPlan;
+use App\Models\DietMealDivision;
 use App\Models\DietPlan;
+use App\Models\Recipe;
 use App\Models\Unit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -53,7 +55,6 @@ class DietPlanController extends Controller
             'dietCarbohydrate' => $this->user->userDiet->carbohydrate,
             'dietProteinShare' => $this->user->userDiet->diet->protein,
             'dietFatShare' => $this->user->userDiet->diet->fat,
-            'dietCarbohydrateShare' => $this->user->userDiet->diet->carbohydrate
             'dietCarbohydrateShare' => $this->user->userDiet->diet->carbohydrate,
             'mealsTags' => (new DietMealDivision())->mealsTags($this->user->userDiet->meals_count)
         ]);
@@ -135,5 +136,33 @@ class DietPlanController extends Controller
         }
 
         return redirect($url);
+    }
+
+    public function update(Request $request)
+    {
+        $currentMeal = DietPlan::where('user_id', '=', Auth::user()->id)
+                                ->where('date_on', '=', $request->date)
+                                ->where('meal', '=', $request->meal)
+                                ->get();
+
+        $kcalSum = 0;
+        foreach ($currentMeal as $meal) {
+            $oldRecipe = Recipe::select('kcal')->where('id', '=', $meal->recipe_id)->first();
+            $kcalSum += $oldRecipe->kcal * $meal->modifier / 100;
+            $meal->delete();
+        }
+
+        $recipe = Recipe::where('slug', '=', $request->slug)->firstOrFail();
+        $modifier = $kcalSum / $recipe->kcal * 100;
+
+        $newMeal = DietPlan::create([
+            'user_id' => Auth::user()->id,
+            'modifier' => $modifier,
+            'recipe_id' =>  $recipe->id,
+            'meal' => $request->meal,
+            'date_on' => $request->date
+        ]);
+
+        return response()->json($newMeal->id);
     }
 }
