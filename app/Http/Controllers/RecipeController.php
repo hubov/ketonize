@@ -174,4 +174,19 @@ class RecipeController extends Controller
     {
         //
     }
+
+    /**
+     * Search for resources matching given criteria.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function search(Request $request)
+    {
+        $recipes = Recipe::select('name', 'slug', 'image', 'preparation_time', 'total_time', 'protein_ratio', 'fat_ratio', 'carbohydrate_ratio')->whereRelation('tags', function($query) use($request) {
+            return $query->whereIn('tags.id', explode(",", $request->tags));
+        })->get();
+
+        return response()->json($recipes);
+    }
 }
