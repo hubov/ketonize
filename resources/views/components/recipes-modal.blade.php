@@ -1,0 +1,78 @@
+<div id="recipesModal" class="modal" tabindex="-1">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Change recipe</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row mb-3">
+                    <div class="col-4">
+                        <input type="text" class="form-control" id="search-query" name="search-query" placeholder="Recipe name or ingredient">
+                    </div>
+                    <div class="col-3">
+                        <select class="form-select" id="meal-filter" size="1" aria-label="Meal">
+                            <option value="0" selected>No filter</option>
+                            <option value="1">Śniadanie</option>
+                            <option value="2">Obiad</option>
+                            <option value="3">Kolacja</option>
+                            <option value="4">Przekąska</option>
+                        </select>
+                    </div>
+                    <div class="col-1">
+                        <button class="btn btn-primary" id="search-btn">Search</button>
+                    </div>
+                </div>
+                <div id="recipes-found"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    recipesModal = new bootstrap.Modal(document.getElementById('recipesModal'));
+    var recipeUpdateDate;
+    var recipeUpdateMeal;
+
+    $('.change-meal').on('click', function() {
+        var tags = $(this).attr('meal-tags');
+        recipeUpdateDate = $(this).attr('diet-date');
+        recipeUpdateMeal = $(this).attr('diet-meal');
+
+        $.ajax({
+            type: "POST",
+            url: "/recipes/search",
+            data: {'tags': tags, '_token': '{{ csrf_token() }}'},
+            dataType: "json",
+            encode: true,
+        }).done(function (data) {
+            console.log(data);
+            console.log(tags);
+            $('#meal-filter').val(tags).change();
+            var html = '<table class="table"><tr><td>Recipe</td><td>Protein</td><td>Fat</td><td>Carbohydrate</td><td>Preparation time</td><td>Total time</td><td></td></tr>';
+            data.forEach(function(item) {
+                html += '<tr><td><a href="/recipe/' + item.slug +'">' + item.name + '</a></td><td>' + item.protein_ratio + '%</td><td>' + item.fat_ratio + '%</td><td>' + item.carbohydrate_ratio + '%</td><td>' + item.preparation_time + 'min</td><td>' + item.total_time + 'min</td><td><button class="btn btn-success change-recipe" slug="' + item.slug + '">Choose</button></td></tr>';
+            });
+            html += '</table>';
+            $('#recipes-found').html(html);
+        });
+    });
+
+    $('#recipes-found').on('click', '.change-recipe', function() {
+        var slug = $(this).attr('slug');
+
+        console.log(slug);
+
+        $.ajax({
+            type: "POST",
+            url: "/diet/update",
+            data: {'date': recipeUpdateDate, 'meal': recipeUpdateMeal, 'slug': slug, '_token': '{{ csrf_token() }}'},
+            dataType: "json",
+            encode: true,
+        }).done(function (data) {
+            location.reload();
+        });
+    });
+
+
+</script>

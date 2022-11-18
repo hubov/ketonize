@@ -30,14 +30,30 @@
                 <div class="row my-3">
                     <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                         <div class="p-3 bg-white border-b border-gray-200">
+                            <div class="row">
+                                <div class="col-8">
+                                    <a href="
+                                    @if ($meal->modifier != 100)
+                                        /recipe/{{ $meal->recipe->slug }}/{{ $meal->modifier }}
+                                    @else
+                                        /recipe/{{ $meal->recipe->slug }}
+                                    @endif
+                                    "><h2>Meal {{ $meal->meal }}</h2></a>
+                                </div>
+                                <div class="col-4 d-flex flex-row flex-row-reverse">
+                                    @php
+                                        $mealOrder = $meal->meal;
+                                    @endphp
+                                    <button class="btn btn-outline-secondary btn-sm change-meal" data-bs-toggle="modal" data-bs-target="#recipesModal" diet-meal="{{ $mealOrder }}" diet-date="{{ $date }}" meal-tags="{{ $mealsTags->$mealOrder }}"><span class="material-icons material-icons-outlined inline-icon">swap_horiz</span></button>
+                                </div>
+                            </div>
                             <a href="
                             @if ($meal->modifier != 100)
                                 /recipe/{{ $meal->recipe->slug }}/{{ $meal->modifier }}
                             @else
                                 /recipe/{{ $meal->recipe->slug }}
                             @endif
-                            "><h2>Meal {{ $meal->meal }}</h2>
-                            <h3>{{ $meal->recipe->name }}</h3></a>
+                            "><h3>{{ $meal->recipe->name }}</h3></a>
                             Proteins: {{ $meal->recipe->protein }}g ({{ $meal->shareProtein }}%) | Fats: {{ $meal->recipe->fat }}g ({{ $meal->shareFat }}%) | Carbs: {{ $meal->recipe->carbohydrate }}g ({{ $meal->shareCarbohydrate }}%) | Kcal: {{ $meal->recipe->kcal }} | Time: {{ $meal->recipe->total_time }} min
                         </div>
                     </div>
@@ -49,6 +65,8 @@
         @endif
     </div>
 </x-app-layout>
+
+<x-recipes-modal />
 
 <script type="text/javascript">
     $(document).ready(function(){

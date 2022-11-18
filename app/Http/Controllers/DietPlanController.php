@@ -54,6 +54,8 @@ class DietPlanController extends Controller
             'dietProteinShare' => $this->user->userDiet->diet->protein,
             'dietFatShare' => $this->user->userDiet->diet->fat,
             'dietCarbohydrateShare' => $this->user->userDiet->diet->carbohydrate
+            'dietCarbohydrateShare' => $this->user->userDiet->diet->carbohydrate,
+            'mealsTags' => (new DietMealDivision())->mealsTags($this->user->userDiet->meals_count)
         ]);
     }
 

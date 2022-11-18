@@ -13,4 +13,20 @@ class DietMealDivision extends Model
     {
         return $this->belongsTo(Tag::class);
     }
+
+    public function mealsTags($mealsCount)
+    {
+        $list = DietMealDivision::where('meals_count', '=', $mealsCount)->get();
+
+        foreach ($list as $l) {
+            $group[$l->meal_order][] = $l->tag_id;
+        }
+
+        $result = new \stdClass;
+        foreach ($group as $order => $g) {
+            $result->$order = implode(",", $g);
+        }
+
+        return $result;
+    }
 }
