@@ -45,6 +45,8 @@ Route::middleware('auth')->group(function() {
         Route::delete('/shopping-list/delete', [ShoppingListController::class, 'destroy']);
         Route::get('/recipe/{slug}/{modifier}', [RecipeController::class, 'show'])->where('slug', '[0-9a-z\-]+')->where('modifier', '[0-9]+');
         Route::get('/recipe/{slug}', [RecipeController::class, 'show'])->where('slug', '[0-9a-z\-]+');
+        Route::post('/recipes/search', [RecipeController::class, 'search'])->middleware(['auth']);
+        Route::post('/diet/update', [DietPlanController::class, 'update']);
         Route::get('/recipes', [RecipeController::class, 'index'])->middleware(['auth']);
         Route::get('/ingredients', [IngredientController::class, 'index']);
         Route::get('/ingredient-autocomplete', [IngredientController::class, 'search']);
