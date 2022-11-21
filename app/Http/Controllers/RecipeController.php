@@ -8,6 +8,8 @@ use App\Models\IngredientCategory;
 use App\Models\Recipe;
 use App\Models\Tag;
 use App\Models\Unit;
+use App\Services\Interfaces\RecipeSearchInterface;
+use App\Services\RecipeSearchService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\View;
@@ -181,12 +183,18 @@ class RecipeController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function search(Request $request)
+    public function search(Request $request, RecipeSearchInterface $recipeSearch)
     {
-        $recipes = Recipe::select('name', 'slug', 'image', 'preparation_time', 'total_time', 'protein_ratio', 'fat_ratio', 'carbohydrate_ratio')->whereRelation('tags', function($query) use($request) {
-            return $query->whereIn('tags.id', explode(",", $request->tags));
-        })->get();
+        $filters = $request->searchFilter;
+        if ($filters['tags'] != '0') {
+            $filters['tags'] = explode(",", $filters['tags']);
+        } else {
+            $filters['tags'] = NULL;
+        }
 
-        return response()->json($recipes);
+        $recipeSearch = new RecipeSearchService;
+        $recipeSearch->filters($filters);
+
+        return response()->json($recipeSearch->search());
     }
 }
