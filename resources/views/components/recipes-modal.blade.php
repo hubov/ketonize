@@ -58,8 +58,6 @@
             dataType: "json",
             encode: true,
         }).done(function (data) {
-            console.log(data);
-            console.log(tags);
             $('#meal-filter').val(tags).change();
             var html = '<table class="table"><tr><td>Recipe</td><td>Protein</td><td>Fat</td><td>Carbohydrate</td><td>Preparation time</td><td>Total time</td><td></td></tr>';
             if (data.length > 0) {
@@ -77,8 +75,6 @@
 
     $('#recipes-found').on('click', '.change-recipe', function() {
         var slug = $(this).attr('slug');
-
-        console.log(slug);
 
         $.ajax({
             type: "POST",
