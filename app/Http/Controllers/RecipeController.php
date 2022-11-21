@@ -108,15 +108,19 @@ class RecipeController extends Controller
 
         return View::make('recipe.single', [
             'name' => $recipe->name,
+            'image' => $recipe->image,
             'protein' => round($recipe->protein),
             'fat' => round($recipe->fat),
             'carbohydrate' => round($recipe->carbohydrate),
+            'preparationTime' => $recipe->preparation_time,
+            'cookingTime' => $recipe->cooking_time,
             'kcal' => round($recipe->kcal),
             'ingredients' => $recipe->ingredients,
             'description' => $recipe->description,
             'weightTotal' => $weightTotal,
             'admin' => $isAdmin,
-            'categories' => IngredientCategory::orderBy('name')->get()
+            'categories' => IngredientCategory::orderBy('name')->get(),
+            'displayMacros' => true
         ]);
     }
 
