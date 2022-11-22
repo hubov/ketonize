@@ -201,4 +201,22 @@ class RecipeController extends Controller
 
         return response()->json($recipeSearch->search());
     }
+
+    /**
+     * Get raw data of a single recipe.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function showRaw(Request $request)
+    {
+        $recipe = Recipe::where('slug', $request->slug)->with('ingredients.unit')->firstOrFail();
+
+        return response()->json([
+            'name' => $recipe->name,
+            'image' => $recipe->image,
+            'ingredients' => $recipe->ingredients,
+            'description' => $recipe->description
+         ]);
+    }
 }

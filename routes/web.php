@@ -46,6 +46,7 @@ Route::middleware('auth')->group(function() {
         Route::get('/recipe/{slug}/{modifier}', [RecipeController::class, 'show'])->where('slug', '[0-9a-z\-]+')->where('modifier', '[0-9]+');
         Route::get('/recipe/{slug}', [RecipeController::class, 'show'])->where('slug', '[0-9a-z\-]+');
         Route::post('/recipes/search', [RecipeController::class, 'search'])->middleware(['auth']);
+        Route::post('/recipe/search', [RecipeController::class, 'showRaw'])->middleware(['auth']);
         Route::post('/diet/update', [DietPlanController::class, 'update']);
         Route::get('/recipes', [RecipeController::class, 'index'])->middleware(['auth']);
         Route::get('/ingredients', [IngredientController::class, 'index']);

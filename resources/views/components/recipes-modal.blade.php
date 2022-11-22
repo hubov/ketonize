@@ -1,4 +1,4 @@
-<div id="recipesModal" class="modal" tabindex="-1">
+<div id="recipesModal" class="modal"  aria-labelledby="recipesModal" tabindex="-1">
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
             <div class="modal-header">
@@ -62,7 +62,7 @@
             var html = '<table class="table"><tr><td>Recipe</td><td>Protein</td><td>Fat</td><td>Carbohydrate</td><td>Preparation time</td><td>Total time</td><td></td></tr>';
             if (data.length > 0) {
                 data.forEach(function (item) {
-                    html += '<tr><td><a href="#" data-slug="'+ item.slug + '">' + item.name + '</a></td><td>' + item.protein_ratio + '%</td><td>' + item.fat_ratio + '%</td><td>' + item.carbohydrate_ratio + '%</td><td>' + item.preparation_time + 'min</td><td>' + item.total_time + 'min</td><td><button class="btn btn-success change-recipe" slug="' + item.slug + '">Choose</button></td></tr>';
+                    html += '<tr><td><a href="#" class="openPreview" data-bs-target="#recipePreview" data-bs-toggle="modal" data-slug="'+ item.slug + '">' + item.name + '</a></td><td>' + item.protein_ratio + '%</td><td>' + item.fat_ratio + '%</td><td>' + item.carbohydrate_ratio + '%</td><td>' + item.preparation_time + 'min</td><td>' + item.total_time + 'min</td><td><button class="btn btn-success change-recipe" slug="' + item.slug + '">Choose</button></td></tr>';
                 });
                 html += '</table>';
             } else {
@@ -86,6 +86,6 @@
             location.reload();
         });
     });
-
-
 </script>
+
+<x-recipe-modal-preview />
