@@ -140,17 +140,7 @@ class DietPlanController extends Controller
 
     public function update(Request $request)
     {
-        $currentMeal = DietPlan::where('user_id', '=', Auth::user()->id)
-                                ->where('date_on', '=', $request->date)
-                                ->where('meal', '=', $request->meal)
-                                ->get();
-
-        $kcalSum = 0;
-        foreach ($currentMeal as $meal) {
-            $oldRecipe = Recipe::select('kcal')->where('id', '=', $meal->recipe_id)->first();
-            $kcalSum += $oldRecipe->kcal * $meal->modifier / 100;
-            $meal->delete();
-        }
+        $kcalSum = DietPlan::
 
         $recipe = Recipe::where('slug', '=', $request->slug)->firstOrFail();
         $modifier = $kcalSum / $recipe->kcal * 100;

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
 class DietPlan extends Model
 {
@@ -35,5 +36,22 @@ class DietPlan extends Model
         $this->shareProtein = round($this->recipe->protein / $macros * 100);
         $this->shareFat = round($this->recipe->fat / $macros * 100);
         $this->shareCarbohydrate = round($this->recipe->carbohydrate / $macros * 100);
+    }
+
+    public function deleteCurrentMeal($date, $meal)
+    {
+        $currentMeal = DietPlan::where('user_id', '=', Auth::user()->id)
+            ->where('date_on', '=', $date)
+            ->where('meal', '=', $meal)
+            ->get();
+
+        $kcalSum = 0;
+        foreach ($currentMeal as $meal) {
+            $oldRecipe = Recipe::select('kcal')->where('id', '=', $meal->recipe_id)->first();
+            $kcalSum += $oldRecipe->kcal * $meal->modifier / 100;
+            $meal->delete();
+        }
+
+        return $kcalSum;
     }
 }

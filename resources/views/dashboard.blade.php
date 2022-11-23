@@ -44,7 +44,7 @@
                                     @php
                                         $mealOrder = $meal->meal;
                                     @endphp
-                                    <button class="btn btn-outline-secondary btn-sm change-meal" data-bs-toggle="modal" data-bs-target="#recipesModal" diet-meal="{{ $mealOrder }}" diet-date="{{ $date }}" meal-tags="{{ $mealsTags->$mealOrder }}"><span class="material-icons material-icons-outlined inline-icon">swap_horiz</span></button>
+                                    <button class="btn btn-outline-secondary btn-sm change-meal" data-bs-toggle="modal" data-bs-target="#recipesModal" diet-meal="{{ $mealOrder }}" diet-date="{{ $date }}" meal-tags="{{ $mealsTags[$mealOrder] }}"><span class="material-icons material-icons-outlined inline-icon">swap_horiz</span></button>
                                 </div>
                             </div>
                             <a href="

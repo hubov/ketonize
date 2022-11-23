@@ -22,9 +22,8 @@ class DietMealDivision extends Model
             $group[$l->meal_order][] = $l->tag_id;
         }
 
-        $result = new \stdClass;
         foreach ($group as $order => $g) {
-            $result->$order = implode(",", $g);
+            $result[$order] = implode(",", $g);
         }
 
         return $result;
