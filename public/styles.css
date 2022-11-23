@@ -21,6 +21,16 @@ a {
 	border-color: #155263;
 }
 
+.btn-outline-primary {
+	border-color: #155263;
+	color: #155263;
+}
+
+.btn-outline-primary:hover {
+	background-color: #155263;
+	border-color: #155263;
+}
+
 .form-control:read-only {
 	background-color: #e9ecef;
 	color: #6c757d;
@@ -33,6 +43,7 @@ a {
 
 .macros {
 	padding-bottom: 20px;
+    text-align: center;
 }
 
 .macros span.label {
@@ -57,7 +68,10 @@ span.date-navigate {
 
 .inline-icon {
    vertical-align: middle;
-   /*font-size: 18px !important;*/
+}
+
+.pointer {
+    cursor: pointer;
 }
 
 .scale {
@@ -88,4 +102,29 @@ span.date-navigate {
 .tt-suggestion:last-child {
     border-bottom: 1px solid #ced4da;
     border-radius: 0 0 0.375rem 0.375rem;
+}
+
+.macros .vr {
+    width: 1px;
+    padding: 0;
+}
+
+.bold {
+    font-weight: bold;
+}
+
+hr.yellow {
+    border-color: #ffc93c;
+}
+
+.yellow {
+    color: #ffc93c;
+}
+
+.teal {
+    color: #155263;
+}
+
+.table tr td {
+    vertical-align: middle;
 }
