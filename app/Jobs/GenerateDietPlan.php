@@ -20,7 +20,12 @@ class GenerateDietPlan implements ShouldQueue
      *
      * @return void
      */
-    public function __construct($date = NULL)
+    public function __construct()
+    {
+        $this->setDate();
+    }
+
+    public function setDate($date = NULL)
     {
         if  (is_null($date)) {
             $this->date = ((new \DateTime())->modify('+28 days'))->format('Y-m-d');

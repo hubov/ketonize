@@ -124,9 +124,9 @@ class DietPlanController extends Controller
         ];
     }
 
-    public function generate(Request $request, $date)
+    public function generate(Request $request, GenerateDietPlan $plan, $date)
     {
-        $plan = new GenerateDietPlan($date);
+        $plan->setDate($date);
         $plan->handle(Auth::user());
 
         if ($date == date('Y-m-d')) {
