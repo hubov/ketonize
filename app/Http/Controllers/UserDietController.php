@@ -11,8 +11,15 @@ use Illuminate\Support\Facades\Auth;
 
 class UserDietController extends Controller
 {
-    public function create(Profile $profile, $dietId, $mealsCount) {
-        $kcalTotal = $this->kcal($profile);
+    protected $profile;
+
+    public function __construct(Profile $profile)
+    {
+        $this->profile = $profile;
+    }
+
+    public function create($dietId, $mealsCount) {
+        $kcalTotal = $this->kcal($this->profile);
 
         $diet = Diet::find($dietId);
         $userDiet = new UserDiet;
@@ -28,8 +35,8 @@ class UserDietController extends Controller
         $this->newDietPlan();
     }
 
-    public function update(Profile $profile, $dietId, $mealsCount) {
-        $kcalTotal = $this->kcal($profile);
+    public function update($dietId, $mealsCount) {
+        $kcalTotal = $this->kcal($this->profile);
 
         $diet = Diet::find($dietId);
         $userDiet = UserDiet::where('user_id', Auth::user()->id)->first();
@@ -44,16 +51,16 @@ class UserDietController extends Controller
         $this->newDietPlan();
     }
 
-    protected function kcal(Profile $profile) {
-        switch ($profile->gender)
+    protected function kcal() {
+        switch ($this->profile->gender)
         {
             case 1: { $genderModifier = -161; break; }
             case 2: { $genderModifier = 5; break; }
         }
 
-        $kcalBasic = round(9.99 * $profile->weight + 6.25 * $profile->height - 4.92 * $profile->age() + $genderModifier);
+        $kcalBasic = round(9.99 * $this->profile->weight + 6.25 * $this->profile->height - 4.92 * $this->profile->age() + $genderModifier);
 
-        switch ($profile->basic_activity)
+        switch ($this->profile->basic_activity)
         {
             case 1: { $basicActivityModifier = 1.2; break; }
             case 2: { $basicActivityModifier = 1.3; break; }
@@ -61,7 +68,7 @@ class UserDietController extends Controller
             case 4: { $basicActivityModifier = 1.7; break; }
         }
 
-        switch ($profile->sport_activity)
+        switch ($this->profile->sport_activity)
         {
             case 1: { $sportActivityModifier = 1; break; }
             case 2: { $sportActivityModifier = 1.1; break; }
@@ -71,7 +78,7 @@ class UserDietController extends Controller
 
         $kcalTotal = $kcalBasic * $basicActivityModifier * $sportActivityModifier;
 
-        switch ($profile->diet_target)
+        switch ($this->profile->diet_target)
         {
             case 1: { $kcalTotal *= 0.9; break; }
             case 3: { $kcalTotal *= 1.1; break; }

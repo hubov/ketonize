@@ -55,7 +55,7 @@ class ProfileController extends Controller
         $profile->birthday = $request->birthday;
         $profile->save();
 
-        (new UserDietController)->create($profile, $request->diet_type, $request->meals_count);
+        (new UserDietController($profile))->create($request->diet_type, $request->meals_count);
 
         return response()->json(TRUE);
     }
@@ -113,7 +113,7 @@ class ProfileController extends Controller
         $profile->birthday = $request->birthday;
         $profile->save();
 
-        (new UserDietController)->update($profile, $request->diet_type, $request->meals_count);
+        (new UserDietController($profile))->update($request->diet_type, $request->meals_count);
 
         return response()->json(TRUE);
     }
