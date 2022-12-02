@@ -140,9 +140,9 @@ class DietPlanController extends Controller
 
     public function update(Request $request)
     {
-        $kcalSum = DietPlan::
-
         $recipe = Recipe::where('slug', '=', $request->slug)->firstOrFail();
+
+        $kcalSum = DietPlan::deleteCurrentMeal($request->date, $request->meal);
         $modifier = $kcalSum / $recipe->kcal * 100;
 
         $newMeal = DietPlan::create([
