@@ -14,16 +14,31 @@ class DietMealDivision extends Model
         return $this->belongsTo(Tag::class);
     }
 
-    public function mealsTags($mealsCount)
+    public function mealEnergyDivisions()
     {
-        $list = DietMealDivision::where('meals_count', '=', $mealsCount)->get();
+        return $this->hasMany(MealEnergyDivision::class);
+    }
 
-        foreach ($list as $l) {
-            $group[$l->meal_order][] = $l->tag_id;
+    public function getMeals()
+    {
+        return $this->mealEnergyDivisions();
+    }
+
+    public function mealsTags()
+    {
+        $list = $this->getMeals;
+        $result = [];
+
+        if (isset($list)) {
+            foreach ($list as $l) {
+                $group[$l->meal_order][] = $l->tag_id;
+            }
         }
 
-        foreach ($group as $order => $g) {
-            $result[$order] = implode(",", $g);
+        if (isset($group)) {
+            foreach ($group as $order => $g) {
+                $result[$order] = implode(",", $g);
+            }
         }
 
         return $result;
