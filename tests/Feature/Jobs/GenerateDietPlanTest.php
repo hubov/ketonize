@@ -21,13 +21,10 @@ class GenerateDietPlanTest extends TestCase
     public function test_handle_with_a_date_and_a_user_given()
     {
         $user = User::factory()->create();
-        Tag::factory()->create(['id' => 1]);
-        Tag::factory()->create(['id' => 2]);
-        Tag::factory()->create(['id' => 3]);
-        Tag::factory()->create(['id' => 4]);
+        $tags = $user->userDiet->getMealsTags();
         $recipes = Recipe::factory()->has(Tag::factory())->count(4)->create();
         foreach ($recipes as $recipe) {
-            $recipe->tags()->attach([1, 2, 3, 4]);
+            $recipe->tags()->attach($tags);
         }
         $generateDietPlan = new GenerateDietPlan('2022-09-30');
 
@@ -38,14 +35,14 @@ class GenerateDietPlanTest extends TestCase
 
     public function test_handle_with_a_date_but_without_a_user_given()
     {
-        $user = User::factory()->count(2)->create();
-        Tag::factory()->create(['id' => 1]);
-        Tag::factory()->create(['id' => 2]);
-        Tag::factory()->create(['id' => 3]);
-        Tag::factory()->create(['id' => 4]);
+        $users = User::factory()->count(2)->create();
+        $tags = [];
+        foreach ($users as $user) {
+            $tags = array_merge($tags, $user->userDiet->getMealsTags());
+        }
         $recipes = Recipe::factory()->has(Tag::factory())->count(4)->create();
         foreach ($recipes as $recipe) {
-            $recipe->tags()->attach([1, 2, 3, 4]);
+            $recipe->tags()->attach($tags);
         }
         $generateDietPlan = new GenerateDietPlan('2022-09-30');
 
@@ -57,13 +54,10 @@ class GenerateDietPlanTest extends TestCase
     public function test_handle_without_a_date_but_with_a_user_given()
     {
         $user = User::factory()->create();
-        Tag::factory()->create(['id' => 1]);
-        Tag::factory()->create(['id' => 2]);
-        Tag::factory()->create(['id' => 3]);
-        Tag::factory()->create(['id' => 4]);
+        $tags = $user->userDiet->getMealsTags();
         $recipes = Recipe::factory()->has(Tag::factory())->count(4)->create();
         foreach ($recipes as $recipe) {
-            $recipe->tags()->attach([1, 2, 3, 4]);
+            $recipe->tags()->attach($tags);
         }
         $generateDietPlan = new GenerateDietPlan();
 
@@ -74,14 +68,14 @@ class GenerateDietPlanTest extends TestCase
 
     public function test_handle_without_a_date_and_without_a_user_given()
     {
-        $user = User::factory()->count(2)->create();
-        Tag::factory()->create(['id' => 1]);
-        Tag::factory()->create(['id' => 2]);
-        Tag::factory()->create(['id' => 3]);
-        Tag::factory()->create(['id' => 4]);
+        $users = User::factory()->count(2)->create();
+        $tags = [];
+        foreach ($users as $user) {
+            $tags = array_merge($tags, $user->userDiet->getMealsTags());
+        }
         $recipes = Recipe::factory()->has(Tag::factory())->count(4)->create();
         foreach ($recipes as $recipe) {
-            $recipe->tags()->attach([1, 2, 3, 4]);
+            $recipe->tags()->attach($tags);
         }
         $generateDietPlan = new GenerateDietPlan();
 

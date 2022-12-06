@@ -32,6 +32,11 @@ class DietPlanController extends Controller
         $this->user = Auth::user();
         $this->setDate($date);
         $this->sumUp();
+        $dietMealDivision = $this->user->userDiet->dietMealDivision();
+        $mealsTags = [];
+        if (isset($dietMealDivision)) {
+            $mealsTags = $dietMealDivision->mealsTags();
+        }
 
         return View::make('dashboard', [
             'date' => $this->date,
@@ -56,7 +61,7 @@ class DietPlanController extends Controller
             'dietProteinShare' => $this->user->userDiet->diet->protein,
             'dietFatShare' => $this->user->userDiet->diet->fat,
             'dietCarbohydrateShare' => $this->user->userDiet->diet->carbohydrate,
-            'mealsTags' => (new DietMealDivision())->mealsTags($this->user->userDiet->meals_count)
+            'mealsTags' => $mealsTags
         ]);
     }
 

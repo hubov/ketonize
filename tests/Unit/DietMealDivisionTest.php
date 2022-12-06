@@ -21,9 +21,9 @@ class DietMealDivisionTest extends TestCase
 
     public function test_getting_mealsTags_by_meal_count()
     {
-        DietMealDivision::factory()->count(4)->create();
+        $dietMealDivision = DietMealDivision::factory()->create(['meals_count' => 4]);
 
-        $tags = (new DietMealDivision())->mealsTags(4);
+        $tags = $dietMealDivision->mealsTags();
 
         $this->assertIsArray($tags);
         $this->assertCount(4, $tags);

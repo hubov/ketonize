@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\User;
 
+use App\Models\DietMealDivision;
 use App\Models\DietPlan;
 use App\Models\Recipe;
 use App\Models\Tag;
@@ -45,10 +46,11 @@ class DietPlanTest extends TestCase
     public function test_diet_plan_with_meals()
     {
         $user = User::factory()->create();
-        $meals = DietPlan::factory()->count(4)->create([
+        DietPlan::factory()->count(4)->create([
             'user_id' => $user,
             'date_on' => '2022-09-29'
         ]);
+
         $response = $this->actingAs($user)->get('/dashboard/2022-09-29');
 
         $response->assertStatus(200);
@@ -57,13 +59,10 @@ class DietPlanTest extends TestCase
     public function test_diet_plan_generate_user_signed_in()
     {
         $user = User::factory()->create();
-        Tag::factory()->create(['id' => 1]);
-        Tag::factory()->create(['id' => 2]);
-        Tag::factory()->create(['id' => 3]);
-        Tag::factory()->create(['id' => 4]);
+        $tags = $user->userDiet->getMealsTags();
         $recipes = Recipe::factory()->has(Tag::factory())->count(4)->create();
         foreach ($recipes as $recipe) {
-            $recipe->tags()->attach([1, 2, 3, 4]);
+            $recipe->tags()->attach($tags);
         }
 
         $response = $this->actingAs($user)->get('/dashboard/generate/2022-09-30');
