@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Jobs\GenerateDietPlan;
-use App\Models\DietMealDivision;
 use App\Models\DietPlan;
 use App\Models\Recipe;
 use App\Models\Unit;
@@ -33,10 +32,7 @@ class DietPlanController extends Controller
         $this->setDate($date);
         $this->sumUp();
         $dietMealDivision = $this->user->userDiet->dietMealDivision();
-        $mealsTags = [];
-        if (isset($dietMealDivision)) {
-            $mealsTags = $dietMealDivision->mealsTags();
-        }
+        $mealsTags = (isset($dietMealDivision)) ? $dietMealDivision->mealsTags() : [];
 
         return View::make('dashboard', [
             'date' => $this->date,
@@ -67,11 +63,7 @@ class DietPlanController extends Controller
 
     public function setDate($date)
     {
-        if ($date === NULL) {
-            $this->date = date("Y-m-d");
-        } else {
-            $this->date = $date;
-        }
+        $this->date = ($date === NULL) ? date("Y-m-d") : $date;
 
         $this->dates();
     }
@@ -134,11 +126,7 @@ class DietPlanController extends Controller
         $plan->setDate($date);
         $plan->handle(Auth::user());
 
-        if ($date == date('Y-m-d')) {
-            $url = '/dashboard';
-        } else {
-            $url = '/dashboard/' . $date;
-        }
+        $url = ($date == date('Y-m-d')) ? '/dashboard' : '/dashboard/' . $date;
 
         return redirect($url);
     }
