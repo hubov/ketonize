@@ -42,7 +42,7 @@ class DietPlanControllerTest extends TestCase
                 'carbohydrate' => 100,
                 'kcal' => 1000,
                 'preparation_time' => 60,
-                'total_time' => 120
+                'cooking_time' => 60
             ]))->create([
                 'modifier' => 50
             ]),
@@ -52,7 +52,7 @@ class DietPlanControllerTest extends TestCase
                 'carbohydrate' => 100,
                 'kcal' => 1500,
                 'preparation_time' => 20,
-                'total_time' => 20
+                'cooking_time' => 0
             ]))->create([
                 'modifier' => 100
             ])
