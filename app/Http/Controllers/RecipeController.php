@@ -83,10 +83,7 @@ class RecipeController extends Controller
 
         $weightTotal = 0;
         foreach  ($recipe->ingredients as $ingredient) {
-            if ($modifier !== NULL) {
-                $ingredient->pivot->amount = round($ingredient->pivot->amount * $modifier / 100);
-            }
-
+            $ingredient->pivot->amount = ($modifier !== NULL) ? round($ingredient->pivot->amount * $modifier / 100) : 0;
             $weightTotal += $ingredient->pivot->amount;
         }
 
