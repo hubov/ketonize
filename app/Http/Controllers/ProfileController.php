@@ -2,25 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreProfileRequest;
+use App\Http\Requests\UpdateProfileRequest;
 use App\Models\Profile;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\View;
 
 class ProfileController extends Controller
 {
-    protected $formValidation = [
-        'diet_type' => 'required|integer',
-        'diet_target' => 'required|integer',
-        'meals_count' => 'required|integer|min:3|max:5',
-        'gender' => 'required|integer',
-        'birthday' => 'required|date',
-        'weight' => 'required|integer|min:45|max:250',
-        'height' => 'required|integer|min:120|max:230',
-        'target_weight' => 'required|integer|min:45|max:250',
-        'basic_activity' => 'required|integer',
-        'sport_activity' => 'required|integer'];
-
     /**
      * Show the form for creating a new resource.
      *
@@ -37,10 +26,8 @@ class ProfileController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function store(Request $request)
+    public function store(StoreProfileRequest $request)
     {
-        $request->validate($this->formValidation);
-
         $user = Auth::user();
 
         $profile = new Profile;
@@ -96,10 +83,8 @@ class ProfileController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\JsonResponse
      */
-    public function update(Request $request)
+    public function update(UpdateProfileRequest $request)
     {
-        $request->validate($this->formValidation);
-
         $user = Auth::user();
 
         $profile = $user->profile;
