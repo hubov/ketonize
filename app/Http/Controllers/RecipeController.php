@@ -52,19 +52,13 @@ class RecipeController extends Controller
      */
     public function store(StoreRecipeRequest $request)
     {
-        $recipe = new Recipe;
-        $recipe->name = $request->name;
-        if ($request->image == NULL) {
-            $recipe->image = 'default';
-        } else {
-            $recipe->image = $request->image;
-        }
-
-        $recipe->description = $request->description;
-        $recipe->preparation_time = $request->preparation_time;
-        $recipe->cooking_time = $request->cooking_time;
-        $recipe->total_time = $request->preparation_time + $request->cooking_time;
-        $recipe->save();
+        $recipe = Recipe::create([
+            'name' => $request->name,
+            'image' => ($request->image == NULL) ? 'default' : $request->image,
+            'description' => $request->description,
+            'preparation_time' => $request->preparation_time,
+            'cooking_time' => $request->cooking_time
+        ]);
 
         $recipe->setIngredients($request->ids, $request->quantity);
 
@@ -154,16 +148,13 @@ class RecipeController extends Controller
         $recipe = Recipe::where('slug', $slug)->firstOrFail();
 
         $recipe->setIngredients($request->ids, $request->quantity);
-        $recipe->name = $request->name;
-        if ($request->image == NULL) {
-            $recipe->image = 'default';
-        } else {
-            $recipe->image = $request->image;
-        }
-        $recipe->description = $request->description;
-        $recipe->preparation_time = $request->preparation_time;
-        $recipe->cooking_time = $request->cooking_time;
-        $recipe->total_time = $request->preparation_time + $request->cooking_time;
+        $recipe->fill([
+            'name' => $request->name,
+            'image' => ($request->image == NULL) ? 'default' : $request->image,
+            'description' => $request->description,
+            'preparation_time' => $request->preparation_time,
+            'cooking_time' => $request->cooking_time
+        ]);
         $recipe->save();
         $recipe->tags()->sync($request->tags);
 

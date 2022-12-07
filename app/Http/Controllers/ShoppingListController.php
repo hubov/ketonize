@@ -58,11 +58,11 @@ class ShoppingListController extends Controller
         ShoppingList::where('user_id', Auth::user()->id)->delete();
 
         foreach ($ingredients as $id => $ingredient) {
-            $newList = new ShoppingList;
-            $newList->user_id = Auth::user()->id;
-            $newList->ingredient_id = $id;
-            $newList->amount = $ingredient['amount'];
-            $newList->save();
+            ShoppingList::create([
+                'user_id' => Auth::user()->id,
+                'ingredient_id' => $id,
+                'amount' => $ingredient['amount']
+            ]);
         }
 
         return redirect('/shopping-list');

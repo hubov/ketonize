@@ -98,13 +98,15 @@ class IngredientController extends Controller
     public function update(UpdateIngredientRequest $request, $id)
     {
         $ingredient = Ingredient::find($id);
-        $ingredient->name = $request->name;
-        $ingredient->ingredient_category_id = $request->ingredient_category_id;
-        $ingredient->protein = $request->protein;
-        $ingredient->fat = $request->fat;
-        $ingredient->carbohydrate = $request->carbohydrate;
-        $ingredient->kcal = $request->kcal;
-        $ingredient->unit_id = $request->unit_id;
+        $ingredient->fill([
+            'name' => $request->name,
+            'ingredient_category_id' => $request->ingredient_category_id,
+            'protein' => $request->protein,
+            'fat' => $request->fat,
+            'carbohydrate' => $request->carbohydrate,
+            'kcal' => $request->kcal,
+            'unit_id' => $request->unit_id
+        ]);
         $ingredient->save();
 
         return redirect('/ingredient/'.$ingredient->id);
@@ -163,9 +165,6 @@ class IngredientController extends Controller
             $head = fgetcsv($file, 4096, ',', '"');
 
             while (($data = fgetcsv($file, 4096, ",")) !== FALSE) {
-                $ingredient = new Ingredient;
-                $ingredient->name = $data[0];
-
                 for ($i = 3; $i <= 33; $i++) {
                     if ($data[$i][0] == '<') {
                         $data[$i] = substr($data[$i], 1);
@@ -176,14 +175,16 @@ class IngredientController extends Controller
                     }
                 }
 
-                $ingredient->protein = $data[13];
-                $ingredient->fat = $data[4];
-                $ingredient->carbohydrate = $data[9];
-                $ingredient->kcal = $data[3];
                 $category = IngredientCategory::where('name', $data[2])->first();
-                $ingredient->ingredient_category_id = $category->id;
-                $ingredient->unit_id = $data[1];
-                $ingredient->save();
+                $ingredient = Ingredient::create([
+                    'name' => $data[0],
+                    'protein' => $data[13],
+                    'fat' => $data[4],
+                    'carbohydrate' => $data[9],
+                    'kcal' => $data[3],
+                    'ingredient_category_id' => $category->id,
+                    'unit_id' => $data[1]
+                ]);
 
                 unset($data[0]);
                 unset($data[1]);

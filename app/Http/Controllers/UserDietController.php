@@ -22,15 +22,15 @@ class UserDietController extends Controller
         $kcalTotal = $this->kcal($this->profile);
 
         $diet = Diet::find($dietId);
-        $userDiet = new UserDiet;
-        $userDiet->user_id = Auth::user()->id;
-        $userDiet->diet_id = $diet->id;
-        $userDiet->meals_count = $mealsCount;
-        $userDiet->kcal = $kcalTotal;
-        $userDiet->protein = round(($kcalTotal * $diet->protein / 100) / 4);
-        $userDiet->fat = round(($kcalTotal * $diet->fat / 100) / 9);
-        $userDiet->carbohydrate = round(($kcalTotal * $diet->carbohydrate / 100) / 4);
-        $userDiet->save();
+        UserDiet::create([
+            'user_id' => Auth::user()->id,
+            'diet_id' => $diet->id,
+            'meals_count' => $mealsCount,
+            'kcal' => $kcalTotal,
+            'protein' => round(($kcalTotal * $diet->protein / 100) / 4),
+            'fat' => round(($kcalTotal * $diet->fat / 100) / 9),
+            'carbohydrate' => round(($kcalTotal * $diet->carbohydrate / 100) / 4)
+        ]);
 
         $this->newDietPlan();
     }
@@ -40,12 +40,14 @@ class UserDietController extends Controller
 
         $diet = Diet::find($dietId);
         $userDiet = UserDiet::where('user_id', Auth::user()->id)->first();
-        $userDiet->diet_id = $diet->id;
-        $userDiet->meals_count = $mealsCount;
-        $userDiet->kcal = $kcalTotal;
-        $userDiet->protein = round(($kcalTotal * $diet->protein / 100) / 4);
-        $userDiet->fat = round(($kcalTotal * $diet->fat / 100) / 9);
-        $userDiet->carbohydrate = round(($kcalTotal * $diet->carbohydrate / 100) / 4);
+        $userDiet->fill([
+            'diet_id' => $diet->id,
+            'meals_count' => $mealsCount,
+            'kcal' => $kcalTotal,
+            'protein' => round(($kcalTotal * $diet->protein / 100) / 4),
+            'fat' => round(($kcalTotal * $diet->fat / 100) / 9),
+            'carbohydrate' => round(($kcalTotal * $diet->carbohydrate / 100) / 4)
+        ]);
         $userDiet->save();
 
         $this->newDietPlan();
