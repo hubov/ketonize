@@ -5,6 +5,7 @@ namespace Tests\Unit;
 use App\Http\Controllers\DietPlanController;
 use App\Models\DietPlan;
 use App\Models\Recipe;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -30,6 +31,18 @@ class DietPlanControllerTest extends TestCase
             'prev' => $dietPlanController->dates['prev'],
             'next' => $dietPlanController->dates['next']
         ]);
+    }
+
+    public function test_getMeals_method()
+    {
+        $dietPlan = DietPlan::factory()->create();
+        $dietPlanController = new DietPlanController();
+        $this->actingAs(User::find($dietPlan->user_id));
+        $dietPlanController->setDate($dietPlan->date_on);
+
+        $dietPlanController->getMeals();
+
+        $this->assertCount(1, $dietPlanController->meals);
     }
 
     public function test_sumUp_method()
