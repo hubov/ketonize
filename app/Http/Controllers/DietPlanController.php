@@ -77,10 +77,7 @@ class DietPlanController extends Controller
 
     public function getMeals()
     {
-        $this->meals = DietPlan::where('user_id', $this->user->id)
-            ->where('date_on', $this->date)
-            ->orderBy('meal')
-            ->get();
+        $this->meals = (new DietPlan)->getCurrentMeal($this->date);
     }
 
     public function sumUp()

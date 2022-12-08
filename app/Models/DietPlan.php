@@ -38,12 +38,14 @@ class DietPlan extends Model
         $this->shareCarbohydrate = round($this->recipe->carbohydrate / $macros * 100);
     }
 
-    public function getCurrentMeal($date, $meal)
+    public function getCurrentMeal($date, $meal = NULL)
     {
-        return DietPlan::where('user_id', '=', Auth::user()->id)
-            ->where('date_on', '=', $date)
-            ->where('meal', '=', $meal)
-            ->get();
+        $dietPlan = DietPlan::where('user_id', '=', Auth::user()->id)
+            ->where('date_on', '=', $date);
+
+        $dietPlan = ($meal != NULL) ? $dietPlan->where('meal', '=', $meal) : $dietPlan;
+
+        return $dietPlan->get();
     }
 
     public function deleteCurrentMeal($date, $meal)
