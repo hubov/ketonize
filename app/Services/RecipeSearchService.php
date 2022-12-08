@@ -20,8 +20,6 @@ class RecipeSearchService implements RecipeSearchInterface
         $this->recipes = Recipe::select('name', 'slug', 'image', 'preparation_time', 'total_time', 'protein_ratio', 'fat_ratio', 'carbohydrate_ratio');
         $this->applyFilters();
 
-//        dd($this);
-
         return $this->recipes->get();
     }
 
