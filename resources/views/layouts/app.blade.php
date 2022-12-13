@@ -56,7 +56,7 @@
                             @endif
                         @else
                             <li class="nav-item">
-                                <a class="nav-link" href="/dashboard">Diet plan</a>
+                                <a class="btn btn-outline-primary me-2" href="/dashboard">Diet plan</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" href="/shopping-list">Shopping list</a>

@@ -166,4 +166,75 @@ class RecipeTest extends TestCase
         $request->assertLocation('/recipe/recipe-1');
         $this->assertObjectEquals($recipeExpected, $recipeIs);
     }
+
+    public function test_search_as_guest()
+    {
+        Recipe::factory()->create(['name' => 'aaa']);
+        Recipe::factory()->create(['name' => 'bbb']);
+        $query = [
+            'searchFilter' => [
+                'tags' => 0,
+                'query' => 'a'
+            ]
+        ];
+
+        $response = $this->post('/recipes/search', $query);
+
+        $response->assertRedirectContains('/login');
+    }
+
+    public function test_search_by_query_as_signed_in_user()
+    {
+        $user = User::factory()->create();
+        Recipe::factory()->create(['name' => 'aaa']);
+        Recipe::factory()->create(['name' => 'bbb']);
+        $query = [
+            'searchFilter' => [
+                'tags' => 0,
+                'query' => 'a'
+            ]
+        ];
+
+        $response = $this->actingAs($user)->post('/recipes/search', $query);
+
+        $response->assertStatus(200);
+        $response->assertJsonFragment(['aaa']);
+    }
+
+    public function test_search_by_tag_as_signed_in_user()
+    {
+        $user = User::factory()->create();
+        $recipe = Recipe::factory()->has(Tag::factory())->create(['name' => 'aaa']);
+        Recipe::factory()->has(Tag::factory())->create(['name' => 'bbb']);
+        $query = [
+            'searchFilter' => [
+                'tags' => $recipe->tags[0]->id
+            ]
+        ];
+
+        $response = $this->actingAs($user)->post('/recipes/search', $query);
+
+        $response->assertStatus(200);
+        $response->assertJsonFragment(['aaa']);
+    }
+
+    public function test_returning_raw_recipe_data_as_guest()
+    {
+        $recipe = Recipe::factory()->create();
+
+        $response = $this->post('/recipe/search', ['slug' => $recipe->slug]);
+
+        $response->assertRedirectContains('/login');
+    }
+
+    public function test_returning_raw_recipe_data_as_user()
+    {
+        $user = User::factory()->create();
+        $recipe = Recipe::factory()->create();
+
+        $response = $this->actingAs($user)->post('/recipe/search', ['slug' => $recipe->slug]);
+
+        $response->assertStatus(200);
+        $response->assertJsonFragment([$recipe->name]);
+    }
 }

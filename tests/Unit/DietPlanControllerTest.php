@@ -5,6 +5,7 @@ namespace Tests\Unit;
 use App\Http\Controllers\DietPlanController;
 use App\Models\DietPlan;
 use App\Models\Recipe;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -32,6 +33,18 @@ class DietPlanControllerTest extends TestCase
         ]);
     }
 
+    public function test_getMeals_method()
+    {
+        $dietPlan = DietPlan::factory()->create();
+        $dietPlanController = new DietPlanController();
+        $this->actingAs(User::find($dietPlan->user_id));
+        $dietPlanController->setDate($dietPlan->date_on);
+
+        $dietPlanController->getMeals();
+
+        $this->assertCount(1, $dietPlanController->meals);
+    }
+
     public function test_sumUp_method()
     {
         $dietPlanController = new DietPlanController;
@@ -42,7 +55,7 @@ class DietPlanControllerTest extends TestCase
                 'carbohydrate' => 100,
                 'kcal' => 1000,
                 'preparation_time' => 60,
-                'total_time' => 120
+                'cooking_time' => 60
             ]))->create([
                 'modifier' => 50
             ]),
@@ -52,7 +65,7 @@ class DietPlanControllerTest extends TestCase
                 'carbohydrate' => 100,
                 'kcal' => 1500,
                 'preparation_time' => 20,
-                'total_time' => 20
+                'cooking_time' => 0
             ]))->create([
                 'modifier' => 100
             ])

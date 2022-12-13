@@ -20,7 +20,12 @@ class GenerateDietPlan implements ShouldQueue
      *
      * @return void
      */
-    public function __construct($date = NULL)
+    public function __construct()
+    {
+        $this->setDate();
+    }
+
+    public function setDate($date = NULL)
     {
         if  (is_null($date)) {
             $this->date = ((new \DateTime())->modify('+28 days'))->format('Y-m-d');
@@ -66,13 +71,14 @@ class GenerateDietPlan implements ShouldQueue
 
             $modifier = round($meal['kcal'] / $recipe->kcal * 100);
 
-            $dietPlan = new DietPlan;
-            $dietPlan->user_id = $user->id;
-            $dietPlan->modifier = $modifier;
-            $dietPlan->recipe_id = $recipe->id;
-            $dietPlan->meal = $mealOrder;
-            $dietPlan->date_on = $this->date;
-            $dietPlan->save();
+            DietPlan::create([
+                'user_id' => $user->id,
+                'modifier' => $modifier,
+                'recipe_id' => $recipe->id,
+                'meal' => $mealOrder,
+                'date_on' => $this->date
+            ]);
+
             $chosenRecipes[] = $recipe->id;
         }
     }

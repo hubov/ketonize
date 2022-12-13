@@ -150,19 +150,19 @@
         var ingredientFormValidation = ['name', 'protein', 'fat', 'carbohydrate', 'kcal', 'unit_id'];
 
         @if (isset($ingredients))
-        @php
-            $i = 0;
-        @endphp
-        @foreach ($ingredients as $ingredient)
-        addIngredientRow('{{ $ingredient->name }}', {{ $ingredient->pivot->amount }}, '{{ $ingredient->unit->symbol }}', {{ $ingredient->id }});
-        setIngredientsArray({{ $i }}, {{ $ingredient->protein }}, {{ $ingredient->fat }}, {{ $ingredient->carbohydrate }}, {{ $ingredient->kcal }});
-        setResultArray({{ $i }}, {{ $ingredient->pivot->amount }}, {{ $ingredient->protein }}, {{ $ingredient->fat }}, {{ $ingredient->carbohydrate }}, {{ $ingredient->kcal }});
-        @php
-            $i++;
-        @endphp
-        @endforeach
-        typeaheadInitialize();
-        calculateMacro();
+            @php
+                $i = 0;
+            @endphp
+            @foreach ($ingredients as $ingredient)
+                addIngredientRow('{{ $ingredient->name }}', {{ $ingredient->pivot->amount }}, '{{ $ingredient->unit->symbol }}', {{ $ingredient->id }});
+                setIngredientsArray({{ $i }}, {{ $ingredient->protein }}, {{ $ingredient->fat }}, {{ $ingredient->carbohydrate }}, {{ $ingredient->kcal }});
+                setResultArray({{ $i }}, {{ $ingredient->pivot->amount }}, {{ $ingredient->protein }}, {{ $ingredient->fat }}, {{ $ingredient->carbohydrate }}, {{ $ingredient->kcal }});
+            @php
+                $i++;
+            @endphp
+            @endforeach
+            typeaheadInitialize();
+            calculateMacro();
         @endif
 
         $.ajax({

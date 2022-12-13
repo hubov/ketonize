@@ -2,6 +2,8 @@
 
 namespace Database\Factories;
 
+use App\Models\DietMealDivision;
+use App\Models\MealEnergyDivision;
 use App\Models\Tag;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -18,10 +20,18 @@ class DietMealDivisionFactory extends Factory
     public function definition()
     {
         return [
-            'meals_count' => 4,
-            'meal_order' => fake()->randomNumber(),
-            'tag_id' => Tag::factory(),
-            'kcal_share' => 33
+            'meals_count' => 4
         ];
+    }
+
+    public function configure()
+    {
+        return $this->afterMaking(function (DietMealDivision $dietMealDivision) {
+            //
+        })->afterCreating(function (DietMealDivision $dietMealDivision) {
+            for ($i = 1; $i <= $dietMealDivision->meals_count; $i++) {
+                MealEnergyDivision::factory()->create(['diet_meal_division_id' => $dietMealDivision->id, 'meal_order' => $i]);
+            }
+        });
     }
 }

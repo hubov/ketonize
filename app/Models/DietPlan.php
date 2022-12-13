@@ -4,10 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
 class DietPlan extends Model
 {
     use HasFactory;
+
+    protected $fillable = ['user_id', 'modifier', 'recipe_id', 'meal', 'date_on'];
 
     public function recipe()
     {
@@ -33,5 +36,29 @@ class DietPlan extends Model
         $this->shareProtein = round($this->recipe->protein / $macros * 100);
         $this->shareFat = round($this->recipe->fat / $macros * 100);
         $this->shareCarbohydrate = round($this->recipe->carbohydrate / $macros * 100);
+    }
+
+    public function getCurrentMeal($date, $meal = NULL)
+    {
+        $dietPlan = DietPlan::where('user_id', '=', Auth::user()->id)
+            ->where('date_on', '=', $date);
+
+        $dietPlan = ($meal != NULL) ? $dietPlan->where('meal', '=', $meal) : $dietPlan;
+
+        return $dietPlan->get();
+    }
+
+    public function deleteCurrentMeal($date, $meal)
+    {
+        $currentMeal = $this->getCurrentMeal($date, $meal);
+        $kcalSum = 0;
+
+        foreach ($currentMeal as $meal) {
+            $oldRecipe = Recipe::select('kcal')->where('id', '=', $meal->recipe_id)->first();
+            $kcalSum += $oldRecipe->kcal * $meal->modifier / 100;
+            $meal->delete();
+        }
+
+        return $kcalSum;
     }
 }

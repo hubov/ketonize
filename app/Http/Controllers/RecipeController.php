@@ -8,10 +8,11 @@ use App\Models\IngredientCategory;
 use App\Models\Recipe;
 use App\Models\Tag;
 use App\Models\Unit;
+use App\Services\Interfaces\RecipeSearchInterface;
+use App\Services\RecipeSearchService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\View;
-use Illuminate\Support\Str;
 
 class RecipeController extends Controller
 {
@@ -51,19 +52,13 @@ class RecipeController extends Controller
      */
     public function store(StoreRecipeRequest $request)
     {
-        $recipe = new Recipe;
-        $recipe->name = $request->name;
-        if ($request->image == NULL) {
-            $recipe->image = 'default';
-        } else {
-            $recipe->image = $request->image;
-        }
-
-        $recipe->description = $request->description;
-        $recipe->preparation_time = $request->preparation_time;
-        $recipe->cooking_time = $request->cooking_time;
-        $recipe->total_time = $request->preparation_time + $request->cooking_time;
-        $recipe->save();
+        $recipe = Recipe::create([
+            'name' => $request->name,
+            'image' => ($request->image == NULL) ? 'default' : $request->image,
+            'description' => $request->description,
+            'preparation_time' => $request->preparation_time,
+            'cooking_time' => $request->cooking_time
+        ]);
 
         $recipe->setIngredients($request->ids, $request->quantity);
 
@@ -88,10 +83,7 @@ class RecipeController extends Controller
 
         $weightTotal = 0;
         foreach  ($recipe->ingredients as $ingredient) {
-            if ($modifier !== NULL) {
-                $ingredient->pivot->amount = round($ingredient->pivot->amount * $modifier / 100);
-            }
-
+            $ingredient->pivot->amount = ($modifier !== NULL) ? round($ingredient->pivot->amount * $modifier / 100) : 0;
             $weightTotal += $ingredient->pivot->amount;
         }
 
@@ -107,15 +99,19 @@ class RecipeController extends Controller
 
         return View::make('recipe.single', [
             'name' => $recipe->name,
+            'image' => $recipe->image,
             'protein' => round($recipe->protein),
             'fat' => round($recipe->fat),
             'carbohydrate' => round($recipe->carbohydrate),
+            'preparationTime' => $recipe->preparation_time,
+            'cookingTime' => $recipe->cooking_time,
             'kcal' => round($recipe->kcal),
             'ingredients' => $recipe->ingredients,
             'description' => $recipe->description,
             'weightTotal' => $weightTotal,
             'admin' => $isAdmin,
-            'categories' => IngredientCategory::orderBy('name')->get()
+            'categories' => IngredientCategory::orderBy('name')->get(),
+            'displayMacros' => true
         ]);
     }
 
@@ -149,16 +145,13 @@ class RecipeController extends Controller
         $recipe = Recipe::where('slug', $slug)->firstOrFail();
 
         $recipe->setIngredients($request->ids, $request->quantity);
-        $recipe->name = $request->name;
-        if ($request->image == NULL) {
-            $recipe->image = 'default';
-        } else {
-            $recipe->image = $request->image;
-        }
-        $recipe->description = $request->description;
-        $recipe->preparation_time = $request->preparation_time;
-        $recipe->cooking_time = $request->cooking_time;
-        $recipe->total_time = $request->preparation_time + $request->cooking_time;
+        $recipe->fill([
+            'name' => $request->name,
+            'image' => ($request->image == NULL) ? 'default' : $request->image,
+            'description' => $request->description,
+            'preparation_time' => $request->preparation_time,
+            'cooking_time' => $request->cooking_time
+        ]);
         $recipe->save();
         $recipe->tags()->sync($request->tags);
 
@@ -174,5 +167,44 @@ class RecipeController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    /**
+     * Search for resources matching given criteria.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function search(Request $request, RecipeSearchInterface $recipeSearch)
+    {
+        $filters = $request->searchFilter;
+        if ($filters['tags'] != '0') {
+            $filters['tags'] = explode(",", $filters['tags']);
+        } else {
+            $filters['tags'] = NULL;
+        }
+
+        $recipeSearch = new RecipeSearchService;
+        $recipeSearch->filters($filters);
+
+        return response()->json($recipeSearch->search());
+    }
+
+    /**
+     * Get raw data of a single recipe.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function showRaw(Request $request)
+    {
+        $recipe = Recipe::where('slug', $request->slug)->with('ingredients.unit')->firstOrFail();
+
+        return response()->json([
+            'name' => $recipe->name,
+            'image' => $recipe->image,
+            'ingredients' => $recipe->ingredients,
+            'description' => $recipe->description
+         ]);
     }
 }
