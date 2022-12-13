@@ -2,25 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreProfileRequest;
+use App\Http\Requests\UpdateProfileRequest;
 use App\Models\Profile;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\View;
 
 class ProfileController extends Controller
 {
-    protected $formValidation = [
-        'diet_type' => 'required|integer',
-        'diet_target' => 'required|integer',
-        'meals_count' => 'required|integer|min:3|max:5',
-        'gender' => 'required|integer',
-        'birthday' => 'required|date',
-        'weight' => 'required|integer|min:45|max:250',
-        'height' => 'required|integer|min:120|max:230',
-        'target_weight' => 'required|integer|min:45|max:250',
-        'basic_activity' => 'required|integer',
-        'sport_activity' => 'required|integer'];
-
     /**
      * Show the form for creating a new resource.
      *
@@ -37,25 +26,23 @@ class ProfileController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function store(Request $request)
+    public function store(StoreProfileRequest $request)
     {
-        $request->validate($this->formValidation);
-
         $user = Auth::user();
 
-        $profile = new Profile;
-        $profile->user_id = $user->id;
-        $profile->height = $request->height;
-        $profile->weight = $request->weight;
-        $profile->target_weight = $request->target_weight;
-        $profile->gender = $request->gender;
-        $profile->diet_target = $request->diet_target;
-        $profile->basic_activity = $request->basic_activity;
-        $profile->sport_activity = $request->sport_activity;
-        $profile->birthday = $request->birthday;
-        $profile->save();
+        $profile = Profile::create([
+            'user_id' => $user->id,
+            'height' => $request->height,
+            'weight' => $request->weight,
+            'target_weight' => $request->target_weight,
+            'gender' => $request->gender,
+            'diet_target' => $request->diet_target,
+            'basic_activity' => $request->basic_activity,
+            'sport_activity' => $request->sport_activity,
+            'birthday' => $request->birthday
+        ]);
 
-        (new UserDietController)->create($profile, $request->diet_type, $request->meals_count);
+        (new UserDietController($profile))->create($request->diet_type, $request->meals_count);
 
         return response()->json(TRUE);
     }
@@ -81,10 +68,8 @@ class ProfileController extends Controller
     {
         $user = Auth::user();
 
-        $profile = $user->profile;
-
         return View::make('profile.edit', [
-            'profile' => $profile,
+            'profile' => $user->profile,
             'meals_count' => $user->userDiet->meals_count
         ]);
     }
@@ -96,24 +81,23 @@ class ProfileController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\JsonResponse
      */
-    public function update(Request $request)
+    public function update(UpdateProfileRequest $request)
     {
-        $request->validate($this->formValidation);
-
         $user = Auth::user();
 
-        $profile = $user->profile;
-        $profile->height = $request->height;
-        $profile->weight = $request->weight;
-        $profile->target_weight = $request->target_weight;
-        $profile->gender = $request->gender;
-        $profile->diet_target = $request->diet_target;
-        $profile->basic_activity = $request->basic_activity;
-        $profile->sport_activity = $request->sport_activity;
-        $profile->birthday = $request->birthday;
-        $profile->save();
+        $user->profile->fill([
+            'height' => $request->height,
+            'weight' => $request->weight,
+            'target_weight' => $request->target_weight,
+            'gender' => $request->gender,
+            'diet_target' => $request->diet_target,
+            'basic_activity' => $request->basic_activity,
+            'sport_activity' => $request->sport_activity,
+            'birthday' => $request->birthday
+        ]);
+        $user->profile->save();
 
-        (new UserDietController)->update($profile, $request->diet_type, $request->meals_count);
+        (new UserDietController($user->profile))->update($request->diet_type, $request->meals_count);
 
         return response()->json(TRUE);
     }

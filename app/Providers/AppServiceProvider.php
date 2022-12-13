@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Services\Interfaces\RecipeSearchInterface;
+use App\Services\RecipeSearchService;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -13,7 +15,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //
+        $this->app->bind(RecipeSearchInterface::class, function () {
+            return new RecipeSearchService();
+        });
     }
 
     /**

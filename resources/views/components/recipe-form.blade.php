@@ -1,4 +1,4 @@
-<form method="POST" class="col-3">
+<form method="POST" class="col-4">
     @csrf
     @method($method)
     <div class="mb-3">
@@ -111,27 +111,31 @@
 </form>
 
 <div id="ingredientModal" class="modal" tabindex="-1">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">New ingredient</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <p><x-ingredient-form :categories="$categories" :units="$units" /></p>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary">Save changes</button>
-      </div>
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">New ingredient</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p><x-ingredient-form :categories="$categories" :units="$units" /></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Save changes</button>
+            </div>
+        </div>
     </div>
-  </div>
 </div>
 
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/typeahead.js/0.11.1/typeahead.bundle.min.js"></script>
+<script src="{{ asset('typeahead.bundle.min.js') }}" ></script>
 <script type="text/javascript">
     ingredientModal = new bootstrap.Modal(document.getElementById('ingredientModal'));
+
+    $(document).on("keydown", ":input:not(textarea):not(:submit)", function(event) {
+        return event.key != "Enter";
+    });
 
     $(document).ready(function(){
         var typeahead = $.fn.typeahead;
@@ -153,9 +157,9 @@
                 addIngredientRow('{{ $ingredient->name }}', {{ $ingredient->pivot->amount }}, '{{ $ingredient->unit->symbol }}', {{ $ingredient->id }});
                 setIngredientsArray({{ $i }}, {{ $ingredient->protein }}, {{ $ingredient->fat }}, {{ $ingredient->carbohydrate }}, {{ $ingredient->kcal }});
                 setResultArray({{ $i }}, {{ $ingredient->pivot->amount }}, {{ $ingredient->protein }}, {{ $ingredient->fat }}, {{ $ingredient->carbohydrate }}, {{ $ingredient->kcal }});
-                @php
-                    $i++;
-                @endphp
+            @php
+                $i++;
+            @endphp
             @endforeach
             typeaheadInitialize();
             calculateMacro();
@@ -217,19 +221,20 @@
                 });
 
                 $('.typeahead').typeahead({
-                    hint: true,
-                    highlight: true,
-                    minLength: 1
-                },
-                {
-                    name: 'ingredients',
-                    displayKey: 'name',
-                    limit: 10,
-                    source: ingredients,
-                    templates: function(data) {
-                        return '<p">' + data + '</p>';
-                    }
-                });
+                        hint: true,
+                        highlight: true,
+                        autoselect: true,
+                        minLength: 1
+                    },
+                    {
+                        name: 'ingredients',
+                        displayKey: 'name',
+                        limit: 10,
+                        source: ingredients,
+                        templates: function(data) {
+                            return '<p">' + data + '</p>';
+                        }
+                    });
                 $('.typeahead').bind('typeahead:select', function(ev, suggestion) {
                     var id = $(this).prop('id');
                     var idNum = id.substring(10);
@@ -248,12 +253,7 @@
                     }
                 });
                 $('.quantity').on('input', function() {
-                    // console.log(ingredientsArray);
-                    // console.log(proteins);
                     var id = $(this).prop('id').substring(13);
-                    // console.log($(this));
-                    // console.log(id);
-                    // console.log('-------');
 
                     proteins[id] = ingredientsArray[id][0]/100 * $(this).val();
                     fats[id] = ingredientsArray[id][1]/100 * $(this).val();
@@ -303,8 +303,9 @@
         function addIngredientRow(name = '', quantity = '', unit = '', id = '') {
             var html = '';
             html += '<div class="row mb-3 inputFormRow">';
-            html += '<div class="input-group"><input type="text" id="ingredient' + ingredientsCount + '" class="form-control typeahead" placeholder="Name" autocomplete="off" value="' + name + '">';
-            html += '<input type="text" name="quantity[]" id="ingredient_q_' + ingredientsCount + '" class="form-control quantity" placeholder="Quantity" value="' + quantity + '">';
+            html += '<div class="input-group">';
+            html += '<input type="text" id="ingredient' + ingredientsCount + '" class="form-control typeahead w-75" placeholder="Name" autocomplete="off" value="' + name + '">';
+            html += '<input type="text" name="quantity[]" id="ingredient_q_' + ingredientsCount + '" class="form-control quantity w-25" placeholder="Quantity" value="' + quantity + '">';
             html += '<span class="input-group-text" id="ingredient' + ingredientsCount + '_unit">' + unit + '</span>';
             html += '<button type="button" id="ingredient_r_' + ingredientsCount + '" class="btn btn-danger removeRow"><span class="material-icons material-icons-outline inline-icon" style="font-size: 1.2em">close</span></button>';
             html += '</div><input type="hidden" name="ids[]" id="ingredient' + ingredientsCount + '_id" value="' + id + '"></div>';
@@ -321,7 +322,7 @@
         });
 
         $("#ingredient-form").submit(function (event) {
-        var formData = {
+            var formData = {
                 name: $('#ingredient-name').val(),
                 ingredient_category_id: $('#ingredient-category').val(),
                 protein: $('#ingredient-protein').val(),
@@ -332,12 +333,12 @@
                 _token: $('#ingredient-form input[name=_token]').val()
             }
 
-        $.ajax({
-              type: "POST",
-              url: "/ingredient/new",
-              data: formData,
-              dataType: "json",
-              encode: true,
+            $.ajax({
+                type: "POST",
+                url: "/ingredient/new",
+                data: formData,
+                dataType: "json",
+                encode: true,
             }).done(function (data) {
                 console.log('success');
                 var rowId = $('#ingredient-rowId').val();
@@ -350,18 +351,18 @@
                 ingredientModal.hide();
                 $('#ingredient_q_' + rowId).focus();
             }) .fail(function(data) {
-                    console.log('fail');
-                    if (data.responseJSON.errors != undefined) {
-                        ingredientFormValidation.forEach(function(validate) {
-                            if (data.responseJSON.errors[validate] != undefined) {
-                                $('#ingredient-' + validate).removeClass('is-valid').addClass('is-invalid');
-                            } else {
-                                $('#ingredient-' + validate).removeClass('is-invalid').addClass('is-valid');
-                            }
-                        });
-                    }
+                console.log('fail');
+                if (data.responseJSON.errors != undefined) {
+                    ingredientFormValidation.forEach(function(validate) {
+                        if (data.responseJSON.errors[validate] != undefined) {
+                            $('#ingredient-' + validate).removeClass('is-valid').addClass('is-invalid');
+                        } else {
+                            $('#ingredient-' + validate).removeClass('is-invalid').addClass('is-valid');
+                        }
+                    });
+                }
 
-                });
+            });
 
             event.preventDefault();
         });

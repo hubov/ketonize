@@ -9,6 +9,7 @@ use Illuminate\Support\Str;
 class Recipe extends Model
 {
     use HasFactory;
+
     protected $fillable = ['name', 'image', 'protein', 'fat', 'carbohydrate', 'kcal', 'description', 'preparation_time', 'cooking_time'];
 
     public function ingredients()
@@ -23,11 +24,16 @@ class Recipe extends Model
 
     protected static function boot()
     {
-        parent::boot();
-        static::saving(function($recipe) {
+        $autoValues = function($recipe) {
             $recipe->slug = Str::of($recipe->name)->slug('-')->__toString();
             $recipe->name = Str::of($recipe->name)->ucfirst()->__toString();
-        });
+            $recipe->total_time = $recipe->preparation_time + $recipe->cooking_time;
+        };
+
+        parent::boot();
+        static::saving($autoValues);
+        static::creating($autoValues);
+        static::updating($autoValues);
     }
 
     public function tagsIds()
