@@ -12,6 +12,8 @@ use Illuminate\Support\Facades\View;
 
 class DietPlanController extends Controller
 {
+    protected $dietPlan;
+
     public $date;
     public $dates;
     public $user;
@@ -26,29 +28,33 @@ class DietPlanController extends Controller
     protected $shareFat;
     protected $shareCarbohydrate;
 
-    public function index(Request $request, $date = NULL)
+    public function index(Request $request, DietPlan $dietPlan, $date = NULL)
     {
+        $this->dietPlan = $dietPlan;
         $this->user = Auth::user();
         $this->setDate($date);
-        $this->sumUp();
+        $this->dietPlan = $this->dietPlan
+                                ->where('user_id', $this->user->id)
+                                ->where('date_on', $this->date)
+                                ->firstOrNew();
+
         $dietMealDivision = $this->user->userDiet->dietMealDivision();
-        $mealsTags = (isset($dietMealDivision)) ? $dietMealDivision->mealsTags() : [];
 
         return View::make('dashboard', [
             'date' => $this->date,
             'datePrev' => $this->dates['prev'],
             'dateNext' => $this->dates['next'],
-            'meals' => $this->meals,
+            'meals' => $this->dietPlan->meals,
             'units' => Unit::all(),
-            'protein' => $this->totalProtein,
-            'fat' => $this->totalFat,
-            'carbohydrate' => $this->totalCarbohydrate,
-            'kcal' => $this->totalKcal,
-            'preparation_time' => $this->totalPreparation,
-            'total_time' => $this->totalTime,
-            'shareProtein' => $this->shareProtein,
-            'shareFat' => $this->shareFat,
-            'shareCarbohydrate' => $this->shareCarbohydrate,
+            'protein' => $this->dietPlan->protein,
+            'fat' => $this->dietPlan->fat,
+            'carbohydrate' => $this->dietPlan->carbohydrate,
+            'kcal' => $this->dietPlan->kcal,
+            'preparation_time' => $this->dietPlan->preparationTime,
+            'total_time' => $this->dietPlan->totalTime,
+            'shareProtein' => $this->dietPlan->shareProtein,
+            'shareFat' => $this->dietPlan->shareFat,
+            'shareCarbohydrate' => $this->dietPlan->shareCarbohydrate,
             'diet' => $this->user->userDiet->diet->name,
             'dietKcal' => $this->user->userDiet->kcal,
             'dietProtein' => $this->user->userDiet->protein,
@@ -57,7 +63,7 @@ class DietPlanController extends Controller
             'dietProteinShare' => $this->user->userDiet->diet->protein,
             'dietFatShare' => $this->user->userDiet->diet->fat,
             'dietCarbohydrateShare' => $this->user->userDiet->diet->carbohydrate,
-            'mealsTags' => $mealsTags
+            'mealsTags' => (isset($dietMealDivision)) ? $dietMealDivision->mealsTags() : []
         ]);
     }
 
@@ -75,49 +81,6 @@ class DietPlanController extends Controller
         $this->dates['prev'] = date('Y-m-d', strtotime('-1 day', $dateUnix));
     }
 
-    public function getMeals()
-    {
-        $this->meals = (new DietPlan)->getCurrentMeal($this->date);
-    }
-
-    public function sumUp()
-    {
-        if ($this->meals === NULL) {
-            $this->getMeals();
-        }
-
-        if (count($this->meals) > 0) {
-            foreach ($this->meals as $meal) {
-                $meal->scale();
-                $meal->shares();
-
-                $this->totalProtein += $meal->recipe->protein;
-                $this->totalFat += $meal->recipe->fat;
-                $this->totalCarbohydrate += $meal->recipe->carbohydrate;
-                $this->totalKcal += $meal->recipe->kcal;
-                $this->totalPreparation += $meal->recipe->preparation_time;
-                $this->totalTime += $meal->recipe->total_time;
-            }
-
-            $macros = $this->totalProtein + $this->totalFat + $this->totalCarbohydrate;
-            $this->shareProtein = round($this->totalProtein / $macros * 100);
-            $this->shareFat = round($this->totalFat / $macros * 100);
-            $this->shareCarbohydrate = round($this->totalCarbohydrate / $macros * 100);
-        }
-
-        return [
-            'totalProtein' => $this->totalProtein,
-            'totalFat' => $this->totalFat,
-            'totalCarbohydrate' => $this->totalCarbohydrate,
-            'totalKcal' => $this->totalKcal,
-            'totalPreparation' => $this->totalPreparation,
-            'totalTime' => $this->totalTime,
-            'shareProtein' => $this->shareProtein,
-            'shareFat' => $this->shareFat,
-            'shareCarbohydrate' => $this->shareCarbohydrate
-        ];
-    }
-
     public function generate(Request $request, GenerateDietPlan $plan, $date)
     {
         $plan->setDate($date);
@@ -132,7 +95,7 @@ class DietPlanController extends Controller
     {
         $recipe = Recipe::where('slug', '=', $request->slug)->firstOrFail();
 
-        $kcalSum = DietPlan::deleteCurrentMeal($request->date, $request->meal);
+        $kcalSum = (new DietPlan)->deleteCurrentMeal($request->date, $request->meal);
         $modifier = $kcalSum / $recipe->kcal * 100;
 
         $newMeal = DietPlan::create([

@@ -54,7 +54,7 @@
                                 /recipe/{{ $meal->recipe->slug }}
                             @endif
                             "><h3>{{ $meal->recipe->name }}</h3></a>
-                            Proteins: {{ $meal->recipe->protein }}g ({{ $meal->shareProtein }}%) | Fats: {{ $meal->recipe->fat }}g ({{ $meal->shareFat }}%) | Carbs: {{ $meal->recipe->carbohydrate }}g ({{ $meal->shareCarbohydrate }}%) | Kcal: {{ $meal->recipe->kcal }} | Time: {{ $meal->recipe->total_time }} min
+                            Proteins: {{ $meal->protein }}g ({{ $meal->shareProtein }}%) | Fats: {{ $meal->fat }}g ({{ $meal->shareFat }}%) | Carbs: {{ $meal->carbohydrate }}g ({{ $meal->shareCarbohydrate }}%) | Kcal: {{ $meal->kcal }} | Time: {{ $meal->recipe->total_time }} min
                         </div>
                     </div>
                 </div>
