@@ -3,6 +3,7 @@
 namespace App\Jobs;
 
 use App\Models\DietPlan;
+use App\Models\Meal;
 use App\Models\User;
 use App\Models\Recipe;
 use Illuminate\Bus\Queueable;
@@ -59,7 +60,15 @@ class GenerateDietPlan implements ShouldQueue
 
         $user->userDiet->getMeals();
         $meals = $user->userDiet->mealsDivision();
+        $dietPlan = new DietPlan;
+        $dietPlan->date_on = $this->date;
+        $dietPlan->user()->associate($user);
+        $dietPlan->save();
+
         foreach ($meals as $mealOrder => $meal) {
+
+            // to do: transfer it to separate Service
+
             $recipe = Recipe::join('recipe_tag', 'recipes.id', '=', 'recipe_id')
                     ->select('recipes.*')
                     ->where('tag_id', $meal['tag']->id)
@@ -71,12 +80,11 @@ class GenerateDietPlan implements ShouldQueue
 
             $modifier = round($meal['kcal'] / $recipe->kcal * 100);
 
-            DietPlan::create([
-                'user_id' => $user->id,
+            Meal::create([
+                'diet_plan_id' => $dietPlan->id,
                 'modifier' => $modifier,
                 'recipe_id' => $recipe->id,
-                'meal' => $mealOrder,
-                'date_on' => $this->date
+                'meal' => $mealOrder
             ]);
 
             $chosenRecipes[] = $recipe->id;
