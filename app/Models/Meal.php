@@ -10,6 +10,7 @@ class Meal extends Model
     use HasFactory;
 
     protected $fillable = ['diet_plan_id', 'recipe_id', 'meal', 'modifier'];
+    public $timestamps = false;
 
     public function dietPlan()
     {

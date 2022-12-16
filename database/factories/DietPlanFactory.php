@@ -20,9 +20,6 @@ class DietPlanFactory extends Factory
     {
         return [
             'user_id' => User::factory(),
-            'modifier' => '100',
-            'recipe_id' => Recipe::factory(),
-            'meal' => fake()->numberBetween(1, 4),
             'date_on' => '2022-09-30'
         ];
     }
