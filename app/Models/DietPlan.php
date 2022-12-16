@@ -12,6 +12,15 @@ class DietPlan extends Model
 
     protected $fillable = ['user_id', 'date_on'];
 
+    protected $totalProtein = 0;
+    protected $totalFat = 0;
+    protected $totalCarbohydrate = 0;
+    protected $totalKcal = 0;
+    protected $totalPreparation = 0;
+    protected $totalTime = 0;
+    protected $shareProtein = 0;
+    protected $shareFat = 0;
+    protected $shareCarbohydrate = 0;
     public $timestamps = false;
 
     public function user()
@@ -19,20 +28,98 @@ class DietPlan extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function scale()
+    public function meals()
     {
-        $this->recipe->protein = round($this->recipe->protein * $this->modifier / 100);
-        $this->recipe->fat = round($this->recipe->fat * $this->modifier / 100);
-        $this->recipe->carbohydrate = round($this->recipe->carbohydrate * $this->modifier / 100);
-        $this->recipe->kcal = round($this->recipe->kcal * $this->modifier / 100);
+        return $this->hasMany(Meal::class);
     }
 
-    public function shares()
+    public function meal($meal)
     {
-        $macros = $this->recipe->protein + $this->recipe->fat + $this->recipe->carbohydrate;
-        $this->shareProtein = round($this->recipe->protein / $macros * 100);
-        $this->shareFat = round($this->recipe->fat / $macros * 100);
-        $this->shareCarbohydrate = round($this->recipe->carbohydrate / $macros * 100);
+        return $this->meals()->where('meal', $meal)->get();
+    }
+
+    protected function getProteinAttribute()
+    {
+        return $this->sumUp('protein');
+    }
+
+    protected function getFatAttribute()
+    {
+        return $this->sumUp('fat');
+    }
+
+    protected function getCarbohydrateAttribute()
+    {
+        return $this->sumUp('carbohydrate');
+    }
+
+    protected function getKcalAttribute()
+    {
+        return $this->sumUp('kcal');
+    }
+
+    protected function getShareProteinAttribute()
+    {
+        return $this->share($this->protein);
+    }
+
+    protected function getShareFatAttribute()
+    {
+        return $this->share($this->fat);
+    }
+
+    protected function getShareCarbohydrateAttribute()
+    {
+        return $this->share($this->carbohydrate);
+    }
+
+    protected function getMacrosAttribute()
+    {
+        return $this->protein + $this->fat + $this->carbohydrate;
+    }
+
+    protected function getPreparationTimeAttribute()
+    {
+        return $this->sumUp('preparation_time');
+    }
+
+    protected function getCookingTimeAttribute()
+    {
+        return $this->sumUp('cooking_time');
+    }
+
+    protected function getTotalTimeAttribute()
+    {
+        return $this->sumUp('total_time');
+    }
+
+    protected function sumUp($attribute)
+    {
+        $result = 0;
+
+        if (count($this->meals) > 0) {
+            foreach ($this->meals as $meal) {
+                $result += $meal->$attribute;
+            }
+        }
+
+        return $result;
+    }
+
+    protected function share($value)
+    {
+        return round($value / $this->macros * 100);
+    }
+
+    public function deleteMeal($meal)
+    {
+        $kcalSum = 0;
+
+        foreach ($this->meal($meal) as $meal) {
+            $kcalSum += $meal->recipe->kcal * $meal->modifier / 100;
+        }
+
+        return $kcalSum;
     }
 
     public function getCurrentMeal($date, $meal = NULL)

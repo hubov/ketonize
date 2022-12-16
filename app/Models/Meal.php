@@ -22,19 +22,72 @@ class Meal extends Model
         return $this->belongsTo(Recipe::class);
     }
 
-    public function scale()
+    protected function getProteinAttribute()
     {
-        $this->recipe->protein = round($this->recipe->protein * $this->modifier / 100);
-        $this->recipe->fat = round($this->recipe->fat * $this->modifier / 100);
-        $this->recipe->carbohydrate = round($this->recipe->carbohydrate * $this->modifier / 100);
-        $this->recipe->kcal = round($this->recipe->kcal * $this->modifier / 100);
+        return $this->scale($this->recipe->protein);
     }
 
-    public function shares()
+    protected function getFatAttribute()
     {
-        $macros = $this->recipe->protein + $this->recipe->fat + $this->recipe->carbohydrate;
-        $this->shareProtein = round($this->recipe->protein / $macros * 100);
-        $this->shareFat = round($this->recipe->fat / $macros * 100);
-        $this->shareCarbohydrate = round($this->recipe->carbohydrate / $macros * 100);
+        return $this->scale($this->recipe->fat);
+    }
+
+    protected function getCarbohydrateAttribute()
+    {
+        return $this->scale($this->recipe->carbohydrate);
+    }
+
+    protected function getKcalAttribute()
+    {
+        return $this->scale($this->recipe->kcal);
+    }
+
+    protected function scale($value)
+    {
+        return round($value * $this->modifier / 100);
+//        $this->recipe->protein = round($this->recipe->protein * $this->modifier / 100);
+//        $this->recipe->fat = round($this->recipe->fat * $this->modifier / 100);
+//        $this->recipe->carbohydrate = round($this->recipe->carbohydrate * $this->modifier / 100);
+//        $this->recipe->kcal = round($this->recipe->kcal * $this->modifier / 100);
+    }
+
+    protected function getMacrosAttribute()
+    {
+        return $this->recipe->protein + $this->recipe->fat + $this->recipe->carbohydrate;
+    }
+
+    protected function getShareProteinAttribute()
+    {
+        return $this->share($this->recipe->protein);
+    }
+
+    protected function getShareFatAttribute()
+    {
+        return $this->share($this->recipe->fat);
+    }
+
+    protected function getShareCarbohydrateAttribute()
+    {
+        return $this->share($this->recipe->carbohydrate);
+    }
+
+    protected function share($value)
+    {
+        return round($value / $this->macros * 100);
+    }
+
+    protected function getPreparationTimeAttribute()
+    {
+        return $this->recipe->preparation_time;
+    }
+
+    protected function getCookingTimeAttribute()
+    {
+        return $this->recipe->cooking_time;
+    }
+
+    protected function getTotalTimeAttribute()
+    {
+        return $this->recipe->total_time;
     }
 }
