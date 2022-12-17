@@ -30,7 +30,7 @@ class DietPlan extends Model
 
     public function meals()
     {
-        return $this->hasMany(Meal::class);
+        return $this->hasMany(Meal::class)->orderBy('meal');
     }
 
     public function meal($meal)
@@ -108,41 +108,63 @@ class DietPlan extends Model
 
     protected function share($value)
     {
+        if ($this->macros == 0) {
+            return 0;
+        }
+
         return round($value / $this->macros * 100);
     }
 
-    public function deleteMeal($meal)
+//    public function getCurrentMeal($date, $meal = NULL)
+//    {
+//        $dietPlan = DietPlan::where('user_id', '=', Auth::user()->id)
+//            ->where('date_on', '=', $date);
+//
+//        $dietPlan = ($meal != NULL) ? $dietPlan->where('meal', '=', $meal) : $dietPlan;
+//
+//        return $dietPlan->get();
+//    }
+//
+//    public function deleteCurrentMeal($date, $meal)
+//    {
+//        $currentMeal = $this->getCurrentMeal($date, $meal);
+//        $kcalSum = 0;
+//
+//        foreach ($currentMeal as $meal) {
+//            $oldRecipe = Recipe::select('kcal')->where('id', '=', $meal->recipe_id)->first();
+//            $kcalSum += $oldRecipe->kcal * $meal->modifier / 100;
+//            $meal->delete();
+//        }
+//
+//        return $kcalSum;
+//    }
+
+    public function addMeal($meal, $slug, $kcal)
     {
-        $kcalSum = 0;
+        $recipe = Recipe::where('slug', $slug)->firstOrFail();
 
-        foreach ($this->meal($meal) as $meal) {
-            $kcalSum += $meal->recipe->kcal * $meal->modifier / 100;
-        }
+        $modifier = $kcal / $recipe->kcal * 100;
 
-        return $kcalSum;
+        Meal::create([
+            'diet_plan_id' => $this->id,
+            'recipe_id' => $recipe->id,
+            'meal' => $meal,
+            'modifier' => $modifier
+        ]);
+
+        return $recipe;
     }
 
-    public function getCurrentMeal($date, $meal = NULL)
+    public function changeMeal($meal, $newSlug)
     {
-        $dietPlan = DietPlan::where('user_id', '=', Auth::user()->id)
-            ->where('date_on', '=', $date);
-
-        $dietPlan = ($meal != NULL) ? $dietPlan->where('meal', '=', $meal) : $dietPlan;
-
-        return $dietPlan->get();
-    }
-
-    public function deleteCurrentMeal($date, $meal)
-    {
-        $currentMeal = $this->getCurrentMeal($date, $meal);
         $kcalSum = 0;
-
-        foreach ($currentMeal as $meal) {
-            $oldRecipe = Recipe::select('kcal')->where('id', '=', $meal->recipe_id)->first();
-            $kcalSum += $oldRecipe->kcal * $meal->modifier / 100;
-            $meal->delete();
+        foreach ($this->meal($meal) as $mealPart) {
+            $kcalSum += $mealPart->kcal;
+            $mealPart->delete();
         }
 
-        return $kcalSum;
+        $newMeal = $this->addMeal($meal, $newSlug, $kcalSum);
+
+        return $newMeal;
     }
 }
