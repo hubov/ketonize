@@ -9,6 +9,7 @@ class UserDiet extends Model
 {
     use HasFactory;
 
+    protected $fillable = ['user_id', 'diet_id', 'meals_count', 'kcal', 'protein', 'fat', 'carbohydrate'];
     protected $meals;
     protected $dietMealDivision;
 

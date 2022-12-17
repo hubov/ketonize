@@ -91,20 +91,29 @@ class DietPlanController extends Controller
         return redirect($url);
     }
 
-    public function update(Request $request)
+    public function update(Request $request, DietPlan $dietPlan)
     {
-        $recipe = Recipe::where('slug', '=', $request->slug)->firstOrFail();
+        $this->dietPlan = $dietPlan;
 
-        $kcalSum = (new DietPlan)->deleteCurrentMeal($request->date, $request->meal);
-        $modifier = $kcalSum / $recipe->kcal * 100;
+        $this->dietPlan = $this->dietPlan
+            ->where('user_id', Auth::user()->id)
+            ->where('date_on', $request->date)
+            ->firstOrFail();
 
-        $newMeal = DietPlan::create([
-            'user_id' => Auth::user()->id,
-            'modifier' => $modifier,
-            'recipe_id' =>  $recipe->id,
-            'meal' => $request->meal,
-            'date_on' => $request->date
-        ]);
+        $newMeal = $this->dietPlan->changeMeal($request->meal, $request->slug);
+
+//        $recipe = Recipe::where('slug', '=', $request->slug)->firstOrFail();
+//
+//        $kcalSum = (new DietPlan)->deleteCurrentMeal($request->date, $request->meal);
+//        $modifier = $kcalSum / $recipe->kcal * 100;
+//
+//        $newMeal = DietPlan::create([
+//            'user_id' => Auth::user()->id,
+//            'modifier' => $modifier,
+//            'recipe_id' =>  $recipe->id,
+//            'meal' => $request->meal,
+//            'date_on' => $request->date
+//        ]);
 
         return response()->json($newMeal->id);
     }
