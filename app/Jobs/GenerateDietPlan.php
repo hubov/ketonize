@@ -55,12 +55,12 @@ class GenerateDietPlan implements ShouldQueue
     {
         $protein = $user->userDiet->getProteinRatio();
         $carbohydrate = $user->userDiet->getCarbohydrateRatio();
-
         $chosenRecipes = [];
 
         $user->userDiet->getMeals();
         $meals = $user->userDiet->mealsDivision();
-        $dietPlan = new DietPlan;
+
+        $dietPlan = new DietPlan();
         $dietPlan->date_on = $this->date;
         $dietPlan->user()->associate($user);
         $dietPlan->save();
@@ -71,10 +71,10 @@ class GenerateDietPlan implements ShouldQueue
 
             $recipe = Recipe::join('recipe_tag', 'recipes.id', '=', 'recipe_id')
                     ->select('recipes.*')
+                    ->whereNotIn('recipes.id', $chosenRecipes)
                     ->where('tag_id', $meal['tag']->id)
                     ->whereBetween('protein_ratio', [$protein*0.5, $protein*1.5])
                     ->whereBetween('carbohydrate_ratio', [0, $carbohydrate*1.5])
-                    ->whereNotIn('recipes.id', $chosenRecipes)
                     ->inRandomOrder()
                     ->first();
 
