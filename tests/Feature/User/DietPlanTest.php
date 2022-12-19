@@ -81,11 +81,12 @@ class DietPlanTest extends TestCase
     public function  test_diet_plan_update_recipe()
     {
         $user = User::factory()->create();
-        $dietPlan = DietPlan::factory()->create(['meal' => 1, 'date_on' => '2022-11-30']);
+        $dietPlan = DietPlan::factory()->create(['user_id' => $user->id, 'date_on' => '2022-11-30']);
         $recipe = Recipe::factory()->has(Tag::factory())->create();
 
-        $response = $this->actingAs($user)->post('/diet/update', ['date' => '2022-11-30', 'meal' => 1, 'slug' => $dietPlan->recipe->slug]);
+        $response = $this->actingAs($user)->post('/diet/update', ['date' => '2022-11-30', 'meal' => 1, 'slug' => $recipe->slug]);
 
+        $response->assertStatus(200);
         $response->assertSee($recipe->id);
     }
 }
