@@ -2,6 +2,8 @@
 
 namespace Database\Factories;
 
+use App\Models\DietPlan;
+use App\Models\Meal;
 use App\Models\Recipe;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -22,5 +24,21 @@ class DietPlanFactory extends Factory
             'user_id' => User::factory(),
             'date_on' => '2022-09-30'
         ];
+    }
+
+    /**
+     * Set up the model's config.
+     *
+     * @return static
+     */
+    public function configure()
+    {
+        return $this->afterMaking(function (DietPlan $dietPlan) {
+            //
+        })->afterCreating(function (DietPlan $dietPlan) {
+            Meal::factory()
+                ->for($dietPlan)
+                ->create(['meal' => 1]);
+        });
     }
 }
