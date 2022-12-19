@@ -67,4 +67,9 @@ class User extends Authenticatable
     {
         return $this->hasOne(UserDiet::class);
     }
+
+    public function dietPlan()
+    {
+        return $this->hasMany(DietPlan::class);
+    }
 }

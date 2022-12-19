@@ -50,11 +50,12 @@ class ShoppingListTest extends TestCase
         $user = User::factory()->create();
         $recipe = Recipe::factory()->hasAttached(Ingredient::factory(), ['amount' => 100])
                         ->create();
-        DietPlan::factory()->create([
+        $dietPlan = DietPlan::factory()->create([
             'date_on' => '2022-09-30',
-            'user_id' => $user->id,
-            'recipe_id' => $recipe->id
+            'user_id' => $user->id
         ]);
+        $dietPlan->meals[0]->recipe_id = $recipe->id;
+        $dietPlan->meals[0]->save();
 
         $response = $this->actingAs($user)
                         ->post(
@@ -114,6 +115,7 @@ class ShoppingListTest extends TestCase
 
         $response = $this->actingAs($user)->put('shopping-list/update', ['id' => 1, 'amount' => 105]);
 
+        $response->assertStatus(200);
         $response->assertSee('false');
     }
 
