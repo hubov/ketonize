@@ -57,7 +57,6 @@ class GenerateDietPlan implements ShouldQueue
         $carbohydrate = $user->userDiet->getCarbohydrateRatio();
         $chosenRecipes = [];
 
-        $user->userDiet->getMeals();
         $meals = $user->userDiet->mealsDivision();
 
         $dietPlan = new DietPlan();

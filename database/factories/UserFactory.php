@@ -47,6 +47,7 @@ class UserFactory extends Factory
             UserDiet::factory()
                 ->for($user)
                 ->for(Diet::factory())
+                ->for(DietMealDivision::factory())
                 ->create();
 //            DietMealDivision::factory()->create(['meals_count' => 4]);
         });

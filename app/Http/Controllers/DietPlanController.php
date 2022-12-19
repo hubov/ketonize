@@ -38,7 +38,7 @@ class DietPlanController extends Controller
                                 ->where('date_on', $this->date)
                                 ->firstOrNew();
 
-        $dietMealDivision = $this->user->userDiet->dietMealDivision();
+        $dietMealDivision = $this->user->userDiet->dietMealDivision;
 
         return View::make('dashboard', [
             'date' => $this->date,

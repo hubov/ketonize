@@ -30,6 +30,7 @@ class UserDietTest extends TestCase
     public function test_mealsDivision_method_in_user_diet()
     {
         $dietMealDiv = DietMealDivision::factory()->create(['meals_count' => 4]);
+
         $i = 1;
         $shares = [30, 30, 30, 10];
 
@@ -41,10 +42,10 @@ class UserDietTest extends TestCase
         }
 
         $userDiet = UserDiet::factory()->create([
+            'diet_meal_division_id' => $dietMealDiv->id,
             'kcal' => 1800
         ]);
 
-        $userDiet->getMeals();
         $result = $userDiet->mealsDivision();
 
         $this->assertEquals([540, 180], [$result[1]['kcal'], $result[4]['kcal']]);

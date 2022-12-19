@@ -19,6 +19,11 @@ class DietMealDivision extends Model
         return $this->hasMany(MealEnergyDivision::class);
     }
 
+    public function userDiets()
+    {
+        return $this->hasMany(UserDiet::class);
+    }
+
     public function getMeals()
     {
         return $this->mealEnergyDivisions();
