@@ -19,11 +19,11 @@ class RecipeFactory extends Factory
         return [
             'name' => fake()->name(),
             'slug' => fake()->regexify('[a-z\-]{10}'),
-            'protein' => fake()->numberBetween(10, 30),
+            'protein' => fake()->numberBetween(20, 30),
             'fat' => fake()->numberBetween(30, 60),
             'carbohydrate' => fake()->numberBetween(5, 15),
             'kcal' => fake()->numberBetween(250, 700),
-            'protein_ratio' => 15,
+            'protein_ratio' => 20,
             'fat_ratio' => 77,
             'carbohydrate_ratio' => 8,
             'description' => fake()->sentence(),

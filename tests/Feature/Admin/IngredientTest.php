@@ -94,6 +94,7 @@ class IngredientTest extends TestCase
 
         $response = $this->actingAs($user)->post('/ingredient/new', $this->requestData);
 
+        $response->assertStatus(200);
         $response->assertSee('id');
     }
 
@@ -185,6 +186,7 @@ class IngredientTest extends TestCase
         $response = $this->actingAs($user)->delete('/ingredient/'.$ingredient->id.'/delete');
 
         $this->assertModelMissing($ingredient);
+        $response->assertStatus(200);
         $response->assertSee('true');
     }
 
@@ -198,6 +200,7 @@ class IngredientTest extends TestCase
         $response = $this->actingAs($user)->delete('/ingredient/'.$ingredient->id.'/delete');
 
         $this->assertModelExists($ingredient);
+        $response->assertStatus(403);
         $response->assertJson(['error' => TRUE]);
     }
 
@@ -218,6 +221,7 @@ class IngredientTest extends TestCase
 
         $response = $this->actingAs($user)->get('/ingredient-autocomplete', ['name' => 'ingr']);
 
+        $response->assertStatus(200);
         $response->assertJsonFragment(['id' => $ingredient->id, 'name' => 'Delicious ingredient']);
     }
 

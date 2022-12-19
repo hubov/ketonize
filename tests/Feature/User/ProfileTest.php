@@ -3,6 +3,8 @@
 namespace Tests\Feature\User;
 
 use App\Models\Diet;
+use App\Models\DietMealDivision;
+use App\Models\MealEnergyDivision;
 use App\Models\Profile;
 use App\Models\Recipe;
 use App\Models\Tag;
@@ -30,6 +32,11 @@ class ProfileTest extends TestCase
         foreach ($recipes as $recipe) {
             $recipe->tags()->attach($tagList);
         }
+        $oldMealDiv = DietMealDivision::factory()->create(['meals_count' => 4]);
+        $this->updateTagsForMealDivs($oldMealDiv, $tagList);
+        $newMealDiv = DietMealDivision::factory()->create(['meals_count' => 3]);
+        $this->updateTagsForMealDivs($newMealDiv, $tagList);
+
         $this->requestData = [
             'diet_type' => $diet->id,
             'meals_count' => 3,
@@ -42,6 +49,16 @@ class ProfileTest extends TestCase
             'basic_activity' => 1,
             'sport_activity' => 2
         ];
+    }
+
+    protected function updateTagsForMealDivs($dietMealDiv, $tags)
+    {
+        $i = 0;
+        foreach ($dietMealDiv->mealEnergyDivisions as $mealDiv) {
+            $mealDiv->tag_id = $tags[$i];
+            $mealDiv->save();
+            $i++;
+        }
     }
 
     protected function tearDown(): void
@@ -83,8 +100,15 @@ class ProfileTest extends TestCase
     public function test_saving_new_profile_with_correct_data()
     {
         $user = User::factory()->create();
+        $tags = $user->userDiet->getMealsTags();
+        $recipes = Recipe::factory()->count(4)->create();
+        foreach ($recipes as $recipe) {
+            $recipe->tags()->attach($tags);
+        }
+
         $response = $this->actingAs($user)->post('/profile/new', $this->requestData);
 
+        $response->assertStatus(200);
         $response->assertSee('true');
     }
 
@@ -95,6 +119,7 @@ class ProfileTest extends TestCase
 
         $response = $this->actingAs($user)->post('/profile/new', $this->requestData);
 
+        $response->assertRedirect();
         $response->assertSessionHasErrors('weight');
     }
 
@@ -104,6 +129,7 @@ class ProfileTest extends TestCase
 
         $response = $this->actingAs($user)->post('/profile', $this->requestData);
 
+        $response->assertStatus(200);
         $response->assertSee('true');
     }
 
@@ -114,6 +140,7 @@ class ProfileTest extends TestCase
 
         $response = $this->actingAs($user)->post('/profile', $this->requestData);
 
+        $response->assertRedirect();
         $response->assertSessionHasErrors('weight');
     }
 }

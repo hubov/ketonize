@@ -3,7 +3,9 @@
 namespace Database\Factories;
 
 use App\Models\Diet;
+use App\Models\DietMealDivision;
 use App\Models\User;
+use App\Models\UserDiet;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -27,5 +29,14 @@ class UserDietFactory extends Factory
             'fat' => 77,
             'carbohydrate' => 8,
         ];
+    }
+
+    public function configure()
+    {
+        return $this->afterMaking(function (UserDiet $userDiet) {
+            //
+        })->afterCreating(function (UserDiet $userDiet) {
+            DietMealDivision::factory()->create(['meals_count' => $userDiet->meals_count]);
+        });
     }
 }

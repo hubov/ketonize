@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\DietPlan;
 use App\Models\IngredientCategory;
+use App\Models\Meal;
 use App\Models\ShoppingList;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -37,10 +37,12 @@ class ShoppingListController extends Controller
 
     public function update(Request $request)
     {
-        $meals = DietPlan::where('user_id', Auth::user()->id)
-                                ->where('date_on', '>=', $request->date_from)
-                                ->where('date_on', '<=', $request->date_to)
-                                ->get();
+        $meals = Meal::join('diet_plans', 'meals.diet_plan_id', 'diet_plans.id')
+                            ->where('user_id', Auth::user()->id)
+                            ->where('date_on', '>=', $request->date_from)
+                            ->where('date_on', '<=', $request->date_to)
+                            ->get();
+
         $ingredients = [];
         foreach ($meals as $meal) {
             foreach ($meal->recipe->ingredients as $ingredient) {
