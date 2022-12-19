@@ -2,7 +2,9 @@
 
 namespace App\Providers;
 
+use App\Repositories\DietMealDivisionRepository;
 use App\Repositories\DietRepository;
+use App\Repositories\Interfaces\DietMealDivisionRepositoryInterface;
 use App\Repositories\Interfaces\DietRepositoryInterface;
 use Illuminate\Support\ServiceProvider;
 
@@ -18,6 +20,10 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(
             DietRepositoryInterface::class,
             DietRepository::class
+        );
+        $this->app->bind(
+            DietMealDivisionRepositoryInterface::class,
+            DietMealDivisionRepository::class
         );
     }
 

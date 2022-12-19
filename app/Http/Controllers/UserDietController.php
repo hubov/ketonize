@@ -3,11 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Jobs\GenerateDietPlan;
-use App\Models\Diet;
 use App\Models\DietPlan;
 use App\Models\Profile;
 use App\Models\UserDiet;
-use App\Repositories\DietRepository;
+use App\Repositories\Interfaces\DietMealDivisionRepositoryInterface;
 use App\Repositories\Interfaces\DietRepositoryInterface;
 use Illuminate\Support\Facades\Auth;
 
@@ -15,10 +14,12 @@ class UserDietController extends Controller
 {
     protected $profile;
     protected $dietRepository;
+    protected $dietMealDiv;
 
-    public function __construct(DietRepositoryInterface $dietRepository, Profile $profile)
+    public function __construct(DietRepositoryInterface $dietRepository, DietMealDivisionRepositoryInterface $dietMealDivRepository, Profile $profile)
     {
         $this->dietRepository = $dietRepository;
+        $this->dietMealDivRepository = $dietMealDivRepository;
         $this->profile = $profile;
     }
 
@@ -30,7 +31,7 @@ class UserDietController extends Controller
         UserDiet::create([
             'user_id' => Auth::user()->id,
             'diet_id' => $diet->id,
-            'meals_count' => $mealsCount,
+            'diet_meal_division_id' => $this->dietMealDivRepository->getByMealsCount($mealsCount)->id,
             'kcal' => $kcalTotal,
             'protein' => round(($kcalTotal * $diet->protein / 100) / 4),
             'fat' => round(($kcalTotal * $diet->fat / 100) / 9),
@@ -48,7 +49,7 @@ class UserDietController extends Controller
 
         $userDiet->fill([
             'diet_id' => $diet->id,
-            'meals_count' => $mealsCount,
+            'diet_meal_division_id' => $this->dietMealDivRepository->getByMealsCount($mealsCount)->id,
             'kcal' => $kcalTotal,
             'protein' => round(($kcalTotal * $diet->protein / 100) / 4),
             'fat' => round(($kcalTotal * $diet->fat / 100) / 9),
