@@ -5,11 +5,21 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreProfileRequest;
 use App\Http\Requests\UpdateProfileRequest;
 use App\Models\Profile;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\View;
 
 class ProfileController extends Controller
 {
+    protected $user;
+    protected $profile;
+    protected $userDietController;
+
+    public function __construct(User $user, UserDietController $userDietController)
+    {
+        $this->user = $user;
+        $this->userDietController = $userDietController;
+    }
     /**
      * Show the form for creating a new resource.
      *
@@ -28,10 +38,10 @@ class ProfileController extends Controller
      */
     public function store(StoreProfileRequest $request)
     {
-        $user = Auth::user();
+        $this->user = $this->user->find(Auth()->user()->id);
 
-        $profile = Profile::create([
-            'user_id' => $user->id,
+        $profile = $this->user->profile->create([
+            'user_id' => $this->user->id,
             'height' => $request->height,
             'weight' => $request->weight,
             'target_weight' => $request->target_weight,
@@ -42,7 +52,7 @@ class ProfileController extends Controller
             'birthday' => $request->birthday
         ]);
 
-        (new UserDietController($profile))->create($request->diet_type, $request->meals_count);
+        $this->userDietController->create($request->diet_type, $request->meals_count);
 
         return response()->json(TRUE);
     }
@@ -66,11 +76,11 @@ class ProfileController extends Controller
      */
     public function edit()
     {
-        $user = Auth::user();
+        $this->user = $this->user->find(Auth()->user()->id);
 
         return View::make('profile.edit', [
-            'profile' => $user->profile,
-            'meals_count' => $user->userDiet->meals_count
+            'profile' => $this->user->profile,
+            'meals_count' => $this->user->userDiet->meals_count
         ]);
     }
 
@@ -83,9 +93,9 @@ class ProfileController extends Controller
      */
     public function update(UpdateProfileRequest $request)
     {
-        $user = Auth::user();
+        $this->user = $this->user->find(Auth()->user()->id);
 
-        $user->profile->fill([
+        $this->user->profile->fill([
             'height' => $request->height,
             'weight' => $request->weight,
             'target_weight' => $request->target_weight,
@@ -95,9 +105,9 @@ class ProfileController extends Controller
             'sport_activity' => $request->sport_activity,
             'birthday' => $request->birthday
         ]);
-        $user->profile->save();
+        $this->user->profile->save();
 
-        (new UserDietController($user->profile))->update($request->diet_type, $request->meals_count);
+        $this->userDietController->update($request->diet_type, $request->meals_count);
 
         return response()->json(TRUE);
     }

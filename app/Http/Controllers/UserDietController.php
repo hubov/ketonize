@@ -7,21 +7,26 @@ use App\Models\Diet;
 use App\Models\DietPlan;
 use App\Models\Profile;
 use App\Models\UserDiet;
+use App\Repositories\DietRepository;
+use App\Repositories\Interfaces\DietRepositoryInterface;
 use Illuminate\Support\Facades\Auth;
 
 class UserDietController extends Controller
 {
     protected $profile;
+    protected $dietRepository;
 
-    public function __construct(Profile $profile)
+    public function __construct(DietRepositoryInterface $dietRepository, Profile $profile)
     {
+        $this->dietRepository = $dietRepository;
         $this->profile = $profile;
     }
 
     public function create($dietId, $mealsCount) {
+        $this->profile = $this->profile->where('user_id', Auth::user()->id)->firstOrFail();
         $kcalTotal = $this->kcal($this->profile);
+        $diet = $this->dietRepository->find($dietId);
 
-        $diet = Diet::find($dietId);
         UserDiet::create([
             'user_id' => Auth::user()->id,
             'diet_id' => $diet->id,
@@ -36,10 +41,11 @@ class UserDietController extends Controller
     }
 
     public function update($dietId, $mealsCount) {
+        $this->profile = $this->profile->where('user_id', Auth::user()->id)->firstOrFail();
         $kcalTotal = $this->kcal($this->profile);
-
-        $diet = Diet::find($dietId);
+        $diet = $this->dietRepository->find($dietId);
         $userDiet = UserDiet::where('user_id', Auth::user()->id)->first();
+
         $userDiet->fill([
             'diet_id' => $diet->id,
             'meals_count' => $mealsCount,
