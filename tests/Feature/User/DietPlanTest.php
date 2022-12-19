@@ -2,7 +2,6 @@
 
 namespace Tests\Feature\User;
 
-use App\Models\DietMealDivision;
 use App\Models\DietPlan;
 use App\Models\Recipe;
 use App\Models\Tag;
@@ -88,25 +87,5 @@ class DietPlanTest extends TestCase
         $response = $this->actingAs($user)->post('/diet/update', ['date' => '2022-11-30', 'meal' => 1, 'slug' => $dietPlan->recipe->slug]);
 
         $response->assertSee($recipe->id);
-    }
-
-    public function test_getCurrentMeal_method()
-    {
-        $dietPlan = DietPlan::factory()->create();
-        $this->actingAs(User::find($dietPlan->user_id));
-
-        $meal = $dietPlan->getCurrentMeal($dietPlan->date_on, $dietPlan->meal);
-
-        $this->assertCount(1, $meal);
-    }
-
-    public function test_deleteCurrentMeal()
-    {
-        $dietPlan = DietPlan::factory()->create();
-        $this->actingAs(User::find($dietPlan->user_id));
-
-        $kcal = $dietPlan->deleteCurrentMeal($dietPlan->date_on, $dietPlan->meal);
-
-        $this->assertEquals($dietPlan->recipe->kcal, $kcal);
     }
 }

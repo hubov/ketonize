@@ -45,10 +45,6 @@ class Meal extends Model
     protected function scale($value)
     {
         return round($value * $this->modifier / 100);
-//        $this->recipe->protein = round($this->recipe->protein * $this->modifier / 100);
-//        $this->recipe->fat = round($this->recipe->fat * $this->modifier / 100);
-//        $this->recipe->carbohydrate = round($this->recipe->carbohydrate * $this->modifier / 100);
-//        $this->recipe->kcal = round($this->recipe->kcal * $this->modifier / 100);
     }
 
     protected function getMacrosAttribute()

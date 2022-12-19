@@ -102,19 +102,6 @@ class DietPlanController extends Controller
 
         $newMeal = $this->dietPlan->changeMeal($request->meal, $request->slug);
 
-//        $recipe = Recipe::where('slug', '=', $request->slug)->firstOrFail();
-//
-//        $kcalSum = (new DietPlan)->deleteCurrentMeal($request->date, $request->meal);
-//        $modifier = $kcalSum / $recipe->kcal * 100;
-//
-//        $newMeal = DietPlan::create([
-//            'user_id' => Auth::user()->id,
-//            'modifier' => $modifier,
-//            'recipe_id' =>  $recipe->id,
-//            'meal' => $request->meal,
-//            'date_on' => $request->date
-//        ]);
-
         return response()->json($newMeal->id);
     }
 }
