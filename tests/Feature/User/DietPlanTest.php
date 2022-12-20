@@ -88,5 +88,6 @@ class DietPlanTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertSee($recipe->id);
+        $this->assertEquals(1, count($dietPlan->meals));
     }
 }
