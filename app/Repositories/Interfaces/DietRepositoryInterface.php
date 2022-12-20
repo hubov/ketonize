@@ -6,5 +6,5 @@ use App\Models\Diet;
 
 interface DietRepositoryInterface
 {
-    public function find(int $id) : Diet;
+    public function get(int $id) : Diet;
 }

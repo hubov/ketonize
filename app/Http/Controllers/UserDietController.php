@@ -26,7 +26,7 @@ class UserDietController extends Controller
     public function create($dietId, $mealsCount) {
         $this->profile = $this->profile->where('user_id', Auth::user()->id)->firstOrFail();
         $kcalTotal = $this->kcal($this->profile);
-        $diet = $this->dietRepository->find($dietId);
+        $diet = $this->dietRepository->get($dietId);
 
         UserDiet::create([
             'user_id' => Auth::user()->id,
@@ -44,7 +44,7 @@ class UserDietController extends Controller
     public function update($dietId, $mealsCount) {
         $this->profile = $this->profile->where('user_id', Auth::user()->id)->firstOrFail();
         $kcalTotal = $this->kcal($this->profile);
-        $diet = $this->dietRepository->find($dietId);
+        $diet = $this->dietRepository->get($dietId);
         $userDiet = UserDiet::where('user_id', Auth::user()->id)->first();
 
         $userDiet->fill([

@@ -7,7 +7,7 @@ use App\Repositories\Interfaces\DietRepositoryInterface;
 
 class DietRepository implements DietRepositoryInterface
 {
-    public function find(int $id) : Diet
+    public function get(int $id) : Diet
     {
         return Diet::find($id)->first();
     }
