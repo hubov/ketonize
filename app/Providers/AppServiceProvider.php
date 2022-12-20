@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Services\DietPlanService;
+use App\Services\Interfaces\DietPlanInterface;
 use App\Services\Interfaces\RecipeSearchInterface;
 use App\Services\RecipeSearchService;
 use Illuminate\Support\ServiceProvider;
@@ -18,6 +20,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(RecipeSearchInterface::class, function () {
             return new RecipeSearchService();
         });
+        $this->app->bind(DietPlanInterface::class, DietPlanService::class);
     }
 
     /**
