@@ -3,8 +3,10 @@
 namespace App\Providers;
 
 use App\Repositories\DietMealDivisionRepository;
+use App\Repositories\DietPlanRepository;
 use App\Repositories\DietRepository;
 use App\Repositories\Interfaces\DietMealDivisionRepositoryInterface;
+use App\Repositories\Interfaces\DietPlanRepositoryInterface;
 use App\Repositories\Interfaces\DietRepositoryInterface;
 use Illuminate\Support\ServiceProvider;
 
@@ -17,6 +19,10 @@ class RepositoryServiceProvider extends ServiceProvider
      */
     public function register()
     {
+        $this->app->bind(
+            DietPlanRepositoryInterface::class,
+            DietPlanRepository::class
+        );
         $this->app->bind(
             DietRepositoryInterface::class,
             DietRepository::class
