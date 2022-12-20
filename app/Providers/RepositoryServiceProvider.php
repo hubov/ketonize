@@ -8,6 +8,8 @@ use App\Repositories\DietRepository;
 use App\Repositories\Interfaces\DietMealDivisionRepositoryInterface;
 use App\Repositories\Interfaces\DietPlanRepositoryInterface;
 use App\Repositories\Interfaces\DietRepositoryInterface;
+use App\Repositories\Interfaces\UserRepositoryInterface;
+use App\Repositories\UserRepository;
 use Illuminate\Support\ServiceProvider;
 
 class RepositoryServiceProvider extends ServiceProvider
@@ -30,6 +32,9 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(
             DietMealDivisionRepositoryInterface::class,
             DietMealDivisionRepository::class
+        $this->app->bind(
+            UserRepositoryInterface::class,
+            UserRepository::class
         );
     }
 
