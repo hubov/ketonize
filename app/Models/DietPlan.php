@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Auth;
 
 class DietPlan extends Model
 {
@@ -31,11 +30,6 @@ class DietPlan extends Model
     public function meals()
     {
         return $this->hasMany(Meal::class)->orderBy('meal');
-    }
-
-    public function meal($meal)
-    {
-        return $this->meals()->where('meal', $meal)->get();
     }
 
     protected function getProteinAttribute()
@@ -113,58 +107,5 @@ class DietPlan extends Model
         }
 
         return round($value / $this->macros * 100);
-    }
-
-//    public function getCurrentMeal($date, $meal = NULL)
-//    {
-//        $dietPlan = DietPlan::where('user_id', '=', Auth::user()->id)
-//            ->where('date_on', '=', $date);
-//
-//        $dietPlan = ($meal != NULL) ? $dietPlan->where('meal', '=', $meal) : $dietPlan;
-//
-//        return $dietPlan->get();
-//    }
-//
-//    public function deleteCurrentMeal($date, $meal)
-//    {
-//        $currentMeal = $this->getCurrentMeal($date, $meal);
-//        $kcalSum = 0;
-//
-//        foreach ($currentMeal as $meal) {
-//            $oldRecipe = Recipe::select('kcal')->where('id', '=', $meal->recipe_id)->first();
-//            $kcalSum += $oldRecipe->kcal * $meal->modifier / 100;
-//            $meal->delete();
-//        }
-//
-//        return $kcalSum;
-//    }
-
-    public function addMeal($meal, $slug, $kcal)
-    {
-        $recipe = Recipe::where('slug', $slug)->firstOrFail();
-
-        $modifier = $kcal / $recipe->kcal * 100;
-
-        Meal::create([
-            'diet_plan_id' => $this->id,
-            'recipe_id' => $recipe->id,
-            'meal' => $meal,
-            'modifier' => $modifier
-        ]);
-
-        return $recipe;
-    }
-
-    public function changeMeal($meal, $newSlug)
-    {
-        $kcalSum = 0;
-        foreach ($this->meal($meal) as $mealPart) {
-            $kcalSum += $mealPart->kcal;
-            $mealPart->delete();
-        }
-
-        $newMeal = $this->addMeal($meal, $newSlug, $kcalSum);
-
-        return $newMeal;
     }
 }
