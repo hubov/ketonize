@@ -8,8 +8,10 @@ use App\Repositories\DietRepository;
 use App\Repositories\Interfaces\DietMealDivisionRepositoryInterface;
 use App\Repositories\Interfaces\DietPlanRepositoryInterface;
 use App\Repositories\Interfaces\DietRepositoryInterface;
+use App\Repositories\Interfaces\MealRepositoryInterface;
 use App\Repositories\Interfaces\RecipeRepositoryInterface;
 use App\Repositories\Interfaces\UserRepositoryInterface;
+use App\Repositories\MealRepository;
 use App\Repositories\RecipeRepository;
 use App\Repositories\UserRepository;
 use Illuminate\Support\ServiceProvider;
@@ -24,6 +26,10 @@ class RepositoryServiceProvider extends ServiceProvider
     public function register()
     {
         $this->app->bind(
+            DietMealDivisionRepositoryInterface::class,
+            DietMealDivisionRepository::class
+        );
+        $this->app->bind(
             DietPlanRepositoryInterface::class,
             DietPlanRepository::class
         );
@@ -32,8 +38,9 @@ class RepositoryServiceProvider extends ServiceProvider
             DietRepository::class
         );
         $this->app->bind(
-            DietMealDivisionRepositoryInterface::class,
-            DietMealDivisionRepository::class
+            MealRepositoryInterface::class,
+            MealRepository::class
+        );
         $this->app->bind(
             RecipeRepositoryInterface::class,
             RecipeRepository::class
