@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Jobs\GenerateDietPlan;
 use App\Models\Unit;
-use App\Repositories\Interfaces\DietPlanRepositoryInterface;
 use App\Repositories\Interfaces\UserRepositoryInterface;
 use App\Services\Interfaces\DietPlanInterface;
 use Illuminate\Http\Request;
@@ -13,14 +12,12 @@ use Illuminate\Support\Facades\View;
 
 class DietPlanController extends Controller
 {
-    protected $dietPlanRepository;
     protected $dietPlanService;
     protected $userRepository;
     protected $planJob;
 
-    public function __construct(DietPlanRepositoryInterface $dietPlanRepository, DietPlanInterface $dietPlanService, UserRepositoryInterface $userRepository, GenerateDietPlan $planJob)
+    public function __construct(DietPlanInterface $dietPlanService, UserRepositoryInterface $userRepository, GenerateDietPlan $planJob)
     {
-        $this->dietPlanRepository = $dietPlanRepository;
         $this->dietPlanService = $dietPlanService;
         $this->userRepository = $userRepository;
         $this->planJob = $planJob;
