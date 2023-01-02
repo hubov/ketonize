@@ -3,11 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Jobs\GenerateDietPlan;
-use App\Models\DietPlan;
 use App\Models\Unit;
 use App\Repositories\Interfaces\DietPlanRepositoryInterface;
 use App\Repositories\Interfaces\UserRepositoryInterface;
-use App\Services\DietPlanService;
 use App\Services\Interfaces\DietPlanInterface;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -76,10 +74,6 @@ class DietPlanController extends Controller
     {
         $this->dietPlanService->setUser(Auth::user());
         $this->dietPlanService->getByDate($request->date);
-//        $dietPlan = $this->dietPlanService->
-//            ->where('user_id', Auth::user()->id)
-//            ->where('date_on', $request->date)
-//            ->firstOrFail();
 
         $newMeal = $this->dietPlanService->changeMeal($request->meal, $request->slug);
 
