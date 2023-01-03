@@ -7,21 +7,31 @@ use App\Http\Requests\UpdateIngredientRequest;
 use App\Models\Ingredient;
 use App\Models\IngredientCategory;
 use App\Models\Unit;
+use App\Repositories\Interfaces\IngredientRepositoryInterface;
+use App\Services\Interfaces\IngredientInterface;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\View;
 
 class IngredientController extends Controller
 {
+    protected $ingredientService;
+    protected $ingredientRepository;
+
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Contracts\View\View
      */
 
+    public function __construct(IngredientInterface $ingredientService, IngredientRepositoryInterface $ingredientRepository)
+    {
+        $this->ingredientService = $ingredientService;
+        $this->ingredientRepository = $ingredientRepository;
+    }
+
     public function index()
     {
-        $ingredients = Ingredient::all()
-                                ->sortBy('name');
+        $ingredients = $this->ingredientService->getSorted('name');
 
         return View::make('ingredient.listing', [
             'ingredients' => $ingredients,
@@ -48,14 +58,14 @@ class IngredientController extends Controller
      */
     public function store(StoreIngredientRequest $request)
     {
-        $ingredient = Ingredient::create($request->all());
+        $ingredient = $this->ingredientRepository->create($request->all());
 
         return redirect('/ingredient/'.$ingredient->id);
     }
 
     public function ajaxStore(StoreIngredientRequest $request)
     {
-        $ingredient = Ingredient::create($request->all());
+        $ingredient = $this->ingredientRepository->create($request->all());
 
         return response()->json(['id' => $ingredient->id]);
     }
@@ -79,7 +89,7 @@ class IngredientController extends Controller
      */
     public function edit($id)
     {
-        $ingredient = Ingredient::find($id);
+        $ingredient = $this->ingredientRepository->get($id);
 
         return View::make('ingredient.edit', [
             'ingredient' => $ingredient,
@@ -97,8 +107,7 @@ class IngredientController extends Controller
      */
     public function update(UpdateIngredientRequest $request, $id)
     {
-        $ingredient = Ingredient::find($id);
-        $ingredient->fill([
+        $ingredient = $this->ingredientRepository->update($id, [
             'name' => $request->name,
             'ingredient_category_id' => $request->ingredient_category_id,
             'protein' => $request->protein,
@@ -107,7 +116,6 @@ class IngredientController extends Controller
             'kcal' => $request->kcal,
             'unit_id' => $request->unit_id
         ]);
-        $ingredient->save();
 
         return redirect('/ingredient/'.$ingredient->id);
     }
@@ -120,15 +128,13 @@ class IngredientController extends Controller
      */
     public function destroy($id)
     {
-        $ingredient = Ingredient::find($id);
-        if (count($ingredient->recipes) > 0) {
-            foreach ($ingredient->recipes as $recipe) {
-                $results[] = $recipe->slug;
-            }
-            return response()->json(['error' => TRUE, 'recipes' => $results], 403);
+        $recipes = $this->ingredientService->relatedRecipes($id);
+
+        if (count($recipes) > 0) {
+            return response()->json(['error' => TRUE, 'recipes' => $recipes], 403);
         }
 
-        Ingredient::destroy($id);
+        $this->ingredientRepository->delete($id);
 
         return response()->json(TRUE);
     }
