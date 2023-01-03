@@ -4,19 +4,26 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreProfileRequest;
 use App\Http\Requests\UpdateProfileRequest;
-use App\Models\Profile;
 use App\Models\User;
-use Illuminate\Support\Facades\Auth;
+use App\Repositories\Interfaces\ProfileRepositoryInterface;
+use App\Repositories\Interfaces\UserRepositoryInterface;
+use App\Services\Interfaces\ProfileCreateOrUpdateInterface;
 use Illuminate\Support\Facades\View;
 
 class ProfileController extends Controller
 {
+    protected $profileCreateOrUpdate;
+    protected $profileRepository;
+    protected $userRepository;
     protected $user;
     protected $profile;
     protected $userDietController;
 
-    public function __construct(User $user, UserDietController $userDietController)
+    public function __construct(ProfileCreateOrUpdateInterface $profileCreateOrUpdate, ProfileRepositoryInterface $profileRepository, UserRepositoryInterface $userRepository, User $user, UserDietController $userDietController)
     {
+        $this->profileCreateOrUpdate = $profileCreateOrUpdate;
+        $this->profileRepository = $profileRepository;
+        $this->userRepository = $userRepository;
         $this->user = $user;
         $this->userDietController = $userDietController;
     }
@@ -38,21 +45,10 @@ class ProfileController extends Controller
      */
     public function store(StoreProfileRequest $request)
     {
-        $this->user = $this->user->find(Auth()->user()->id);
-
-        $profile = $this->user->profile->create([
-            'user_id' => $this->user->id,
-            'height' => $request->height,
-            'weight' => $request->weight,
-            'target_weight' => $request->target_weight,
-            'gender' => $request->gender,
-            'diet_target' => $request->diet_target,
-            'basic_activity' => $request->basic_activity,
-            'sport_activity' => $request->sport_activity,
-            'birthday' => $request->birthday
-        ]);
-
-        $this->userDietController->create($request->diet_type, $request->meals_count);
+        $this->profileCreateOrUpdate->perform(
+            Auth()->user()->id,
+            $request->input()
+        );
 
         return response()->json(TRUE);
     }
@@ -76,10 +72,10 @@ class ProfileController extends Controller
      */
     public function edit()
     {
-        $this->user = $this->user->find(Auth()->user()->id);
+        $this->user = $this->userRepository->get(Auth()->user()->id);
 
         return View::make('profile.edit', [
-            'profile' => $this->user->profile,
+            'profile' => $this->profileRepository->getForUser(Auth()->user()->id),
             'meals_count' => $this->user->userDiet->meals_count
         ]);
     }
@@ -93,21 +89,10 @@ class ProfileController extends Controller
      */
     public function update(UpdateProfileRequest $request)
     {
-        $this->user = $this->user->find(Auth()->user()->id);
-
-        $this->user->profile->fill([
-            'height' => $request->height,
-            'weight' => $request->weight,
-            'target_weight' => $request->target_weight,
-            'gender' => $request->gender,
-            'diet_target' => $request->diet_target,
-            'basic_activity' => $request->basic_activity,
-            'sport_activity' => $request->sport_activity,
-            'birthday' => $request->birthday
-        ]);
-        $this->user->profile->save();
-
-        $this->userDietController->update($request->diet_type, $request->meals_count);
+        $this->profileCreateOrUpdate->perform(
+            Auth()->user()->id,
+            $request->input()
+        );
 
         return response()->json(TRUE);
     }
