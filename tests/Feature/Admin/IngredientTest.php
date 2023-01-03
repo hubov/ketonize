@@ -219,7 +219,7 @@ class IngredientTest extends TestCase
         $user = User::factory()->create();
         $ingredient = Ingredient::factory()->create(['name' => 'Delicious ingredient']);
 
-        $response = $this->actingAs($user)->get('/ingredient-autocomplete', ['name' => 'ingr']);
+        $response = $this->actingAs($user)->get('/ingredient-autocomplete?name=ingr');
 
         $response->assertStatus(200);
         $response->assertJsonFragment(['id' => $ingredient->id, 'name' => 'Delicious ingredient']);
