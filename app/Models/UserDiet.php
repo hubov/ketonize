@@ -31,6 +31,10 @@ class UserDiet extends Model
         return $this->dietMealDivision->mealEnergyDivisions;
     }
 
+    protected function getMealsCountAttribute()
+    {
+        return $this->dietMealDivision->meals_count;
+    }
 
     public function getMacros()
     {

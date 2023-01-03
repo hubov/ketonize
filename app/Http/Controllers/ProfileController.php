@@ -76,7 +76,10 @@ class ProfileController extends Controller
 
         return View::make('profile.edit', [
             'profile' => $this->profileRepository->getForUser(Auth()->user()->id),
-            'meals_count' => $this->user->userDiet->meals_count
+            'meals_count' => $this->userRepository
+                                    ->get(Auth()->user()->id)
+                                    ->userDiet
+                                    ->meals_count
         ]);
     }
 
