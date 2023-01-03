@@ -5,9 +5,11 @@ namespace App\Providers;
 use App\Repositories\DietMealDivisionRepository;
 use App\Repositories\DietPlanRepository;
 use App\Repositories\DietRepository;
+use App\Repositories\IngredientRepository;
 use App\Repositories\Interfaces\DietMealDivisionRepositoryInterface;
 use App\Repositories\Interfaces\DietPlanRepositoryInterface;
 use App\Repositories\Interfaces\DietRepositoryInterface;
+use App\Repositories\Interfaces\IngredientRepositoryInterface;
 use App\Repositories\Interfaces\MealRepositoryInterface;
 use App\Repositories\Interfaces\RecipeRepositoryInterface;
 use App\Repositories\Interfaces\UserRepositoryInterface;
@@ -36,6 +38,10 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(
             DietRepositoryInterface::class,
             DietRepository::class
+        );
+        $this->app->bind(
+            IngredientRepositoryInterface::class,
+            IngredientRepository::class
         );
         $this->app->bind(
             MealRepositoryInterface::class,
