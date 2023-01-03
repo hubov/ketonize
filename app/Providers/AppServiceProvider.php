@@ -10,7 +10,9 @@ use App\Services\Interfaces\DietPlanInterface;
 use App\Services\Interfaces\IngredientCategoryInterface;
 use App\Services\Interfaces\IngredientInterface;
 use App\Services\Interfaces\IngredientSearchInterface;
+use App\Services\Interfaces\ProfileCreateOrUpdateInterface;
 use App\Services\Interfaces\RecipeSearchInterface;
+use App\Services\ProfileCreateOrUpdateService;
 use App\Services\RecipeSearchService;
 use Illuminate\Support\ServiceProvider;
 
@@ -30,6 +32,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(IngredientInterface::class, IngredientService::class);
         $this->app->bind(IngredientCategoryInterface::class, IngredientCategoryService::class);
         $this->app->bind(IngredientSearchInterface::class, IngredientSearchService::class);
+        $this->app->bind(ProfileCreateOrUpdateInterface::class, ProfileCreateOrUpdateService::class);
     }
 
     /**
