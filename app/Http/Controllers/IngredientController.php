@@ -9,6 +9,7 @@ use App\Models\IngredientCategory;
 use App\Models\Unit;
 use App\Repositories\Interfaces\IngredientRepositoryInterface;
 use App\Services\Interfaces\IngredientInterface;
+use App\Services\Interfaces\IngredientSearchInterface;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\View;
 
@@ -139,29 +140,13 @@ class IngredientController extends Controller
         return response()->json(TRUE);
     }
 
-    public function search(Request $request)
+    public function search(Request $request, IngredientSearchInterface $ingredientSearch)
     {
-        $ingredients = Ingredient::where('name', 'like', '%'.$request->input('name').'%')->limit(20)->get();
-
-        if (count($ingredients) > 0) {
-            $i = 0;
-            foreach ($ingredients as $ingredient) {
-                $result[levenshtein($request->input('name'), $ingredient->name)*100+$i] = [
-                    'id' => $ingredient->id,
-                    'name' => $ingredient->name,
-                    'unit' => $ingredient->unit->symbol,
-                    'protein' => $ingredient->protein,
-                    'fat' => $ingredient->fat,
-                    'carbohydrate' => $ingredient->carbohydrate,
-                    'kcal' => $ingredient->kcal
-                ];
-                $i++;
-            }
-        } else {
-            $result = [];
-        }
-
-        return response()->json($result);
+        return response()->json(
+            $ingredientSearch->query($request->input('name'))
+                                ->limit(20)
+                                ->return()
+        );
     }
 
     public function upload(Request $request)
