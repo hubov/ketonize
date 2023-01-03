@@ -8,6 +8,7 @@ use App\Models\Ingredient;
 use App\Models\IngredientCategory;
 use App\Models\Unit;
 use App\Repositories\Interfaces\IngredientRepositoryInterface;
+use App\Services\Interfaces\IngredientCategoryInterface;
 use App\Services\Interfaces\IngredientInterface;
 use App\Services\Interfaces\IngredientSearchInterface;
 use Illuminate\Http\Request;
@@ -17,6 +18,7 @@ class IngredientController extends Controller
 {
     protected $ingredientService;
     protected $ingredientRepository;
+    protected $ingredientCategoryService;
 
     /**
      * Display a listing of the resource.
@@ -24,10 +26,11 @@ class IngredientController extends Controller
      * @return \Illuminate\Contracts\View\View
      */
 
-    public function __construct(IngredientInterface $ingredientService, IngredientRepositoryInterface $ingredientRepository)
+    public function __construct(IngredientInterface $ingredientService, IngredientRepositoryInterface $ingredientRepository, IngredientCategoryInterface $ingredientCategoryService)
     {
         $this->ingredientService = $ingredientService;
         $this->ingredientRepository = $ingredientRepository;
+        $this->ingredientCategoryService = $ingredientCategoryService;
     }
 
     public function index()
@@ -37,7 +40,7 @@ class IngredientController extends Controller
         return View::make('ingredient.listing', [
             'ingredients' => $ingredients,
             'units' => Unit::all(),
-            'categories' => IngredientCategory::orderBy('name')->get()
+            'categories' => $this->ingredientCategoryService->getSorted([['name', 'asc']])
         ]);
     }
 
@@ -95,7 +98,7 @@ class IngredientController extends Controller
         return View::make('ingredient.edit', [
             'ingredient' => $ingredient,
             'units' => Unit::all(),
-            'categories' => IngredientCategory::orderBy('name')->get()
+            'categories' => $this->ingredientCategoryService->getSorted([['name', 'asc']])
         ]);
     }
 
@@ -151,6 +154,8 @@ class IngredientController extends Controller
 
     public function upload(Request $request)
     {
+        // deprecated; to do auto upload later
+
         if ($request->file('bulk_upload')->isValid()) {
             $file = fopen($request->file('bulk_upload')->path(), 'r');
             $head = fgetcsv($file, 4096, ',', '"');
