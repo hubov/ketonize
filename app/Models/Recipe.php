@@ -10,7 +10,12 @@ class Recipe extends Model
 {
     use HasFactory;
 
+    const IMAGE_DEFAULT = 'default';
+
     protected $fillable = ['name', 'image', 'protein', 'fat', 'carbohydrate', 'kcal', 'description', 'preparation_time', 'cooking_time'];
+    protected $attributes = [
+        'image' => self::IMAGE_DEFAULT
+    ];
 
     public function ingredients()
     {
@@ -25,6 +30,7 @@ class Recipe extends Model
     protected static function boot()
     {
         $autoValues = function($recipe) {
+            $recipe->image = ($recipe->image === NULL) ? self::IMAGE_DEFAULT : $recipe->image;
             $recipe->slug = Str::of($recipe->name)->slug('-')->__toString();
             $recipe->name = Str::of($recipe->name)->ucfirst()->__toString();
             $recipe->total_time = $recipe->preparation_time + $recipe->cooking_time;
