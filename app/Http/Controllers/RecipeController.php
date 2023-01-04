@@ -4,18 +4,31 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreRecipeRequest;
 use App\Http\Requests\UpdateRecipeRequest;
-use App\Models\IngredientCategory;
-use App\Models\Recipe;
-use App\Models\Tag;
-use App\Models\Unit;
+use App\Repositories\Interfaces\IngredientCategoryRepositoryInterface;
+use App\Repositories\Interfaces\RecipeRepositoryInterface;
+use App\Repositories\Interfaces\TagRepositoryInterface;
+use App\Repositories\Interfaces\UnitRepositoryInterface;
+use App\Services\Interfaces\RecipeCreateOrUpdateInterface;
 use App\Services\Interfaces\RecipeSearchInterface;
-use App\Services\RecipeSearchService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\View;
 
 class RecipeController extends Controller
 {
+    protected $recipeRepository;
+    protected $recipeCreateOrUpdate;
+    protected $ingredientCategoryRepository;
+    protected $unitRepository;
+    protected $tagRepository;
+
+    public function __construct(RecipeRepositoryInterface $recipeRepository, RecipeCreateOrUpdateInterface $recipeCreateOrUpdate, IngredientCategoryRepositoryInterface $ingredientCategoryRepository, UnitRepositoryInterface $unitRepository, TagRepositoryInterface $tagRepository)
+    {
+        $this->recipeRepository = $recipeRepository;
+        $this->recipeCreateOrUpdate = $recipeCreateOrUpdate;
+        $this->ingredientCategoryRepository = $ingredientCategoryRepository;
+        $this->unitRepository = $unitRepository;
+        $this->tagRepository = $tagRepository;
+    }
     /**
      * Display a listing of the resource.
      *
@@ -23,14 +36,14 @@ class RecipeController extends Controller
      */
     public function index()
     {
-        $recipes = Recipe::all()
-                    ->sortBy('name');
-
         return View::make('recipe.listing', [
-            'recipes' => $recipes,
-            'units' => Unit::all(),
-            'categories' => IngredientCategory::orderBy('name')->get(),
-            'tagsList' => Tag::orderBy('name')->get()
+            'recipes' => $this->recipeRepository->getAll()
+                                                ->sortBy('name'),
+            'units' => $this->unitRepository->getAll(),
+            'categories' => $this->ingredientCategoryRepository->getAll()
+                                                                ->sortBy('name'),
+            'tagsList' => $this->tagRepository->getAll()
+                                                ->sortBy('name')
         ]);
     }
 
@@ -52,21 +65,7 @@ class RecipeController extends Controller
      */
     public function store(StoreRecipeRequest $request)
     {
-        $recipe = Recipe::create([
-            'name' => $request->name,
-            'image' => ($request->image == NULL) ? 'default' : $request->image,
-            'description' => $request->description,
-            'preparation_time' => $request->preparation_time,
-            'cooking_time' => $request->cooking_time
-        ]);
-
-        $recipe->setIngredients($request->ids, $request->quantity);
-
-        foreach ($request->tags as $tag) {
-            $recipe->tags()->attach($tag);
-        }
-
-        $recipe->save();
+        $recipe = $this->recipeCreateOrUpdate->perform($request->input());
 
         return redirect('/recipe/'.$recipe->slug);
     }
@@ -77,25 +76,20 @@ class RecipeController extends Controller
      * @param  int  $id
      * @return \Illuminate\Contracts\View\View
      */
-    public function show($slug, $modifier = NULL)
+    public function show($slug, $modifier = 100)
     {
-        $recipe = Recipe::where('slug', $slug)->firstOrFail();
+        $recipe = $this->recipeRepository->getBySlug($slug);
 
         $weightTotal = 0;
         foreach  ($recipe->ingredients as $ingredient) {
-            $ingredient->pivot->amount = ($modifier !== NULL) ? round($ingredient->pivot->amount * $modifier / 100) : 0;
+            $ingredient->pivot->amount = round($ingredient->pivot->amount * $modifier / 100);
             $weightTotal += $ingredient->pivot->amount;
         }
 
-        if ($modifier !== NULL) {
-            $recipe->protein *= $modifier / 100;
-            $recipe->fat *= $modifier / 100;
-            $recipe->carbohydrate *= $modifier / 100;
-            $recipe->kcal *= $modifier / 100;
-        }
-
-        $user = Auth::user();
-        $isAdmin = $user->is('admin');
+        $recipe->protein *= $modifier / 100;
+        $recipe->fat *= $modifier / 100;
+        $recipe->carbohydrate *= $modifier / 100;
+        $recipe->kcal *= $modifier / 100;
 
         return View::make('recipe.single', [
             'name' => $recipe->name,
@@ -109,8 +103,8 @@ class RecipeController extends Controller
             'ingredients' => $recipe->ingredients,
             'description' => $recipe->description,
             'weightTotal' => $weightTotal,
-            'admin' => $isAdmin,
-            'categories' => IngredientCategory::orderBy('name')->get(),
+            'admin' => Auth()->user()->is('admin'),
+            'categories' => $this->ingredientCategoryRepository->getAll()->sortBy('name'),
             'displayMacros' => true
         ]);
     }
@@ -123,13 +117,11 @@ class RecipeController extends Controller
      */
     public function edit($slug)
     {
-        $recipe = Recipe::where('slug', $slug)->firstOrFail();
-
         return View::make('recipe.edit', [
-            'recipe' => $recipe,
-            'units' => Unit::all(),
-            'categories' => IngredientCategory::orderBy('name')->get(),
-            'tagsList' => Tag::orderBy('name')->get()
+            'recipe' => $this->recipeRepository->getBySlug($slug),
+            'units' => $this->unitRepository->getAll(),
+            'categories' => $this->ingredientCategoryRepository->getAll()->sortBy('name'),
+            'tagsList' => $this->tagRepository->getAll()->sortBy('name')
         ]);
     }
 
@@ -142,18 +134,7 @@ class RecipeController extends Controller
      */
     public function update(UpdateRecipeRequest $request, $slug)
     {
-        $recipe = Recipe::where('slug', $slug)->firstOrFail();
-
-        $recipe->setIngredients($request->ids, $request->quantity);
-        $recipe->fill([
-            'name' => $request->name,
-            'image' => ($request->image == NULL) ? 'default' : $request->image,
-            'description' => $request->description,
-            'preparation_time' => $request->preparation_time,
-            'cooking_time' => $request->cooking_time
-        ]);
-        $recipe->save();
-        $recipe->tags()->sync($request->tags);
+        $recipe = $this->recipeCreateOrUpdate->perform($request->input(), $slug);
 
         return redirect('/recipe/'.$recipe->slug);
     }
@@ -184,7 +165,6 @@ class RecipeController extends Controller
             $filters['tags'] = NULL;
         }
 
-        $recipeSearch = new RecipeSearchService;
         $recipeSearch->filters($filters);
 
         return response()->json($recipeSearch->search());
@@ -198,7 +178,8 @@ class RecipeController extends Controller
      */
     public function showRaw(Request $request)
     {
-        $recipe = Recipe::where('slug', $request->slug)->with('ingredients.unit')->firstOrFail();
+        $recipe = $this->recipeRepository->getBySlug($request->slug)
+                                        ->load('ingredients.unit');
 
         return response()->json([
             'name' => $recipe->name,
