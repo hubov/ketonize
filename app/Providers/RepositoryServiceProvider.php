@@ -16,11 +16,13 @@ use App\Repositories\Interfaces\MealRepositoryInterface;
 use App\Repositories\Interfaces\ProfileRepositoryInterface;
 use App\Repositories\Interfaces\RecipeRepositoryInterface;
 use App\Repositories\Interfaces\TagRepositoryInterface;
+use App\Repositories\Interfaces\UnitRepositoryInterface;
 use App\Repositories\Interfaces\UserRepositoryInterface;
 use App\Repositories\MealRepository;
 use App\Repositories\ProfileRepository;
 use App\Repositories\RecipeRepository;
 use App\Repositories\TagRepository;
+use App\Repositories\UnitRepository;
 use App\Repositories\UserRepository;
 use Illuminate\Support\ServiceProvider;
 
@@ -68,6 +70,10 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(
             TagRepositoryInterface::class,
             TagRepository::class
+        );
+        $this->app->bind(
+            UnitRepositoryInterface::class,
+            UnitRepository::class
         );
         $this->app->bind(
             UserRepositoryInterface::class,
