@@ -8,6 +8,5 @@ use Illuminate\Support\Collection;
 interface IngredientInterface
 {
     public function __construct(IngredientRepositoryInterface $ingredientRepository);
-    public function getSorted(string ...$columns) : Collection;
     public function relatedRecipes(int $id) : Collection;
 }

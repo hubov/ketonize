@@ -7,8 +7,8 @@ use App\Http\Requests\UpdateIngredientRequest;
 use App\Models\Ingredient;
 use App\Models\IngredientCategory;
 use App\Models\Unit;
+use App\Repositories\Interfaces\IngredientCategoryRepositoryInterface;
 use App\Repositories\Interfaces\IngredientRepositoryInterface;
-use App\Services\Interfaces\IngredientCategoryInterface;
 use App\Services\Interfaces\IngredientInterface;
 use App\Services\Interfaces\IngredientSearchInterface;
 use Illuminate\Http\Request;
@@ -18,7 +18,7 @@ class IngredientController extends Controller
 {
     protected $ingredientService;
     protected $ingredientRepository;
-    protected $ingredientCategoryService;
+    protected $ingredientCategoryRepository;
 
     /**
      * Display a listing of the resource.
@@ -26,21 +26,21 @@ class IngredientController extends Controller
      * @return \Illuminate\Contracts\View\View
      */
 
-    public function __construct(IngredientInterface $ingredientService, IngredientRepositoryInterface $ingredientRepository, IngredientCategoryInterface $ingredientCategoryService)
+    public function __construct(IngredientInterface $ingredientService, IngredientRepositoryInterface $ingredientRepository, IngredientCategoryRepositoryInterface $ingredientCategoryRepository)
     {
         $this->ingredientService = $ingredientService;
         $this->ingredientRepository = $ingredientRepository;
-        $this->ingredientCategoryService = $ingredientCategoryService;
+        $this->ingredientCategoryRepository = $ingredientCategoryRepository;
     }
 
     public function index()
     {
-        $ingredients = $this->ingredientService->getSorted('name');
+        $ingredients = $this->ingredientRepository->getAll()->sortBy('name');
 
         return View::make('ingredient.listing', [
             'ingredients' => $ingredients,
             'units' => Unit::all(),
-            'categories' => $this->ingredientCategoryService->getSorted([['name', 'asc']])
+            'categories' => $this->ingredientCategoryRepository->getAll()->sortBy('name')
         ]);
     }
 
@@ -98,7 +98,7 @@ class IngredientController extends Controller
         return View::make('ingredient.edit', [
             'ingredient' => $ingredient,
             'units' => Unit::all(),
-            'categories' => $this->ingredientCategoryService->getSorted([['name', 'asc']])
+            'categories' => $this->ingredientCategoryRepository->getAll()->sortBy('name')
         ]);
     }
 

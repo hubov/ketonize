@@ -17,17 +17,6 @@ class IngredientService implements IngredientInterface
         return $this;
     }
 
-    public function getSorted(string ...$columns) : Collection
-    {
-        $ingredients = $this->ingredientRepository->getAll();
-
-        foreach ($columns as $column) {
-            $ingredients->sortBy($column);
-        }
-
-        return $ingredients;
-    }
-
     public function relatedRecipes (int $id) : Collection
     {
         $recipes = [];
