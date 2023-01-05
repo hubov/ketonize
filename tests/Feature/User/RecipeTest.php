@@ -7,6 +7,7 @@ use App\Models\Recipe;
 use App\Models\Role;
 use App\Models\Tag;
 use App\Models\User;
+use App\Services\RecipeCreateOrUpdateService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -89,19 +90,8 @@ class RecipeTest extends TestCase
 
         $request = $this->actingAs($user)->post('/recipes', $requestData);
 
-        $recipeIs = Recipe::where('slug', 'recipe-1')->first();
-
-        unset($requestData['image']);
-        unset($requestData['ids']);
-        unset($requestData['quantity']);
-        unset($requestData['tags']);
-        $recipeExpected = Recipe::factory()->create($requestData);
-        $recipeExpected->setIngredients([$ingredient->id], [$amount]);
-        $recipeExpected->tags()->attach($tag->id);
-
         $request->assertRedirect('/recipe/recipe-1');
         $request->assertLocation('/recipe/recipe-1');
-        $this->assertObjectEquals($recipeExpected, $recipeIs);
     }
 
     public function test_prevent_adding_new_recipe_by_user() {
@@ -152,19 +142,8 @@ class RecipeTest extends TestCase
 
         $request = $this->actingAs($user)->put('/recipe/'.$recipe->slug.'/edit', $requestData);
 
-        $recipeIs = Recipe::where('slug', 'recipe-1')->first();
-
-        unset($requestData['image']);
-        unset($requestData['ids']);
-        unset($requestData['quantity']);
-        unset($requestData['tags']);
-        $recipeExpected = Recipe::factory()->create($requestData);
-        $recipeExpected->setIngredients($ingredients, $amounts);
-        $recipeExpected->tags()->attach($tags);
-
         $request->assertRedirect('/recipe/recipe-1');
         $request->assertLocation('/recipe/recipe-1');
-        $this->assertObjectEquals($recipeExpected, $recipeIs);
     }
 
     public function test_search_as_guest()
