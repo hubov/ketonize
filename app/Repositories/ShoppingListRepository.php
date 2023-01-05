@@ -28,6 +28,22 @@ class ShoppingListRepository implements ShoppingListRepositoryInterface
         return ShoppingList::create($attributes);
     }
 
+    public function createForUser(int $userId, array $attributes)
+    {
+        $attributes['user_id'] = $userId;
+
+        return ShoppingList::create($attributes);
+    }
+
+    public function createForUserBulk(int $userId, array $attributes)
+    {
+        foreach ($attributes as $key => $row) {
+            $attributes[$key]['user_id'] = $userId;
+        }
+
+        return ShoppingList::insert($attributes);
+    }
+
     public function update(int $id, array $attributes): ShoppingList
     {
         $shoppingList = ShoppingList::find($id);
@@ -47,5 +63,11 @@ class ShoppingListRepository implements ShoppingListRepositoryInterface
     public function delete(int $id): bool
     {
         return ShoppingList::destroy($id);
+    }
+
+    public function deleteForUser(int $userId): bool
+    {
+        return ShoppingList::where('user_id', $userId)
+                            ->delete();
     }
 }
