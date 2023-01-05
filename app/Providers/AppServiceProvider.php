@@ -12,10 +12,12 @@ use App\Services\Interfaces\ProfileCreateOrUpdateInterface;
 use App\Services\Interfaces\RecipeCreateOrUpdateInterface;
 use App\Services\Interfaces\RecipeSearchInterface;
 use App\Services\Interfaces\RelateIngredientsToRecipeInterface;
+use App\Services\Interfaces\GetShoppingListInterface;
 use App\Services\ProfileCreateOrUpdateService;
 use App\Services\RecipeCreateOrUpdateService;
 use App\Services\RecipeSearchService;
 use App\Services\RelateIngredientsToRecipeService;
+use App\Services\GetShoppingListService;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -36,6 +38,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(ProfileCreateOrUpdateInterface::class, ProfileCreateOrUpdateService::class);
         $this->app->bind(RecipeCreateOrUpdateInterface::class, RecipeCreateOrUpdateService::class);
         $this->app->bind(RelateIngredientsToRecipeInterface::class, RelateIngredientsToRecipeService::class);
+        $this->app->bind(GetShoppingListInterface::class, GetShoppingListService::class);
     }
 
     /**
