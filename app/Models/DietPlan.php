@@ -10,6 +10,7 @@ class DietPlan extends Model
     use HasFactory;
 
     protected $fillable = ['user_id', 'date_on'];
+    protected $with = ['meals'];
 
     protected $totalProtein = 0;
     protected $totalFat = 0;
