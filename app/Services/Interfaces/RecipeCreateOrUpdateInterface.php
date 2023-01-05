@@ -9,6 +9,6 @@ use App\Repositories\Interfaces\TagRepositoryInterface;
 
 interface RecipeCreateOrUpdateInterface
 {
-    public function __construct(RecipeRepositoryInterface $profileRepository, IngredientRepositoryInterface $ingredientRepository, TagRepositoryInterface $tagRepository);
+    public function __construct(RecipeRepositoryInterface $profileRepository, IngredientRepositoryInterface $ingredientRepository, TagRepositoryInterface $tagRepository, RelateIngredientsToRecipeInterface $relateIngredientsToRecipe);
     public function perform(array $attributes, string $slug) : Recipe;
 }

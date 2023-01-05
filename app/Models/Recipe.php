@@ -69,21 +69,6 @@ class Recipe extends Model
         $this::resetMacros();
     }
 
-    public function setIngredients($ingredientIds, $amounts)
-    {
-        $this->removeIngredients();
-
-        if ($ingredientIds > 0) {
-            foreach ($ingredientIds as $i => $id) {
-                $this->ingredients()->attach($id, ['amount' => $amounts[$i]]);
-                $ingredient = Ingredient::find($id);
-                $this->addMacrosFromIngredient($ingredient, $amounts[$i]);
-            }
-
-            $this->updateMacroRatios();
-        }
-    }
-
     protected function addProtein($amount)
     {
         $this->protein += $amount;
@@ -147,9 +132,9 @@ class Recipe extends Model
             $this->ingredients->modelKeys() === $other->ingredients->modelKeys() &&
             $this->tags->modelKeys() === $other->tags->modelKeys()
         ) {
-            return TRUE;
+            return true;
         } else {
-            return FALSE;
+            return false;
         }
     }
 }
