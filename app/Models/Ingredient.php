@@ -20,9 +20,14 @@ class Ingredient extends Model
         return $this->belongsToMany(Recipe::class)->withPivot('amount');
     }
 
-    public function category()
+    public function ingredientCategory()
     {
         return $this->belongsTo(IngredientCategory::class);
+    }
+
+    public function category()
+    {
+        return $this->ingredientCategory();
     }
 
     public function nutrients()
