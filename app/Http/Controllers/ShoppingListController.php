@@ -2,36 +2,28 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\IngredientCategory;
 use App\Models\Meal;
 use App\Models\ShoppingList;
+use App\Services\Interfaces\GetShoppingListInterface;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\View;
 
 class ShoppingListController extends Controller
 {
+    protected $shoppingListService;
+
+    public function __construct(GetShoppingListInterface $shoppingListService)
+    {
+        $this->shoppingListService = $shoppingListService;
+    }
+
     public function index()
     {
-        $list = ShoppingList::join('ingredients', 'shopping_lists.ingredient_id', '=', 'ingredients.id')
-                        ->where('user_id', Auth::user()->id)
-                        ->select('shopping_lists.*')
-                        ->orderBy('ingredients.ingredient_category_id')
-                        ->orderBy('ingredients.name')
-                        ->get();
-
-        $categorisedList = [];
-        foreach ($list as $l) {
-            $category = IngredientCategory::find($l->ingredient->ingredient_category_id)->name;
-            $categorisedList[$category][] = $l;
-        }
-
-        $date = date("Y-m-d");
-
         return View::make('shopping-list', [
-            'list' => $categorisedList,
-            'date_from' => $date,
-            'date_to' => $date,
+            'list' => $this->shoppingListService->retrieveForUser(Auth()->user()->id),
+            'date_from' => date("Y-m-d"),
+            'date_to' => date("Y-m-d"),
         ]);
     }
 
