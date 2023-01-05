@@ -6,7 +6,6 @@ use App\Models\Meal;
 use App\Models\ShoppingList;
 use App\Services\Interfaces\GetShoppingListInterface;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\View;
 
 class ShoppingListController extends Controller
@@ -30,7 +29,7 @@ class ShoppingListController extends Controller
     public function update(Request $request)
     {
         $meals = Meal::join('diet_plans', 'meals.diet_plan_id', 'diet_plans.id')
-                            ->where('user_id', Auth::user()->id)
+                            ->where('user_id', Auth()->user()->id)
                             ->where('date_on', '>=', $request->date_from)
                             ->where('date_on', '<=', $request->date_to)
                             ->get();
@@ -49,11 +48,11 @@ class ShoppingListController extends Controller
             }
         }
 
-        ShoppingList::where('user_id', Auth::user()->id)->delete();
+        ShoppingList::where('user_id', Auth()->user()->id)->delete();
 
         foreach ($ingredients as $id => $ingredient) {
             ShoppingList::create([
-                'user_id' => Auth::user()->id,
+                'user_id' => Auth()->user()->id,
                 'ingredient_id' => $id,
                 'amount' => $ingredient['amount']
             ]);
@@ -65,7 +64,7 @@ class ShoppingListController extends Controller
     public function edit(Request $request)
     {
         $list = ShoppingList::where('id', $request->id)
-                    ->where('user_id', Auth::user()->id)
+                    ->where('user_id', Auth()->user()->id)
                     ->first();
         if ($list !== NULL) {
             $list->amount = $request->amount;
@@ -80,7 +79,7 @@ class ShoppingListController extends Controller
     public function destroy(Request $request)
     {
         ShoppingList::where('id', $request->id)
-                    ->where('user_id', Auth::user()->id)
+                    ->where('user_id', Auth()->user()->id)
                     ->delete();
 
         return response()->json(TRUE);
