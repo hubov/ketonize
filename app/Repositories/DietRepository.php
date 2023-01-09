@@ -7,8 +7,8 @@ use App\Repositories\Interfaces\DietRepositoryInterface;
 
 class DietRepository implements DietRepositoryInterface
 {
-    public function get(int $id) : Diet
+    public function get(int $dietId) : Diet
     {
-        return Diet::find($id)->first();
+        return Diet::find($dietId)->first();
     }
 }
