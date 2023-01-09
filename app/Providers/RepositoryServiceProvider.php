@@ -18,6 +18,7 @@ use App\Repositories\Interfaces\RecipeRepositoryInterface;
 use App\Repositories\Interfaces\ShoppingListRepositoryInterface;
 use App\Repositories\Interfaces\TagRepositoryInterface;
 use App\Repositories\Interfaces\UnitRepositoryInterface;
+use App\Repositories\Interfaces\UserDietRepositoryInterface;
 use App\Repositories\Interfaces\UserRepositoryInterface;
 use App\Repositories\MealRepository;
 use App\Repositories\ProfileRepository;
@@ -25,6 +26,7 @@ use App\Repositories\RecipeRepository;
 use App\Repositories\ShoppingListRepository;
 use App\Repositories\TagRepository;
 use App\Repositories\UnitRepository;
+use App\Repositories\UserDietRepository;
 use App\Repositories\UserRepository;
 use Illuminate\Support\ServiceProvider;
 
@@ -84,6 +86,10 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(
             UserRepositoryInterface::class,
             UserRepository::class
+        );
+        $this->app->bind(
+            UserDietRepositoryInterface::class,
+            UserDietRepository::class
         );
     }
 
