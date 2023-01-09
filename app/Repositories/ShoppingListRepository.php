@@ -8,9 +8,9 @@ use Illuminate\Support\Collection;
 
 class ShoppingListRepository implements ShoppingListRepositoryInterface
 {
-    public function get(int $id) : ShoppingList
+    public function get(int $id) : ShoppingList|null
     {
-        return ShoppingList::find($id)->first();
+        return ShoppingList::find($id);
     }
 
     public function getAll() : Collection
