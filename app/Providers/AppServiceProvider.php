@@ -16,6 +16,7 @@ use App\Services\Interfaces\ShoppingList\DeleteShoppingListInterface;
 use App\Services\Interfaces\ShoppingList\EditShoppingListInterface;
 use App\Services\Interfaces\ShoppingList\GetShoppingListInterface;
 use App\Services\Interfaces\ShoppingList\UpdateShoppingListInterface;
+use App\Services\Interfaces\UserDietInterface;
 use App\Services\ProfileCreateOrUpdateService;
 use App\Services\RecipeCreateOrUpdateService;
 use App\Services\RecipeSearchService;
@@ -24,6 +25,7 @@ use App\Services\ShoppingList\DeleteShoppingListService;
 use App\Services\ShoppingList\EditShoppingListService;
 use App\Services\ShoppingList\GetShoppingListService;
 use App\Services\ShoppingList\UpdateShoppingListService;
+use App\Services\UserDietService;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -47,7 +49,8 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(ProfileCreateOrUpdateInterface::class, ProfileCreateOrUpdateService::class);
         $this->app->bind(RecipeCreateOrUpdateInterface::class, RecipeCreateOrUpdateService::class);
         $this->app->bind(RelateIngredientsToRecipeInterface::class, RelateIngredientsToRecipeService::class);
-        $this->app->bind(UpdateShoppingListInterface::class, UpdateShoppingListService::class);;
+        $this->app->bind(UpdateShoppingListInterface::class, UpdateShoppingListService::class);
+        $this->app->bind(UserDietInterface::class, UserDietService::class);
     }
 
     /**
