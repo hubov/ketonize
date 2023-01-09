@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\ShoppingList;
+use App\Services\Interfaces\ShoppingList\EditShoppingListInterface;
 use App\Services\Interfaces\ShoppingList\GetShoppingListInterface;
 use App\Services\Interfaces\ShoppingList\UpdateShoppingListInterface;
 use Illuminate\Http\Request;
@@ -12,11 +13,13 @@ class ShoppingListController extends Controller
 {
     protected $getShoppingListService;
     protected $updateShoppingListService;
+    protected $editShoppingListService;
 
-    public function __construct(GetShoppingListInterface $getShoppingListService, UpdateShoppingListInterface $updateShoppingListService)
+    public function __construct(GetShoppingListInterface $getShoppingListService, UpdateShoppingListInterface $updateShoppingListService, EditShoppingListInterface $editShoppingListService)
     {
         $this->getShoppingListService = $getShoppingListService;
         $this->updateShoppingListService = $updateShoppingListService;
+        $this->editShoppingListService = $editShoppingListService;
     }
 
     public function index()
@@ -39,17 +42,9 @@ class ShoppingListController extends Controller
 
     public function edit(Request $request)
     {
-        $list = ShoppingList::where('id', $request->id)
-                    ->where('user_id', Auth()->user()->id)
-                    ->first();
-        if ($list !== NULL) {
-            $list->amount = $request->amount;
-            $list->save();
-        } else {
-            return response()->json(FALSE);
-        }
+        $this->editShoppingListService->setUser(Auth()->user()->id);
 
-        return response()->json(TRUE);
+        return response()->json($this->editShoppingListService->update($request->id, $request->amount));
     }
 
     public function destroy(Request $request)
