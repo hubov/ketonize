@@ -8,35 +8,27 @@ use App\Models\Profile;
 use App\Models\UserDiet;
 use App\Repositories\Interfaces\DietMealDivisionRepositoryInterface;
 use App\Repositories\Interfaces\DietRepositoryInterface;
+use App\Services\UserDietService;
 use Illuminate\Support\Facades\Auth;
 
 class UserDietController extends Controller
 {
+    protected $userDietService;
     protected $profile;
     protected $dietRepository;
     protected $dietMealDiv;
 
-    public function __construct(DietRepositoryInterface $dietRepository, DietMealDivisionRepositoryInterface $dietMealDivRepository, Profile $profile)
+    public function __construct(UserDietService $userDietService, DietRepositoryInterface $dietRepository, DietMealDivisionRepositoryInterface $dietMealDivRepository, Profile $profile)
     {
+        $this->userDietService = $userDietService;
         $this->dietRepository = $dietRepository;
         $this->dietMealDivRepository = $dietMealDivRepository;
         $this->profile = $profile;
     }
 
     public function create($dietId, $mealsCount) {
-        $this->profile = $this->profile->where('user_id', Auth::user()->id)->firstOrFail();
-        $kcalTotal = $this->kcal($this->profile);
-        $diet = $this->dietRepository->get($dietId);
-
-        UserDiet::create([
-            'user_id' => Auth::user()->id,
-            'diet_id' => $diet->id,
-            'diet_meal_division_id' => $this->dietMealDivRepository->getByMealsCount($mealsCount)->id,
-            'kcal' => $kcalTotal,
-            'protein' => round(($kcalTotal * $diet->protein / 100) / 4),
-            'fat' => round(($kcalTotal * $diet->fat / 100) / 9),
-            'carbohydrate' => round(($kcalTotal * $diet->carbohydrate / 100) / 4)
-        ]);
+        $this->userDietService->setUser(Auth()->user()->id);
+        $this->userDietService->create($dietId, $mealsCount);
 
         $this->newDietPlan();
     }
