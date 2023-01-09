@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Services;
+namespace App\Services\ShoppingList;
 
 use App\Repositories\Interfaces\MealRepositoryInterface;
 use App\Repositories\Interfaces\ShoppingListRepositoryInterface;
 use App\Repositories\Interfaces\UserRepositoryInterface;
-use App\Services\Interfaces\UpdateShoppingListInterface;
+use App\Services\Interfaces\ShoppingList\UpdateShoppingListInterface;
 
 class UpdateShoppingListService implements UpdateShoppingListInterface
 {

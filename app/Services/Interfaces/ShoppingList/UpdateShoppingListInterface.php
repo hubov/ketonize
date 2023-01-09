@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\Interfaces;
+namespace App\Services\Interfaces\ShoppingList;
 
 use App\Repositories\Interfaces\MealRepositoryInterface;
 use App\Repositories\Interfaces\ShoppingListRepositoryInterface;

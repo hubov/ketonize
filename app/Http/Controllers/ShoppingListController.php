@@ -2,10 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Meal;
 use App\Models\ShoppingList;
-use App\Services\Interfaces\GetShoppingListInterface;
-use App\Services\Interfaces\UpdateShoppingListInterface;
+use App\Services\Interfaces\ShoppingList\GetShoppingListInterface;
+use App\Services\Interfaces\ShoppingList\UpdateShoppingListInterface;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\View;
 

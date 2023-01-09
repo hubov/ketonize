@@ -12,14 +12,14 @@ use App\Services\Interfaces\ProfileCreateOrUpdateInterface;
 use App\Services\Interfaces\RecipeCreateOrUpdateInterface;
 use App\Services\Interfaces\RecipeSearchInterface;
 use App\Services\Interfaces\RelateIngredientsToRecipeInterface;
-use App\Services\Interfaces\GetShoppingListInterface;
-use App\Services\Interfaces\UpdateShoppingListInterface;
+use App\Services\Interfaces\ShoppingList\GetShoppingListInterface;
+use App\Services\Interfaces\ShoppingList\UpdateShoppingListInterface;
 use App\Services\ProfileCreateOrUpdateService;
 use App\Services\RecipeCreateOrUpdateService;
 use App\Services\RecipeSearchService;
 use App\Services\RelateIngredientsToRecipeService;
-use App\Services\GetShoppingListService;
-use App\Services\UpdateShoppingListService;
+use App\Services\ShoppingList\GetShoppingListService;
+use App\Services\ShoppingList\UpdateShoppingListService;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider

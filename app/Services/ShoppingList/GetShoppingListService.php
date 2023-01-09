@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Services;
+namespace App\Services\ShoppingList;
 
 use App\Repositories\Interfaces\ShoppingListRepositoryInterface;
-use App\Services\Interfaces\GetShoppingListInterface;
+use App\Services\Interfaces\ShoppingList\GetShoppingListInterface;
 
 class GetShoppingListService implements GetShoppingListInterface
 {
