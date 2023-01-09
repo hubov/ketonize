@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\ShoppingList;
+use App\Services\Interfaces\ShoppingList\DeleteShoppingListInterface;
 use App\Services\Interfaces\ShoppingList\EditShoppingListInterface;
 use App\Services\Interfaces\ShoppingList\GetShoppingListInterface;
 use App\Services\Interfaces\ShoppingList\UpdateShoppingListInterface;
@@ -14,12 +15,14 @@ class ShoppingListController extends Controller
     protected $getShoppingListService;
     protected $updateShoppingListService;
     protected $editShoppingListService;
+    protected $deleteShoppingListService;
 
-    public function __construct(GetShoppingListInterface $getShoppingListService, UpdateShoppingListInterface $updateShoppingListService, EditShoppingListInterface $editShoppingListService)
+    public function __construct(GetShoppingListInterface $getShoppingListService, UpdateShoppingListInterface $updateShoppingListService, EditShoppingListInterface $editShoppingListService, DeleteShoppingListInterface $deleteShoppingListService)
     {
         $this->getShoppingListService = $getShoppingListService;
         $this->updateShoppingListService = $updateShoppingListService;
         $this->editShoppingListService = $editShoppingListService;
+        $this->deleteShoppingListService = $deleteShoppingListService;
     }
 
     public function index()
@@ -49,10 +52,8 @@ class ShoppingListController extends Controller
 
     public function destroy(Request $request)
     {
-        ShoppingList::where('id', $request->id)
-                    ->where('user_id', Auth()->user()->id)
-                    ->delete();
+        $this->deleteShoppingListService->setUser(Auth()->user()->id);
 
-        return response()->json(TRUE);
+        return response()->json($this->deleteShoppingListService->delete($request->id));
     }
 }
