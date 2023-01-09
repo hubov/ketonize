@@ -12,6 +12,7 @@ use App\Services\Interfaces\ProfileCreateOrUpdateInterface;
 use App\Services\Interfaces\RecipeCreateOrUpdateInterface;
 use App\Services\Interfaces\RecipeSearchInterface;
 use App\Services\Interfaces\RelateIngredientsToRecipeInterface;
+use App\Services\Interfaces\ShoppingList\DeleteShoppingListInterface;
 use App\Services\Interfaces\ShoppingList\EditShoppingListInterface;
 use App\Services\Interfaces\ShoppingList\GetShoppingListInterface;
 use App\Services\Interfaces\ShoppingList\UpdateShoppingListInterface;
@@ -19,6 +20,7 @@ use App\Services\ProfileCreateOrUpdateService;
 use App\Services\RecipeCreateOrUpdateService;
 use App\Services\RecipeSearchService;
 use App\Services\RelateIngredientsToRecipeService;
+use App\Services\ShoppingList\DeleteShoppingListService;
 use App\Services\ShoppingList\EditShoppingListService;
 use App\Services\ShoppingList\GetShoppingListService;
 use App\Services\ShoppingList\UpdateShoppingListService;
@@ -36,6 +38,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(RecipeSearchInterface::class, function () {
             return new RecipeSearchService();
         });
+        $this->app->bind(DeleteShoppingListInterface::class, DeleteShoppingListService::class);
         $this->app->bind(DietPlanInterface::class, DietPlanService::class);
         $this->app->bind(EditShoppingListInterface::class, EditShoppingListService::class);
         $this->app->bind(GetShoppingListInterface::class, GetShoppingListService::class);
