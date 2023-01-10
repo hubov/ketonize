@@ -10,7 +10,7 @@ class UserDietRepository implements UserDietRepositoryInterface
 
     public function getByUser(int $userId): UserDiet|null
     {
-        return UserDiet::where('user_id', $userId);
+        return UserDiet::where('user_id', $userId)->first();
     }
 
     public function createForUser(int $userId, array $attributes): UserDiet
@@ -22,8 +22,9 @@ class UserDietRepository implements UserDietRepositoryInterface
 
     public function updateForUser(int $userId, array $attributes): UserDiet
     {
-        return $this->getByUser($userId)
-                    ->fill($attributes);
+        $this->getByUser($userId)->update($attributes);
+
+        return $this->getByUser($userId);
     }
 
     public function deleteForUser(int $userId): bool
