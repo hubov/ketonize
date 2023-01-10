@@ -16,6 +16,7 @@ class UserDietService implements UserDietInterface
     protected $userRepository;
     protected $user;
     protected $diet;
+    protected $dietMealDivision;
     protected $kcalTotal;
 
     public function __construct(
@@ -37,59 +38,98 @@ class UserDietService implements UserDietInterface
         return $this;
     }
 
-    public function create($dietId, $mealsCount)
+    public function setDiet(int $dietId)
     {
-        if ($this->diet = $this->dietRepository->get($dietId)) {
-            $attributes = [
-                'user_id' => $this->user->id,
-                'diet_id' => $this->diet->id,
-                'diet_meal_division_id' => $this->dietMealDivRepository->getByMealsCount($mealsCount)->id,
-                'kcal' => $this->calculateKcal(),
-                'protein' => $this->calculateProtein(),
-                'fat' => $this->calculateFat(),
-                'carbohydrate' => $this->calculateCarbohydrate()
-            ];
+        $this->diet = $this->dietRepository->get($dietId);
 
-            $this->userDietRepository->createForUser($this->user->id, $attributes);
-        }
+        return $this;
+    }
+
+    public function setMealsDivision(int $mealsCount)
+    {
+        $this->dietMealDivision = $this->dietMealDivRepository->getByMealsCount($mealsCount);
+
+        return $this;
+    }
+
+    public function create()
+    {
+        $this->userDietRepository->createForUser($this->user->id, $this->setAttributes());
+    }
+
+    public function update()
+    {
+        $this->userDietRepository->updateForUser($this->user->id, $this->setAttributes());
+    }
+
+    protected function setAttributes()
+    {
+        return [
+            'diet_id' => $this->diet->id,
+            'diet_meal_division_id' => $this->dietMealDivision->id,
+            'kcal' => $this->calculateKcal(),
+            'protein' => $this->calculateProtein(),
+            'fat' => $this->calculateFat(),
+            'carbohydrate' => $this->calculateCarbohydrate()
+        ];
     }
 
     protected function calculateKcal() {
-        switch ($this->user->profile->gender)
-        {
-            case 1: { $genderModifier = -161; break; }
-            case 2: { $genderModifier = 5; break; }
-        }
-
-        $kcalBasic = round(9.99 * $this->user->profile->weight + 6.25 * $this->user->profile->height - 4.92 * $this->user->profile->age() + $genderModifier);
-
-        switch ($this->user->profile->basic_activity)
-        {
-            case 1: { $basicActivityModifier = 1.2; break; }
-            case 2: { $basicActivityModifier = 1.3; break; }
-            case 3: { $basicActivityModifier = 1.5; break; }
-            case 4: { $basicActivityModifier = 1.7; break; }
-        }
-
-        switch ($this->user->profile->sport_activity)
-        {
-            case 1: { $sportActivityModifier = 1; break; }
-            case 2: { $sportActivityModifier = 1.1; break; }
-            case 3: { $sportActivityModifier = 1.2; break; }
-            case 4: { $sportActivityModifier = 1.3; break; }
-        }
-
-        $kcalTotal = $kcalBasic * $basicActivityModifier * $sportActivityModifier;
-
-        switch ($this->user->profile->diet_target)
-        {
-            case 1: { $kcalTotal *= 0.9; break; }
-            case 3: { $kcalTotal *= 1.1; break; }
-        }
-
-        $this->kcalTotal = round($kcalTotal / 50) * 50;
+        $this->kcalTotal = $this->getBasicKcal() * $this->getBasicActivityModifier() * $this->getSportActivityModifier();
+        $this->kcalTotal = round($this->kcalTotal * $this->getDietTarget() / 50) * 50;
 
         return $this->kcalTotal;
+    }
+
+    protected function getKcalGenderModifier()
+    {
+        switch ($this->user->profile->gender)
+        {
+            case 1: { return -161; }
+            case 2: { return 5; }
+        }
+    }
+
+    protected function getBasicKcal()
+    {
+        return round(
+            9.99 * $this->user->profile->weight
+            + 6.25 * $this->user->profile->height
+            - 4.92 * $this->user->profile->age()
+            + $this->getKcalGenderModifier()
+        );
+    }
+
+    protected function getBasicActivityModifier()
+    {
+        switch ($this->user->profile->basic_activity)
+        {
+            case 1: { return 1.2; }
+            case 2: { return 1.3; }
+            case 3: { return 1.5; }
+            case 4: { return 1.7; }
+        }
+    }
+
+    protected function getSportActivityModifier()
+    {
+        switch ($this->user->profile->sport_activity)
+        {
+            case 1: { return 1; }
+            case 2: { return 1.1; }
+            case 3: { return 1.2; }
+            case 4: { return 1.3; }
+        }
+    }
+
+    protected function getDietTarget()
+    {
+        switch ($this->user->profile->diet_target)
+        {
+            case 1: { return 0.9; }
+            case 2: { return 1; }
+            case 3: { return 1.1; }
+        }
     }
 
     protected function calculateProtein()
