@@ -35,20 +35,20 @@ class DietPlanService implements DietPlanInterface
         return $this;
     }
 
-    public function getByDate($date) : DietPlan
+    public function getByDate($date): DietPlan
     {
         $this->setDate($date);
-        $this->dietPlan = $this->dietPlanRepository->getByDate($this->user, $this->date);
+        $this->dietPlan = $this->dietPlanRepository->getByDate($this->user->id, $this->date);
 
         return $this->dietPlan;
     }
 
-    protected function setDate($date) : void
+    protected function setDate($date): void
     {
         $this->date = ($date === NULL) ? date("Y-m-d") : $date;
     }
 
-    public function getDates() : array
+    public function getDates(): array
     {
         $dates['current'] = $this->date;
         $dateUnix = strtotime($this->date);
