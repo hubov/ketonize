@@ -31,7 +31,7 @@ class UserDietController extends Controller
                                 ->setMealsDivision($mealsCount)
                                 ->update();
 
-        $this->newDietPlan();
+//        $this->newDietPlan();
     }
 
     protected function newDietPlan() {
