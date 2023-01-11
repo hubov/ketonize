@@ -37,7 +37,9 @@
         </div>
         <div class="row mx-sm-4">
             <div class="col" id="recipeDescription">
-                {!! nl2br($description) !!}
+                @if ($description)
+                    {!! nl2br($description) !!}
+                @endif
             </div>
         </div>
     </div>
