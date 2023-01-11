@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Events\DietPlanCreated;
 use App\Http\Traits\DietPlanTimeline;
 use App\Models\DietPlan;
 use App\Models\User;
@@ -131,6 +132,12 @@ class DietPlanService implements DietPlanInterface
 
     protected function create()
     {
-        return $this->dietPlanRepository->createForUserBulk($this->user->id, $this->getSubscriptionDatesArray());
+        $dietPlans =  $this->dietPlanRepository->createForUserBulk($this->user->id, $this->getSubscriptionDatesArray());
+
+        foreach ($dietPlans as $dietPlan) {
+            event(new DietPlanCreated($dietPlan));
+        }
+
+        return $dietPlans;
     }
 }
