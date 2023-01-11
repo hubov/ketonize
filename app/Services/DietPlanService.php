@@ -109,6 +109,11 @@ class DietPlanService implements DietPlanInterface
         return $newMeal;
     }
 
+    public function update()
+    {
+        $this->deleteAfterDate($this->getToday());
+        $this->create();
+    }
     public function delete(): bool
     {
         return $this->dietPlanRepository->deleteForUser($this->user->id);
@@ -122,5 +127,10 @@ class DietPlanService implements DietPlanInterface
     public function deleteAfterDate(string $date): bool
     {
         return $this->dietPlanRepository->deleteForUserAfterDate($this->user->id, $date);
+    }
+
+    protected function create()
+    {
+        return $this->dietPlanRepository->createForUserBulk($this->user->id, $this->getSubscriptionDatesArray());
     }
 }
