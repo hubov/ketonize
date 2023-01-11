@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Events\UserDietChanged;
 use App\Repositories\Interfaces\DietMealDivisionRepositoryInterface;
 use App\Repositories\Interfaces\DietRepositoryInterface;
 use App\Repositories\Interfaces\UserDietRepositoryInterface;
@@ -59,7 +60,9 @@ class UserDietService implements UserDietInterface
 
     public function update()
     {
-        $this->userDietRepository->updateForUser($this->user->id, $this->setAttributes());
+        $userDiet = $this->userDietRepository->updateForUser($this->user->id, $this->setAttributes());
+
+        event(new UserDietChanged($userDiet));
     }
 
     protected function setAttributes()
