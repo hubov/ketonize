@@ -2,6 +2,9 @@
 
 namespace App\Providers;
 
+use App\Events\UserDietChanged;
+use App\Listeners\CreateDietPlans;
+use GuzzleHttp\Promise\Create;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
@@ -17,6 +20,9 @@ class EventServiceProvider extends ServiceProvider
     protected $listen = [
         Registered::class => [
             SendEmailVerificationNotification::class,
+        ],
+        UserDietChanged::class => [
+            CreateDietPlans::class,
         ],
     ];
 
