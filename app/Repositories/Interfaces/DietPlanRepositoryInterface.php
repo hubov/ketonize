@@ -8,5 +8,5 @@ use App\Models\User;
 interface DietPlanRepositoryInterface
 {
     public function get(int $id) : DietPlan;
-    public function getByDate(User $user, $date) : DietPlan;
+    public function getByDate(int $userId, string $date) : DietPlan;
 }

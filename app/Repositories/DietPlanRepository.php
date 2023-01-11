@@ -3,7 +3,6 @@
 namespace App\Repositories;
 
 use App\Models\DietPlan;
-use App\Models\User;
 use App\Repositories\Interfaces\DietPlanRepositoryInterface;
 
 class DietPlanRepository implements DietPlanRepositoryInterface
@@ -13,9 +12,9 @@ class DietPlanRepository implements DietPlanRepositoryInterface
         return DietPlan::find($id);
     }
 
-    public function getByDate(User $user, $date) : DietPlan
+    public function getByDate(int $userId, string $date) : DietPlan
     {
-        return Dietplan::where('user_id', $user->id)
+        return DietPlan::where('user_id', $userId)
                         ->where('date_on', $date)
                         ->firstOrNew();
     }
