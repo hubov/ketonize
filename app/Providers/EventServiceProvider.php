@@ -2,8 +2,10 @@
 
 namespace App\Providers;
 
+use App\Events\DietPlanCreated;
 use App\Events\UserDietChanged;
 use App\Listeners\CreateDietPlans;
+use App\Listeners\CreateMealsForDietPlan;
 use GuzzleHttp\Promise\Create;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
@@ -23,6 +25,9 @@ class EventServiceProvider extends ServiceProvider
         ],
         UserDietChanged::class => [
             CreateDietPlans::class,
+        ],
+        DietPlanCreated::class => [
+            CreateMealsForDietPlan::class,
         ],
     ];
 
