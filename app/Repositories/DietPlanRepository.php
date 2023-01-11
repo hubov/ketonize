@@ -32,12 +32,10 @@ class DietPlanRepository implements DietPlanRepositoryInterface
     {
         $user = $this->userRepository->get($userId);
 
-        $user->dietPlans()
+        return $user->dietPlans()
             ->createMany(
                 $this->arrangeBulk($userId, $datesList)
             );
-
-        return $user->dietPlans;
     }
 
     protected function arrangeBulk(int $userId, $datesList)
