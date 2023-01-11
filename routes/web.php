@@ -58,7 +58,7 @@ Route::middleware('auth')->group(function() {
     Route::post('/profile/new', [ProfileController::class, 'store']);
 });
 
-require __DIR__.'/auth.php';
+//require __DIR__.'/auth.php';
 
 Auth::routes();
 
