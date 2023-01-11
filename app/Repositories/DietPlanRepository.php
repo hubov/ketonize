@@ -53,4 +53,23 @@ class DietPlanRepository implements DietPlanRepositoryInterface
         return $dietPlans;
     }
 
+    public function deleteForUser(int $userId): bool
+    {
+        return DietPlan::where('user_id', $userId)
+                        ->delete();
+    }
+
+    public function deleteForUserOnDate(int $userId, string $date): bool
+    {
+        return DietPlan::where('user_id', $userId)
+                        ->where('date_on', $date)
+                        ->delete();
+    }
+
+    public function deleteForUserAfterDate(int $userId, string $date): bool
+    {
+        return DietPlan::where('user_id', $userId)
+                        ->where('date_on', '>=', $date)
+                        ->delete();
+    }
 }
