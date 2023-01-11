@@ -14,4 +14,7 @@ interface DietPlanInterface
     public function setUser(User $user);
     public function getByDate($date) : DietPlan;
     public function getDates() : array;
+    public function delete() : bool;
+    public function deleteOnDate(string $date) : bool;
+    public function deleteAfterDate(string $date) : bool;
 }

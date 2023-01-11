@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Http\Traits\DietPlanTimeline;
 use App\Models\DietPlan;
 use App\Models\User;
 use App\Repositories\Interfaces\DietPlanRepositoryInterface;
@@ -11,6 +12,8 @@ use App\Services\Interfaces\DietPlanInterface;
 
 class DietPlanService implements DietPlanInterface
 {
+    use DietPlanTimeline;
+
     protected $dietPlanRepository;
     protected $recipeRepository;
     protected $mealRepository;
@@ -104,5 +107,20 @@ class DietPlanService implements DietPlanInterface
         $newMeal = $this->addMeal($meal, $newSlug, $kcalSum);
 
         return $newMeal;
+    }
+
+    public function delete(): bool
+    {
+        return $this->dietPlanRepository->deleteForUser($this->user->id);
+    }
+
+    public function deleteOnDate(string $date): bool
+    {
+        return $this->dietPlanRepository->deleteForUserOnDate($this->user->id, $date);
+    }
+
+    public function deleteAfterDate(string $date): bool
+    {
+        return $this->dietPlanRepository->deleteForUserAfterDate($this->user->id, $date);
     }
 }
