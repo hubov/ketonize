@@ -2,9 +2,11 @@
 
 namespace App\Providers;
 
+use App\Services\AddMealsToDietPlanService;
 use App\Services\DietPlanService;
 use App\Services\IngredientSearchService;
 use App\Services\IngredientService;
+use App\Services\Interfaces\AddMealsToDietPlanInterface;
 use App\Services\Interfaces\DietPlanInterface;
 use App\Services\Interfaces\IngredientInterface;
 use App\Services\Interfaces\IngredientSearchInterface;
@@ -39,9 +41,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->bind(RecipeSearchInterface::class, function () {
-            return new RecipeSearchService();
-        });
+        $this->app->bind(AddMealsToDietPlanInterface::class, AddMealsToDietPlanService::class);
         $this->app->bind(DeleteShoppingListInterface::class, DeleteShoppingListService::class);
         $this->app->bind(DietPlanInterface::class, DietPlanService::class);
         $this->app->bind(EditShoppingListInterface::class, EditShoppingListService::class);
@@ -51,6 +51,9 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(MealInterface::class, MealService::class);
         $this->app->bind(ProfileCreateOrUpdateInterface::class, ProfileCreateOrUpdateService::class);
         $this->app->bind(RecipeCreateOrUpdateInterface::class, RecipeCreateOrUpdateService::class);
+        $this->app->bind(RecipeSearchInterface::class, function () {
+            return new RecipeSearchService();
+        });
         $this->app->bind(RelateIngredientsToRecipeInterface::class, RelateIngredientsToRecipeService::class);
         $this->app->bind(UpdateShoppingListInterface::class, UpdateShoppingListService::class);
         $this->app->bind(UserDietInterface::class, UserDietService::class);
