@@ -2,7 +2,6 @@
 
 namespace App\Repositories;
 
-use App\Models\DietMealDivision;
 use App\Models\DietPlan;
 use App\Models\User;
 use App\Repositories\Interfaces\DietPlanRepositoryInterface;
@@ -11,7 +10,7 @@ class DietPlanRepository implements DietPlanRepositoryInterface
 {
     public function get(int $id) : DietPlan
     {
-        return DietMealDivision::find($id);
+        return DietPlan::find($id);
     }
 
     public function getByDate(User $user, $date) : DietPlan
