@@ -110,7 +110,7 @@ class DietPlanService implements DietPlanInterface
         return $newMeal;
     }
 
-    public function update()
+    public function updateAll()
     {
         $this->deleteAfterDate($this->getToday());
         $this->create();

@@ -29,6 +29,6 @@ class CreateDietPlans implements ShouldQueue
     public function handle(UserDietChanged $event)
     {
         $this->dietPlanService->setUser($event->userDiet->user);
-        $this->dietPlanService->update();
+        $this->dietPlanService->updateAll();
     }
 }
