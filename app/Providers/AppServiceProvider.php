@@ -14,6 +14,7 @@ use App\Services\Interfaces\MealInterface;
 use App\Services\Interfaces\ProfileCreateOrUpdateInterface;
 use App\Services\Interfaces\Recipe\RecipeCreateOrUpdateInterface;
 use App\Services\Interfaces\Recipe\RecipeSearchInterface;
+use App\Services\Interfaces\Recipe\SelectRecipeForDietInterface;
 use App\Services\Interfaces\RelateIngredientsToRecipeInterface;
 use App\Services\Interfaces\ShoppingList\DeleteShoppingListInterface;
 use App\Services\Interfaces\ShoppingList\EditShoppingListInterface;
@@ -24,6 +25,7 @@ use App\Services\MealService;
 use App\Services\ProfileCreateOrUpdateService;
 use App\Services\Recipe\RecipeCreateOrUpdateService;
 use App\Services\Recipe\RecipeSearchService;
+use App\Services\Recipe\SelectRecipeForDietService;
 use App\Services\RelateIngredientsToRecipeService;
 use App\Services\ShoppingList\DeleteShoppingListService;
 use App\Services\ShoppingList\EditShoppingListService;
@@ -55,6 +57,7 @@ class AppServiceProvider extends ServiceProvider
             return new RecipeSearchService();
         });
         $this->app->bind(RelateIngredientsToRecipeInterface::class, RelateIngredientsToRecipeService::class);
+        $this->app->bind(SelectRecipeForDietInterface::class, SelectRecipeForDietService::class);
         $this->app->bind(UpdateShoppingListInterface::class, UpdateShoppingListService::class);
         $this->app->bind(UserDietInterface::class, UserDietService::class);
     }
