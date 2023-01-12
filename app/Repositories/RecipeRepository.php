@@ -23,6 +23,24 @@ class RecipeRepository implements RecipeRepositoryInterface
         return Recipe::where('slug', $slug)->firstOrFail();
     }
 
+    public function getOneByAttributesAndTagsWithoutIds(array $attributes, array $tags, array $excludedIds): Recipe
+    {
+        $recipe = Recipe::join('recipe_tag', 'recipes.id', '=', 'recipe_id')
+            ->select('recipes.*')
+            ->whereNotIn('recipes.id', $excludedIds)
+            ->whereIn('tag_id', $tags);
+
+        foreach ($attributes as $attributeName => $value) {
+            if (is_array($value)) {
+                $recipe->whereBetween($attributeName, $value);
+            } else {
+                $recipe->where($attributeName, $value);
+            }
+        }
+
+        return $recipe->inRandomOrder()
+                        ->first();
+    }
 
     public function create(array $attributes): Recipe
     {
