@@ -10,7 +10,7 @@ class RecipeRepository implements RecipeRepositoryInterface
 {
     public function get(int $id) : Recipe
     {
-        return Recipe::find($id)->first();
+        return Recipe::find($id);
     }
 
     public function getAll() : Collection

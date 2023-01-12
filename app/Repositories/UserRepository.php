@@ -9,6 +9,6 @@ class UserRepository implements UserRepositoryInterface
 {
     public function get(int $id) : User
     {
-        return User::find($id)->first();
+        return User::find($id);
     }
 }

@@ -10,7 +10,7 @@ class IngredientRepository implements IngredientRepositoryInterface
 {
     public function get(int $id) : Ingredient
     {
-        return Ingredient::find($id)->first();
+        return Ingredient::find($id);
     }
 
     public function getAll(): Collection
@@ -27,7 +27,7 @@ class IngredientRepository implements IngredientRepositoryInterface
     {
         Ingredient::where('id', $id)->update($attributes);
 
-        return Ingredient::find($id);
+        return $this->get($id);
     }
 
     public function delete(int $id): bool

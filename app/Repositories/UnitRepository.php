@@ -10,7 +10,7 @@ class UnitRepository implements UnitRepositoryInterface
 {
     public function get(int $id) : Unit
     {
-        return Unit::find($id)->first();
+        return Unit::find($id);
     }
 
     public function getAll(): Collection

@@ -10,7 +10,7 @@ class IngredientCategoryRepository implements IngredientCategoryRepositoryInterf
 {
     public function get(int $id) : IngredientCategory
     {
-        return IngredientCategory::find($id)->first();
+        return IngredientCategory::find($id);
     }
 
     public function getAll(): Collection

@@ -10,7 +10,7 @@ class MealRepository implements MealRepositoryInterface
 {
     public function get(int $id) : Meal
     {
-        return Meal::find($id)->first();
+        return Meal::find($id);
     }
 
     public function create(array $attributes) : Meal
