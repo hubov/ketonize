@@ -9,6 +9,6 @@ class DietRepository implements DietRepositoryInterface
 {
     public function get(int $dietId) : Diet
     {
-        return Diet::find($dietId)->first();
+        return Diet::find($dietId);
     }
 }
