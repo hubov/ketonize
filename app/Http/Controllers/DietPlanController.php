@@ -57,12 +57,12 @@ class DietPlanController extends Controller
         ]);
     }
 
-    public function generate(Request $request, $date)
+    public function generate(Request $request)
     {
-        $this->planJob->setDate($date);
-        $this->planJob->handle(Auth::user());
+        $this->dietPlanService->setUser(Auth::user());
+        $this->dietPlanService->updateOnDate($request->date);
 
-        $url = ($date == date('Y-m-d')) ? '/dashboard' : '/dashboard/' . $date;
+        $url = ($request->date == date('Y-m-d')) ? '/dashboard' : '/dashboard/' . $request->date;
 
         return redirect($url);
     }
