@@ -3,24 +3,24 @@
 namespace App\Services;
 
 use App\Models\DietPlan;
-use App\Models\Recipe;
-use App\Repositories\Interfaces\RecipeRepositoryInterface;
 use App\Services\Interfaces\AddMealsToDietPlanInterface;
 use App\Services\Interfaces\MealInterface;
+use App\Services\Interfaces\Recipe\SelectRecipeForDietInterface;
 
 class AddMealsToDietPlanService implements AddMealsToDietPlanInterface
 {
     protected $recipeRepository;
     protected $mealService;
+    protected $selectRecipeForDietService;
     protected $dietPlan;
     protected $userDiet;
     protected $mealsDivision;
     protected $chosenRecipes = [];
 
-    public function __construct(RecipeRepositoryInterface $recipeRepository, MealInterface $mealService)
+    public function __construct(MealInterface $mealService, SelectRecipeForDietInterface $selectRecipeForDietService)
     {
         $this->mealService = $mealService;
-        $this->recipeRepository = $recipeRepository;
+        $this->selectRecipeForDietService = $selectRecipeForDietService;
     }
 
     public function setDietPlan(DietPlan $dietPlan)
@@ -41,14 +41,10 @@ class AddMealsToDietPlanService implements AddMealsToDietPlanInterface
     public function setUp()
     {
         foreach ($this->mealsDivision as $mealOrder => $meal) {
-            $recipe = Recipe::join('recipe_tag', 'recipes.id', '=', 'recipe_id')
-                ->select('recipes.*')
-                ->whereNotIn('recipes.id', $this->chosenRecipes)
-                ->where('tag_id', $meal['tag']->id)
-                ->whereBetween('protein_ratio', [$this->userDiet->getProteinRatio() * 0.5, $this->userDiet->getProteinRatio() * 1.5])
-                ->whereBetween('carbohydrate_ratio', [0, $this->userDiet->getCarbohydrateRatio() * 1.5])
-                ->inRandomOrder()
-                ->first();
+            $recipe = $this->selectRecipeForDietService->setTags([$meal['tag']->id])
+                                                ->setUserDiet($this->userDiet)
+                                                ->ignoreRecipes($this->chosenRecipes)
+                                                ->get();
 
             $this->mealService->add($recipe, $meal['kcal'], $mealOrder);
 

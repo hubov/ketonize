@@ -3,11 +3,11 @@
 namespace App\Services\Interfaces;
 
 use App\Models\DietPlan;
-use App\Repositories\Interfaces\RecipeRepositoryInterface;
+use App\Services\Interfaces\Recipe\SelectRecipeForDietInterface;
 
 interface AddMealsToDietPlanInterface
 {
-    public function __construct(RecipeRepositoryInterface $recipeRepository, MealInterface $mealService);
+    public function __construct(MealInterface $mealService, SelectRecipeForDietInterface $selectRecipeForDietService);
     public function setDietPlan(DietPlan $dietPlan);
     public function setUp();
 }
