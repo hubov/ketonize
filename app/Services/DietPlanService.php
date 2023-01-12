@@ -115,6 +115,13 @@ class DietPlanService implements DietPlanInterface
         $this->deleteAfterDate($this->getToday());
         $this->create();
     }
+
+    public function updateOnDate(string $date)
+    {
+        $this->deleteOnDate($date);
+        $this->createOnDate($date);
+    }
+
     public function delete(): bool
     {
         return $this->dietPlanRepository->deleteForUser($this->user->id);
@@ -132,7 +139,7 @@ class DietPlanService implements DietPlanInterface
 
     protected function create()
     {
-        $dietPlans =  $this->dietPlanRepository->createForUserBulk($this->user->id, $this->getSubscriptionDatesArray());
+        $dietPlans = $this->dietPlanRepository->createForUserBulk($this->user->id, $this->getSubscriptionDatesArray());
 
         foreach ($dietPlans as $dietPlan) {
             event(new DietPlanCreated($dietPlan));
@@ -140,4 +147,14 @@ class DietPlanService implements DietPlanInterface
 
         return $dietPlans;
     }
+
+    protected function createOnDate(string $date)
+    {
+        $dietPlan = $this->dietPlanRepository->createForUserOnDate($this->user->id, $date);
+
+        event(new DietPlanCreated($dietPlan));
+
+        return $dietPlan;
+    }
+
 }

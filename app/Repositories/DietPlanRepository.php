@@ -51,6 +51,15 @@ class DietPlanRepository implements DietPlanRepositoryInterface
         return $dietPlans;
     }
 
+    public function createForUserOnDate(int $userId, string $date): DietPlan
+    {
+        $user = $this->userRepository->get($userId);
+
+        return $user->dietPlans()->create([
+            'date_on' => $date
+        ]);
+    }
+
     public function deleteForUser(int $userId): bool
     {
         return DietPlan::where('user_id', $userId)
