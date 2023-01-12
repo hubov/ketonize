@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Services;
+namespace App\Services\Recipe;
 
 use App\Models\Recipe;
-use App\Services\Interfaces\RecipeSearchInterface;
+use App\Services\Interfaces\Recipe\RecipeSearchInterface;
 
 class RecipeSearchService implements RecipeSearchInterface
 {

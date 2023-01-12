@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Services;
+namespace App\Services\Recipe;
 
 use App\Models\Recipe;
 use App\Repositories\Interfaces\IngredientRepositoryInterface;
 use App\Repositories\Interfaces\RecipeRepositoryInterface;
 use App\Repositories\Interfaces\TagRepositoryInterface;
-use App\Services\Interfaces\RecipeCreateOrUpdateInterface;
+use App\Services\Interfaces\Recipe\RecipeCreateOrUpdateInterface;
 use App\Services\Interfaces\RelateIngredientsToRecipeInterface;
 
 class RecipeCreateOrUpdateService implements RecipeCreateOrUpdateInterface

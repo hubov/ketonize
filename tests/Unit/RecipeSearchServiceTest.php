@@ -5,7 +5,7 @@ namespace Tests\Unit;
 use App\Models\Ingredient;
 use App\Models\Recipe;
 use App\Models\Tag;
-use App\Services\RecipeSearchService;
+use App\Services\Recipe\RecipeSearchService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 

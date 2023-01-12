@@ -8,8 +8,8 @@ use App\Repositories\Interfaces\IngredientCategoryRepositoryInterface;
 use App\Repositories\Interfaces\RecipeRepositoryInterface;
 use App\Repositories\Interfaces\TagRepositoryInterface;
 use App\Repositories\Interfaces\UnitRepositoryInterface;
-use App\Services\Interfaces\RecipeCreateOrUpdateInterface;
-use App\Services\Interfaces\RecipeSearchInterface;
+use App\Services\Interfaces\Recipe\RecipeCreateOrUpdateInterface;
+use App\Services\Interfaces\Recipe\RecipeSearchInterface;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\View;
 
