@@ -110,10 +110,37 @@ class DietPlanService implements DietPlanInterface
         return $newMeal;
     }
 
+    public function createIfNotExists()
+    {
+        if (!$this->getByDate($this->getLastSubscriptionDay())) {
+            return $this->createOnDate($this->getLastSubscriptionDay());
+        }
+    }
+
+    protected function createAll()
+    {
+        $dietPlans = $this->dietPlanRepository->createForUserBulk($this->user->id, $this->getSubscriptionDatesArray());
+
+        foreach ($dietPlans as $dietPlan) {
+            event(new DietPlanCreated($dietPlan));
+        }
+
+        return $dietPlans;
+    }
+
+    protected function createOnDate(string $date)
+    {
+        $dietPlan = $this->dietPlanRepository->createForUserOnDate($this->user->id, $date);
+
+        event(new DietPlanCreated($dietPlan));
+
+        return $dietPlan;
+    }
+
     public function updateAll()
     {
         $this->deleteAfterDate($this->getToday());
-        $this->create();
+        $this->createAll();
     }
 
     public function updateOnDate(string $date)
@@ -136,25 +163,4 @@ class DietPlanService implements DietPlanInterface
     {
         return $this->dietPlanRepository->deleteForUserAfterDate($this->user->id, $date);
     }
-
-    protected function create()
-    {
-        $dietPlans = $this->dietPlanRepository->createForUserBulk($this->user->id, $this->getSubscriptionDatesArray());
-
-        foreach ($dietPlans as $dietPlan) {
-            event(new DietPlanCreated($dietPlan));
-        }
-
-        return $dietPlans;
-    }
-
-    protected function createOnDate(string $date)
-    {
-        $dietPlan = $this->dietPlanRepository->createForUserOnDate($this->user->id, $date);
-
-        event(new DietPlanCreated($dietPlan));
-
-        return $dietPlan;
-    }
-
 }
