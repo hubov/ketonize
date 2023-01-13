@@ -17,15 +17,13 @@ class ProfileController extends Controller
     protected $userRepository;
     protected $user;
     protected $profile;
-    protected $userDietController;
 
-    public function __construct(ProfileCreateOrUpdateInterface $profileCreateOrUpdate, ProfileRepositoryInterface $profileRepository, UserRepositoryInterface $userRepository, User $user, UserDietController $userDietController)
+    public function __construct(ProfileCreateOrUpdateInterface $profileCreateOrUpdate, ProfileRepositoryInterface $profileRepository, UserRepositoryInterface $userRepository, User $user)
     {
         $this->profileCreateOrUpdate = $profileCreateOrUpdate;
         $this->profileRepository = $profileRepository;
         $this->userRepository = $userRepository;
         $this->user = $user;
-        $this->userDietController = $userDietController;
     }
     /**
      * Show the form for creating a new resource.

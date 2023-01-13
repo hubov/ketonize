@@ -2,35 +2,42 @@
 
 namespace App\Services;
 
-use App\Http\Controllers\UserDietController;
 use App\Repositories\Interfaces\ProfileRepositoryInterface;
+use App\Repositories\Interfaces\UserRepositoryInterface;
 use App\Services\Interfaces\ProfileCreateOrUpdateInterface;
-use App\Services\Interfaces\ProfileInterface;
 use App\Services\Interfaces\UserDietInterface;
 
 class ProfileCreateOrUpdateService implements ProfileCreateOrUpdateInterface
 {
     protected $profileRepository;
     protected $userDietService;
-    protected $userDietController;
+    protected $userRepository;
 
-    public function __construct(ProfileRepositoryInterface $profileRepository, UserDietInterface $userDietService, UserDietController $userDietController)
+    public function __construct(ProfileRepositoryInterface $profileRepository, UserDietInterface $userDietService, UserRepositoryInterface $userRepository)
     {
         $this->profileRepository = $profileRepository;
         $this->userDietService = $userDietService;
-        $this->userDietController = $userDietController;
+        $this->userRepository = $userRepository;
 
         return $this;
     }
 
-    public function perform(int $userId, array $attributes) : array
+    public function setUser(int $userId)
+    {
+        $this->user = $this->userRepository->get($userId);
+        $this->userDietService->setUser($this->user->id);
+
+        return $this;
+    }
+
+    public function perform(array $attributes) : array
     {
         $sortedAttributes = $this->sortAttributes($attributes);
 
-        if ($this->profileRepository->ifExistsForUser($userId)) {
-            return $this->update($userId, $sortedAttributes);
+        if ($this->profileRepository->ifExistsForUser($this->user->id)) {
+            return $this->update($sortedAttributes);
         } else {
-            return $this->create($userId, $sortedAttributes);
+            return $this->create($sortedAttributes);
         }
     }
 
@@ -54,24 +61,22 @@ class ProfileCreateOrUpdateService implements ProfileCreateOrUpdateInterface
         ];
     }
 
-    protected function create(int $userId, array $attributes) : array
+    protected function create(array $attributes) : array
     {
-        $profile = $this->profileRepository->createForUser($userId, $attributes['profile']);
+        $profile = $this->profileRepository->createForUser($this->user->id, $attributes['profile']);
 
-        $this->userDietService->setUser($userId)
-            ->setDiet($attributes['user_diet']['diet_type'])
+        $this->userDietService->setDiet($attributes['user_diet']['diet_type'])
             ->setMealsDivision($attributes['user_diet']['meals_count'])
             ->create();
 
         return ['profile' => $profile];
     }
 
-    protected function update(int $userId, array $attributes) : array
+    protected function update(array $attributes) : array
     {
-        $profile = $this->profileRepository->updateForUser($userId, $attributes['profile']);
+        $profile = $this->profileRepository->updateForUser($this->user->id, $attributes['profile']);
 
-        $this->userDietService->setUser($userId)
-            ->setDiet($attributes['user_diet']['diet_type'])
+        $this->userDietService->setDiet($attributes['user_diet']['diet_type'])
             ->setMealsDivision($attributes['user_diet']['meals_count'])
             ->update();
 
