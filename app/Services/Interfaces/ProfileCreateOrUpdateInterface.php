@@ -3,9 +3,11 @@
 namespace App\Services\Interfaces;
 
 use App\Repositories\Interfaces\ProfileRepositoryInterface;
+use App\Repositories\Interfaces\UserRepositoryInterface;
 
 interface ProfileCreateOrUpdateInterface
 {
-    public function perform(int $userId, array $attributes) : array;
     public function __construct(ProfileRepositoryInterface $profileRepository, UserDietInterface $userDietService, UserRepositoryInterface $userRepository);
+    public function setUser(int $userId);
+    public function perform(array $attributes) : array;
 }

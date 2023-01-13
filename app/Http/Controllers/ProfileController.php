@@ -43,10 +43,11 @@ class ProfileController extends Controller
      */
     public function store(StoreProfileRequest $request)
     {
-        $this->profileCreateOrUpdate->perform(
-            Auth()->user()->id,
-            $request->input()
-        );
+        $this->profileCreateOrUpdate->setUser(
+                                        Auth()->user()->id
+                                    )->perform(
+                                        $request->input()
+                                    );
 
         return response()->json(TRUE);
     }
@@ -90,10 +91,11 @@ class ProfileController extends Controller
      */
     public function update(UpdateProfileRequest $request)
     {
-        $this->profileCreateOrUpdate->perform(
-            Auth()->user()->id,
-            $request->input()
-        );
+        $this->profileCreateOrUpdate->setUser(
+                                        Auth()->user()->id
+                                    )->perform(
+                                        $request->input()
+                                    );
 
         return response()->json(TRUE);
     }
