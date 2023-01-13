@@ -35,6 +35,7 @@ Route::middleware('role:admin')->group(function() {
     Route::post('/recipes', [RecipeController::class, 'store']);
 });
 Route::middleware('auth')->group(function() {
+    Route::post('/dashboard/is-ready', [DietPlanController::class, 'isReady']);
     Route::middleware('profile.completeness')->group(function() {
         Route::get('/dashboard/{date}', [DietPlanController::class, 'index'])->where('date', '202[0-9]\-(0[1-9]|1[0-2])\-[0-3][0-9]');
         Route::get('/dashboard', [DietPlanController::class, 'index'])->name('dashboard');

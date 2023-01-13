@@ -66,4 +66,16 @@ class DietPlanController extends Controller
 
         return response()->json($newMeal->id);
     }
+
+    public function isReady(Request $request)
+    {
+        $profileUpdatedAt = new \DateTime();
+        $profileUpdatedAt->setTimestamp($request->time);
+
+        return response()->json(
+            $this->dietPlanService->isUpdatedAfter(
+                $profileUpdatedAt->format('Y-m-d H:i:s')
+            )
+        );
+    }
 }
