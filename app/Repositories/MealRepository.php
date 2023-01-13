@@ -24,9 +24,9 @@ class MealRepository implements MealRepositoryInterface
         return Meal::create($attributes);
     }
 
-    public function delete(int $id): void
+    public function delete(int $id): bool
     {
-        Meal::destroy($id);
+        return Meal::destroy($id);
     }
 
     public function getForUserBetweenDates(int $userId, string $dateFrom, string $dateTo): Collection
