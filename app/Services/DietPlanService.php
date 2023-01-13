@@ -10,24 +10,23 @@ use App\Repositories\Interfaces\DietPlanRepositoryInterface;
 use App\Repositories\Interfaces\MealRepositoryInterface;
 use App\Repositories\Interfaces\RecipeRepositoryInterface;
 use App\Services\Interfaces\DietPlanInterface;
+use App\Services\Interfaces\MealInterface;
 
 class DietPlanService implements DietPlanInterface
 {
     use DietPlanTimeline;
 
     protected $dietPlanRepository;
-    protected $recipeRepository;
-    protected $mealRepository;
+    protected $mealService;
     protected $user;
     protected $date;
     protected $dietPlan;
     protected $meals;
 
-    public function __construct(DietPlanRepositoryInterface $dietPlanRepository, RecipeRepositoryInterface $recipeRepository, MealRepositoryInterface $mealRepository)
+    public function __construct(DietPlanRepositoryInterface $dietPlanRepository, MealInterface $mealService)
     {
         $this->dietPlanRepository = $dietPlanRepository;
-        $this->recipeRepository = $recipeRepository;
-        $this->mealRepository = $mealRepository;
+        $this->mealService = $mealService;
 
         return $this;
     }
@@ -80,34 +79,11 @@ class DietPlanService implements DietPlanInterface
         return $this->meals[$meal];
     }
 
-    public function addMeal($meal, $slug, $kcal)
+    public function changeMeal($meal, $newSlug) // deprecated
     {
-        $recipe = $this->recipeRepository->getBySlug($slug);
-
-        $modifier = $kcal / $recipe->kcal * 100;
-
-        $this->mealRepository->create([
-            'diet_plan_id' => $this->dietPlan->id,
-            'recipe_id' => $recipe->id,
-            'meal' => $meal,
-            'modifier' => $modifier
-        ]);
-
-        return $recipe;
-    }
-
-    public function changeMeal($meal, $newSlug)
-    {
-        $kcalSum = 0;
-
-        foreach ($this->getMeal($meal) as $mealPart) {
-            $kcalSum += $mealPart->kcal;
-            $this->mealRepository->delete($mealPart->id);
-        }
-
-        $newMeal = $this->addMeal($meal, $newSlug, $kcalSum);
-
-        return $newMeal;
+        return $this->mealService->setDietPlan($this->dietPlan)
+                            ->change($meal, $newSlug)
+                            ->recipe;
     }
 
     public function createIfNotExists()

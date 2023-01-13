@@ -15,8 +15,6 @@ class MealService implements MealInterface
     protected $recipeRepository;
     protected $dietPlan;
     protected $userDiet;
-    protected $mealsDivision;
-    protected $chosenRecipes = [];
 
     public function __construct(RecipeRepositoryInterface $recipeRepository, MealRepositoryInterface $mealRepository)
     {
@@ -27,6 +25,8 @@ class MealService implements MealInterface
     public function setDietPlan(DietPlan $dietPlan)
     {
         $this->dietPlan = $dietPlan;
+
+        return $this;
     }
 
     public function add(Recipe $recipe, int $kcal, int $mealOrder) : Meal
@@ -37,5 +37,26 @@ class MealService implements MealInterface
             'recipe_id' => $recipe->id,
             'meal' => $mealOrder
         ]);
+    }
+
+    public function change($mealOrder, $recipeSlug) : Meal
+    {
+        $kcalSum = 0;
+
+        foreach ($this->mealRepository->getByMeal($mealOrder) as $mealPart) {
+            $kcalSum += $mealPart->kcal;
+            $this->delete($mealPart->id);
+        }
+
+        return $this->add(
+            $this->recipeRepository->getBySlug($recipeSlug),
+            $kcalSum,
+            $mealOrder
+        );
+    }
+
+    public function delete(int $mealId) : bool
+    {
+        return $this->mealRepository->delete($mealId);
     }
 }
