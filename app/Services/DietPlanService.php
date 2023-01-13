@@ -163,4 +163,9 @@ class DietPlanService implements DietPlanInterface
     {
         return $this->dietPlanRepository->deleteForUserAfterDate($this->user->id, $date);
     }
+
+    public function isUpdatedAfter(string $dateTime): bool
+    {
+        return $this->dietPlanRepository->isCompleteAfter($dateTime);
+    }
 }

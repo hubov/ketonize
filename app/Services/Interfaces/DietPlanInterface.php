@@ -20,4 +20,5 @@ interface DietPlanInterface
     public function delete() : bool;
     public function deleteOnDate(string $date) : bool;
     public function deleteAfterDate(string $date) : bool;
+    public function isUpdatedAfter(string $dateTime) : bool;
 }
