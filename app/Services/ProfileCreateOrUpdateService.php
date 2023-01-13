@@ -6,15 +6,18 @@ use App\Http\Controllers\UserDietController;
 use App\Repositories\Interfaces\ProfileRepositoryInterface;
 use App\Services\Interfaces\ProfileCreateOrUpdateInterface;
 use App\Services\Interfaces\ProfileInterface;
+use App\Services\Interfaces\UserDietInterface;
 
 class ProfileCreateOrUpdateService implements ProfileCreateOrUpdateInterface
 {
     protected $profileRepository;
+    protected $userDietService;
     protected $userDietController;
 
-    public function __construct(ProfileRepositoryInterface $profileRepository, UserDietController $userDietController)
+    public function __construct(ProfileRepositoryInterface $profileRepository, UserDietInterface $userDietService, UserDietController $userDietController)
     {
         $this->profileRepository = $profileRepository;
+        $this->userDietService = $userDietService;
         $this->userDietController = $userDietController;
 
         return $this;
@@ -54,7 +57,11 @@ class ProfileCreateOrUpdateService implements ProfileCreateOrUpdateInterface
     protected function create(int $userId, array $attributes) : array
     {
         $profile = $this->profileRepository->createForUser($userId, $attributes['profile']);
-        $this->userDietController->create($attributes['user_diet']['diet_type'], $attributes['user_diet']['meals_count']);
+
+        $this->userDietService->setUser($userId)
+            ->setDiet($attributes['user_diet']['diet_type'])
+            ->setMealsDivision($attributes['user_diet']['meals_count'])
+            ->create();
 
         return ['profile' => $profile];
     }
@@ -62,7 +69,11 @@ class ProfileCreateOrUpdateService implements ProfileCreateOrUpdateInterface
     protected function update(int $userId, array $attributes) : array
     {
         $profile = $this->profileRepository->updateForUser($userId, $attributes['profile']);
-        $this->userDietController->update($attributes['user_diet']['diet_type'], $attributes['user_diet']['meals_count']);
+
+        $this->userDietService->setUser($userId)
+            ->setDiet($attributes['user_diet']['diet_type'])
+            ->setMealsDivision($attributes['user_diet']['meals_count'])
+            ->update();
 
         return ['profile' => $profile];
     }

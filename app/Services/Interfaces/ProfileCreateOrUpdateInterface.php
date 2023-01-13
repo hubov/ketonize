@@ -7,6 +7,6 @@ use App\Repositories\Interfaces\ProfileRepositoryInterface;
 
 interface ProfileCreateOrUpdateInterface
 {
-    public function __construct(ProfileRepositoryInterface $profileRepository, UserDietController $userDietController);
+    public function __construct(ProfileRepositoryInterface $profileRepository, UserDietInterface $userDietService, UserDietController $userDietController);
     public function perform(int $userId, array $attributes) : array;
 }
