@@ -15,5 +15,5 @@ interface DietPlanRepositoryInterface
     public function deleteForUser(int $userId) : bool;
     public function deleteForUserOnDate(int $userId, string $date) : bool;
     public function deleteForUserAfterDate(int $userId, string $date) : bool;
-    public function isCompleteAfter(string $dateTime) : bool;
+    public function isCompleteForUserAfter(int $userId, string $dateTime) : bool;
 }

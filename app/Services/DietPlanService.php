@@ -143,6 +143,6 @@ class DietPlanService implements DietPlanInterface
 
     public function isUpdatedAfter(string $dateTime): bool
     {
-        return $this->dietPlanRepository->isCompleteAfter($dateTime);
+        return $this->dietPlanRepository->isCompleteForUserAfter($this->user->id, $dateTime);
     }
 }

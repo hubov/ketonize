@@ -80,9 +80,10 @@ class DietPlanRepository implements DietPlanRepositoryInterface
                         ->delete();
     }
 
-    public function isCompleteAfter(string $dateTime): bool
+    public function isCompleteForUserAfter(int $userId, string $dateTime): bool
     {
-        return DietPlan::where('date_on', substr($dateTime, 0, 10))
+        return DietPlan::where('user_id', $userId)
+                            ->where('date_on', substr($dateTime, 0, 10))
                             ->where('created_at', '>=', $dateTime)
                             ->exists();
     }

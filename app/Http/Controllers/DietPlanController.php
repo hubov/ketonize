@@ -31,7 +31,7 @@ class DietPlanController extends Controller
         if (!$dietPlan) {
             $dietPlan = new DietPlan();
         }
-        
+
         $meals = $dietPlan->meals;
         $protein = $dietPlan->protein;
         $fat = $dietPlan->fat;
@@ -98,9 +98,11 @@ class DietPlanController extends Controller
         $profileUpdatedAt->setTimestamp($request->time);
 
         return response()->json(
-            $this->dietPlanService->isUpdatedAfter(
-                $profileUpdatedAt->format('Y-m-d H:i:s')
-            )
+            $this->dietPlanService
+                ->setUser(Auth::user())
+                ->isUpdatedAfter(
+                    $profileUpdatedAt->format('Y-m-d H:i:s')
+                )
         );
     }
 }
