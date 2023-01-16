@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Events\DietPlanCreated;
 use App\Http\Traits\DietPlanTimeline;
 use App\Models\DietPlan;
+use App\Models\Recipe;
 use App\Models\User;
 use App\Repositories\Interfaces\DietPlanRepositoryInterface;
 use App\Repositories\Interfaces\MealRepositoryInterface;
@@ -79,7 +80,7 @@ class DietPlanService implements DietPlanInterface
         return $this->meals[$meal];
     }
 
-    public function changeMeal($meal, $newSlug) // deprecated
+    public function changeMeal(int $meal, string $newSlug): Recipe
     {
         return $this->mealService->setDietPlan($this->dietPlan)
                             ->change($meal, $newSlug)
