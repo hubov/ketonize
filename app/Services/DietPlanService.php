@@ -8,8 +8,6 @@ use App\Models\DietPlan;
 use App\Models\Recipe;
 use App\Models\User;
 use App\Repositories\Interfaces\DietPlanRepositoryInterface;
-use App\Repositories\Interfaces\MealRepositoryInterface;
-use App\Repositories\Interfaces\RecipeRepositoryInterface;
 use App\Services\Interfaces\DietPlanInterface;
 use App\Services\Interfaces\MealInterface;
 
@@ -47,7 +45,7 @@ class DietPlanService implements DietPlanInterface
         return $this->dietPlan;
     }
 
-    protected function setDate($date): void
+    protected function setDate(string|null $date): void
     {
         $this->date = ($date === NULL) ? date("Y-m-d") : $date;
     }
@@ -87,11 +85,13 @@ class DietPlanService implements DietPlanInterface
                             ->recipe;
     }
 
-    public function createIfNotExists()
+    public function createIfNotExists(): DietPlan|null
     {
         if (!$this->getByDate($this->getLastSubscriptionDay())) {
             return $this->createOnDate($this->getLastSubscriptionDay());
         }
+
+        return null;
     }
 
     protected function createAll()
@@ -117,13 +117,13 @@ class DietPlanService implements DietPlanInterface
     public function updateAll()
     {
         $this->deleteAfterDate($this->getToday());
-        $this->createAll();
+        return $this->createAll();
     }
 
     public function updateOnDate(string $date)
     {
         $this->deleteOnDate($date);
-        $this->createOnDate($date);
+        return $this->createOnDate($date);
     }
 
     public function delete(): bool
