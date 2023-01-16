@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Jobs\GenerateDietPlan;
+use App\Models\DietPlan;
 use App\Models\Unit;
 use App\Repositories\Interfaces\UserRepositoryInterface;
 use App\Services\Interfaces\DietPlanInterface;
@@ -27,6 +28,20 @@ class DietPlanController extends Controller
     {
         $this->dietPlanService->setUser(Auth::user());
         $dietPlan = $this->dietPlanService->getByDate($date);
+        if (!$dietPlan) {
+            $dietPlan = new DietPlan();
+        }
+        
+        $meals = $dietPlan->meals;
+        $protein = $dietPlan->protein;
+        $fat = $dietPlan->fat;
+        $carbohydrate = $dietPlan->carbohydrate;
+        $kcal = $dietPlan->kcal;
+        $preparation_time = $dietPlan->preparationTime;
+        $total_time = $dietPlan->totalTime;
+        $shareProtein = $dietPlan->shareProtein;
+        $shareFat = $dietPlan->shareFat;
+        $shareCarbohydrate = $dietPlan->shareCarbohydrate;
 
         $dietMealDivision = Auth::user()->userDiet->dietMealDivision;
 
@@ -34,17 +49,17 @@ class DietPlanController extends Controller
             'date' => $this->dietPlanService->getDates()['current'],
             'datePrev' => $this->dietPlanService->getDates()['prev'],
             'dateNext' => $this->dietPlanService->getDates()['next'],
-            'meals' => $dietPlan->meals,
+            'meals' => $meals,
             'units' => Unit::all(),
-            'protein' => $dietPlan->protein,
-            'fat' => $dietPlan->fat,
-            'carbohydrate' => $dietPlan->carbohydrate,
-            'kcal' => $dietPlan->kcal,
-            'preparation_time' => $dietPlan->preparationTime,
-            'total_time' => $dietPlan->totalTime,
-            'shareProtein' => $dietPlan->shareProtein,
-            'shareFat' => $dietPlan->shareFat,
-            'shareCarbohydrate' => $dietPlan->shareCarbohydrate,
+            'protein' => $protein,
+            'fat' => $fat,
+            'carbohydrate' => $carbohydrate,
+            'kcal' => $kcal,
+            'preparation_time' => $preparation_time,
+            'total_time' => $total_time,
+            'shareProtein' => $shareProtein,
+            'shareFat' => $shareFat,
+            'shareCarbohydrate' => $shareCarbohydrate,
             'diet' => Auth::user()->userDiet->diet->name,
             'dietKcal' => Auth::user()->userDiet->kcal,
             'dietProtein' => Auth::user()->userDiet->protein,

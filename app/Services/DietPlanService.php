@@ -38,7 +38,7 @@ class DietPlanService implements DietPlanInterface
         return $this;
     }
 
-    public function getByDate($date): DietPlan
+    public function getByDate(string|null $date): DietPlan|null
     {
         $this->setDate($date);
         $this->dietPlan = $this->dietPlanRepository->getByDate($this->user->id, $this->date);

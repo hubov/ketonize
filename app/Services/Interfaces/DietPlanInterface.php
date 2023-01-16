@@ -10,7 +10,7 @@ interface DietPlanInterface
 {
     public function __construct(DietPlanRepositoryInterface $dietPlanRepository, MealInterface $mealService);
     public function setUser(User $user);
-    public function getByDate($date) : DietPlan;
+    public function getByDate(string|null $date) : DietPlan|null;
     public function getDates() : array;
     public function createIfNotExists();
     public function updateAll();

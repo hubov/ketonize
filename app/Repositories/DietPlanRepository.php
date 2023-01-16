@@ -21,11 +21,11 @@ class DietPlanRepository implements DietPlanRepositoryInterface
         return DietPlan::find($id);
     }
 
-    public function getByDate(int $userId, string $date) : DietPlan
+    public function getByDate(int $userId, string $date) : DietPlan|null
     {
         return DietPlan::where('user_id', $userId)
                         ->where('date_on', $date)
-                        ->firstOrNew();
+                        ->first();
     }
 
     public function createForUserBulk(int $userId, array $datesList): Collection
