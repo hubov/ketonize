@@ -32,42 +32,14 @@ class DietPlanController extends Controller
             $dietPlan = new DietPlan();
         }
 
-        $meals = $dietPlan->meals;
-        $protein = $dietPlan->protein;
-        $fat = $dietPlan->fat;
-        $carbohydrate = $dietPlan->carbohydrate;
-        $kcal = $dietPlan->kcal;
-        $preparation_time = $dietPlan->preparationTime;
-        $total_time = $dietPlan->totalTime;
-        $shareProtein = $dietPlan->shareProtein;
-        $shareFat = $dietPlan->shareFat;
-        $shareCarbohydrate = $dietPlan->shareCarbohydrate;
-
         $dietMealDivision = Auth::user()->userDiet->dietMealDivision;
 
         return View::make('dashboard', [
-            'date' => $this->dietPlanService->getDates()['current'],
-            'datePrev' => $this->dietPlanService->getDates()['prev'],
-            'dateNext' => $this->dietPlanService->getDates()['next'],
-            'meals' => $meals,
+            'date' => $this->dietPlanService->getDates(),
+            'meals' => $dietPlan->meals,
             'units' => Unit::all(),
-            'protein' => $protein,
-            'fat' => $fat,
-            'carbohydrate' => $carbohydrate,
-            'kcal' => $kcal,
-            'preparation_time' => $preparation_time,
-            'total_time' => $total_time,
-            'shareProtein' => $shareProtein,
-            'shareFat' => $shareFat,
-            'shareCarbohydrate' => $shareCarbohydrate,
-            'diet' => Auth::user()->userDiet->diet->name,
-            'dietKcal' => Auth::user()->userDiet->kcal,
-            'dietProtein' => Auth::user()->userDiet->protein,
-            'dietFat' => Auth::user()->userDiet->fat,
-            'dietCarbohydrate' => Auth::user()->userDiet->carbohydrate,
-            'dietProteinShare' => Auth::user()->userDiet->diet->protein,
-            'dietFatShare' => Auth::user()->userDiet->diet->fat,
-            'dietCarbohydrateShare' => Auth::user()->userDiet->diet->carbohydrate,
+            'dietPlan' => $dietPlan,
+            'userDiet' => Auth::user()->userDiet,
             'mealsTags' => (isset($dietMealDivision)) ? $dietMealDivision->mealsTags() : []
         ]);
     }
