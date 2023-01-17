@@ -9,7 +9,6 @@ use App\Services\Interfaces\Recipe\SelectRecipeForDietInterface;
 
 class AddMealsToDietPlanService implements AddMealsToDietPlanInterface
 {
-    protected $recipeRepository;
     protected $mealService;
     protected $selectRecipeForDietService;
     protected $dietPlan;
@@ -30,6 +29,8 @@ class AddMealsToDietPlanService implements AddMealsToDietPlanInterface
         $this->mealService->setDietPlan($this->dietPlan);
 
         $this->getDietData();
+
+        return $this;
     }
 
     protected function getDietData()
@@ -41,10 +42,7 @@ class AddMealsToDietPlanService implements AddMealsToDietPlanInterface
     public function setUp()
     {
         foreach ($this->mealsDivision as $mealOrder => $meal) {
-            $recipe = $this->selectRecipeForDietService->setTags([$meal['tag']->id])
-                                                ->setUserDiet($this->userDiet)
-                                                ->ignoreRecipes($this->chosenRecipes)
-                                                ->get();
+            $recipe = $this->getRecipe($meal['tag']->id);
 
             $this->mealService->add($recipe, $meal['kcal'], $mealOrder);
 
@@ -52,7 +50,15 @@ class AddMealsToDietPlanService implements AddMealsToDietPlanInterface
         }
     }
 
-    protected function addChosenRecipe($recipeId)
+    protected function getRecipe($tagId)
+    {
+        return $this->selectRecipeForDietService->setTags([$tagId])
+            ->setUserDiet($this->userDiet)
+            ->ignoreRecipes($this->chosenRecipes)
+            ->get();
+    }
+
+    public function addChosenRecipe($recipeId)
     {
         $this->chosenRecipes[] = $recipeId;
     }
