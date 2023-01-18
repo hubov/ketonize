@@ -12,6 +12,7 @@ class ProfileCreateOrUpdateService implements ProfileCreateOrUpdateInterface
     protected $profileRepository;
     protected $userDietService;
     protected $userRepository;
+    protected $action = NULL;
 
     public function __construct(ProfileRepositoryInterface $profileRepository, UserDietInterface $userDietService, UserRepositoryInterface $userRepository)
     {
@@ -30,14 +31,37 @@ class ProfileCreateOrUpdateService implements ProfileCreateOrUpdateInterface
         return $this;
     }
 
+    public function create()
+    {
+        $this->action = 'create';
+
+        return $this;
+    }
+
+    public function update()
+    {
+        $this->action = 'update';
+
+        return $this;
+    }
+
+    protected function isActionUpdate()
+    {
+        switch ($this->action) {
+            case 'create': { return false; }
+            case 'update': { return true; }
+            default: { return $this->profileRepository->ifExistsForUser($this->user->id); }
+        }
+    }
+
     public function perform(array $attributes) : array
     {
         $sortedAttributes = $this->sortAttributes($attributes);
 
-        if ($this->profileRepository->ifExistsForUser($this->user->id)) {
-            return $this->update($sortedAttributes);
+        if ($this->isActionUpdate()) {
+            return $this->performUpdate($sortedAttributes);
         } else {
-            return $this->create($sortedAttributes);
+            return $this->performCreate($sortedAttributes);
         }
     }
 
@@ -61,7 +85,7 @@ class ProfileCreateOrUpdateService implements ProfileCreateOrUpdateInterface
         ];
     }
 
-    protected function create(array $attributes) : array
+    protected function performCreate(array $attributes) : array
     {
         $profile = $this->profileRepository->createForUser($this->user->id, $attributes['profile']);
 
@@ -72,7 +96,7 @@ class ProfileCreateOrUpdateService implements ProfileCreateOrUpdateInterface
         return ['profile' => $profile];
     }
 
-    protected function update(array $attributes) : array
+    protected function performUpdate(array $attributes) : array
     {
         $profile = $this->profileRepository->updateForUser($this->user->id, $attributes['profile']);
 
