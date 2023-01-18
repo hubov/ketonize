@@ -45,20 +45,21 @@ class IngredientSearchService implements IngredientSearchInterface
         if (count($ingredients) > 0) {
             $i = 0;
             foreach ($ingredients as $ingredient) {
-                $result[levenshtein($this->query, $ingredient->name)*100+$i] = [
-                    'id' => $ingredient->id,
-                    'name' => $ingredient->name,
-                    'unit' => $ingredient->unit->symbol,
-                    'protein' => $ingredient->protein,
-                    'fat' => $ingredient->fat,
-                    'carbohydrate' => $ingredient->carbohydrate,
-                    'kcal' => $ingredient->kcal
-                ];
+                $result[
+                    $this->getOrderByLevenshtein($ingredient->name, $i)
+                ] = $ingredient;
 
                 $i++;
             }
         }
 
         return $result;
+    }
+
+    protected function getOrderByLevenshtein($name, $order)
+    {
+        return levenshtein($this->query, $name)
+            *100
+            +$order;
     }
 }
