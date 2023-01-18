@@ -33,7 +33,7 @@ class MealService implements MealInterface
     {
         return $this->mealRepository->create([
             'diet_plan_id' => $this->dietPlan->id,
-            'modifier' => round($kcal / $recipe->kcal * 100),
+            'modifier' => $this->calculateModifier($kcal, $recipe->kcal),
             'recipe_id' => $recipe->id,
             'meal' => $mealOrder
         ]);
@@ -58,5 +58,10 @@ class MealService implements MealInterface
     public function delete(int $mealId) : bool
     {
         return $this->mealRepository->delete($mealId);
+    }
+
+    public function calculateModifier(int $mealKcal, int $recipeKcal) : int
+    {
+        return round($mealKcal / $recipeKcal * 100);
     }
 }
