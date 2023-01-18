@@ -53,6 +53,8 @@ class IngredientSearchService implements IngredientSearchInterface
             }
         }
 
+        ksort($result);
+
         return $result;
     }
 
