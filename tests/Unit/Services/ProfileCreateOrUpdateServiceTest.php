@@ -67,16 +67,7 @@ class ProfileCreateOrUpdateServiceTest extends TestCase
      */
     public function creates_successfully_profile_with_complete_data($expectedResult, $data)
     {
-        $this->profileRepository
-            ->expects($this->once())
-            ->method('createForUser')
-            ->withAnyParameters()
-            ->willReturn($this->profile);
-
-        $this->userDietService
-            ->expects($this->once())
-            ->method('create')
-            ->willReturnSelf();
+        $this->arrangeFor('create');
 
         $profileCreateOrUpdateService = new ProfileCreateOrUpdateService($this->profileRepository, $this->userDietService, $this->userRepository);
         $result = $profileCreateOrUpdateService
@@ -94,16 +85,7 @@ class ProfileCreateOrUpdateServiceTest extends TestCase
      */
     public function updates_successfully_profile_with_complete_data($expectedResult, $data)
     {
-        $this->profileRepository
-            ->expects($this->once())
-            ->method('updateForUser')
-            ->withAnyParameters()
-            ->willReturn($this->profile);
-
-        $this->userDietService
-            ->expects($this->once())
-            ->method('update')
-            ->willReturnSelf();
+        $this->arrangeFor('update');
 
         $profileCreateOrUpdateService = new ProfileCreateOrUpdateService($this->profileRepository, $this->userDietService, $this->userRepository);
         $result = $profileCreateOrUpdateService
@@ -124,16 +106,7 @@ class ProfileCreateOrUpdateServiceTest extends TestCase
      */
     public function creates_successfully_profile_with_complete_data_and_without_action_given($expectedResult, $data)
     {
-        $this->profileRepository
-            ->expects($this->once())
-            ->method('createForUser')
-            ->withAnyParameters()
-            ->willReturn($this->profile);
-
-        $this->userDietService
-            ->expects($this->once())
-            ->method('create')
-            ->willReturnSelf();
+        $this->arrangeFor('create');
 
         $profileCreateOrUpdateService = new ProfileCreateOrUpdateService($this->profileRepository, $this->userDietService, $this->userRepository);
         $result = $profileCreateOrUpdateService
@@ -144,7 +117,21 @@ class ProfileCreateOrUpdateServiceTest extends TestCase
         $this->assertEquals($this->profile, $result['profile']);
     }
 
-    public function provideCompleteData()
+    protected function arrangeFor(string $action): void
+    {
+        $this->profileRepository
+            ->expects($this->once())
+            ->method($action . 'ForUser')
+            ->withAnyParameters()
+            ->willReturn($this->profile);
+
+        $this->userDietService
+            ->expects($this->once())
+            ->method($action)
+            ->willReturnSelf();
+    }
+
+    public function provideCompleteData(): array
     {
         return [
             [
