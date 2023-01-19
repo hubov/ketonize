@@ -5,7 +5,6 @@ namespace App\Models;
 use GeneaLabs\LaravelPivotEvents\Traits\PivotEventTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Str;
 
 class Recipe extends Model
 {
@@ -26,36 +25,6 @@ class Recipe extends Model
     public function tags()
     {
         return $this->belongsToMany(Tag::class);
-    }
-
-    protected static function boot()
-    {
-        $autoValues = function($recipe) {
-            $recipe->image = ($recipe->image === NULL) ? self::IMAGE_DEFAULT : $recipe->image;
-            $recipe->slug = Str::of($recipe->name)->slug('-')->__toString();
-            $recipe->name = Str::of($recipe->name)->ucfirst()->__toString();
-            $recipe->total_time = $recipe->preparation_time + $recipe->cooking_time;
-        };
-
-        $ingredientsSynced = function($recipe, $relationName) {
-            dump($relationName);
-            if ($relationName == 'ingredients') {
-                $recipe->resetMacros();
-
-                if (count($recipe->ingredients) > 0) {
-                    foreach ($recipe->ingredients as $ingredientId => $ingredient) {
-                        $recipe->addMacrosFromIngredient($ingredient, $ingredient->pivot->amount);
-                    }
-
-                    $recipe->updateMacroRatios();
-                    $recipe->save();
-                }
-            }
-        };
-
-        parent::boot();
-        static::saving($autoValues);
-        static::pivotSynced($ingredientsSynced);
     }
 
     public function tagsIds()

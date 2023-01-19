@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Models\Recipe;
+use App\Observers\RecipeObserver;
 use App\Services\AddMealsToDietPlanService;
 use App\Services\DietPlanService;
 use App\Services\IngredientSearchService;
@@ -69,6 +71,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+        Recipe::observe(RecipeObserver::class);
     }
 }
