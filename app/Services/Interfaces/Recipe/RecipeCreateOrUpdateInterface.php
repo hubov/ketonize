@@ -6,7 +6,6 @@ use App\Models\Recipe;
 use App\Repositories\Interfaces\IngredientRepositoryInterface;
 use App\Repositories\Interfaces\RecipeRepositoryInterface;
 use App\Repositories\Interfaces\TagRepositoryInterface;
-use App\Services\Interfaces\RelateIngredientsToRecipeInterface;
 
 interface RecipeCreateOrUpdateInterface
 {

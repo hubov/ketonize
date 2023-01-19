@@ -1,10 +1,9 @@
 <?php
 
-namespace App\Services\Interfaces;
+namespace App\Services\Interfaces\Recipe;
 
 use App\Repositories\Interfaces\IngredientRepositoryInterface;
 use App\Repositories\Interfaces\RecipeRepositoryInterface;
-use Illuminate\Support\Collection;
 
 interface RelateIngredientsToRecipeInterface
 {

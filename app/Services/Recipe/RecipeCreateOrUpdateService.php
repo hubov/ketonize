@@ -7,7 +7,7 @@ use App\Repositories\Interfaces\IngredientRepositoryInterface;
 use App\Repositories\Interfaces\RecipeRepositoryInterface;
 use App\Repositories\Interfaces\TagRepositoryInterface;
 use App\Services\Interfaces\Recipe\RecipeCreateOrUpdateInterface;
-use App\Services\Interfaces\RelateIngredientsToRecipeInterface;
+use App\Services\Interfaces\Recipe\RelateIngredientsToRecipeInterface;
 
 class RecipeCreateOrUpdateService implements RecipeCreateOrUpdateInterface
 {

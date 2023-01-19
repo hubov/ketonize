@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Services;
+namespace App\Services\Recipe;
 
 use App\Repositories\Interfaces\IngredientRepositoryInterface;
 use App\Repositories\Interfaces\RecipeRepositoryInterface;
-use App\Services\Interfaces\RelateIngredientsToRecipeInterface;
+use App\Services\Interfaces\Recipe\RelateIngredientsToRecipeInterface;
 
 class RelateIngredientsToRecipeService implements RelateIngredientsToRecipeInterface
 {
