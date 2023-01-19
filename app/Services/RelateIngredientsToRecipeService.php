@@ -43,24 +43,6 @@ class RelateIngredientsToRecipeService implements RelateIngredientsToRecipeInter
 
     public function sync() : void
     {
-        $this->recipe->ingredients()->detach();
-        $this->recipe->ingredients()->attach($this->ingredients);
-
-        $this->recipe->resetMacros();
-        $this->updateRecipeMacros();
-
-        $this->recipe->save();
-    }
-
-    protected function updateRecipeMacros()
-    {
-        if (count($this->ingredients) > 0) {
-            foreach ($this->ingredients as $ingredientId => $attributes) {
-                $ingredient = $this->ingredientRepository->get($ingredientId);
-                $this->recipe->addMacrosFromIngredient($ingredient, $attributes['amount']);
-            }
-
-            $this->recipe->updateMacroRatios();
-        }
+        $this->recipe->ingredients()->sync($this->ingredients);
     }
 }

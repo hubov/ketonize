@@ -2,13 +2,14 @@
 
 namespace App\Models;
 
+use GeneaLabs\LaravelPivotEvents\Traits\PivotEventTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
 class Recipe extends Model
 {
-    use HasFactory;
+    use HasFactory, PivotEventTrait;
 
     const IMAGE_DEFAULT = 'default';
 
@@ -36,10 +37,25 @@ class Recipe extends Model
             $recipe->total_time = $recipe->preparation_time + $recipe->cooking_time;
         };
 
+        $ingredientsSynced = function($recipe, $relationName) {
+            dump($relationName);
+            if ($relationName == 'ingredients') {
+                $recipe->resetMacros();
+
+                if (count($recipe->ingredients) > 0) {
+                    foreach ($recipe->ingredients as $ingredientId => $ingredient) {
+                        $recipe->addMacrosFromIngredient($ingredient, $ingredient->pivot->amount);
+                    }
+
+                    $recipe->updateMacroRatios();
+                    $recipe->save();
+                }
+            }
+        };
+
         parent::boot();
         static::saving($autoValues);
-        static::creating($autoValues);
-        static::updating($autoValues);
+        static::pivotSynced($ingredientsSynced);
     }
 
     public function tagsIds()
@@ -65,7 +81,7 @@ class Recipe extends Model
 
     public function removeIngredients()
     {
-        $this->ingredients()->detach();
+        $this->ingredients()->sync([]);
         $this::resetMacros();
     }
 
