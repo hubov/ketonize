@@ -130,6 +130,7 @@ class RecipeTest extends TestCase
         $recipe = Recipe::factory()->hasAttached(Ingredient::factory(), ['amount' => 100])->create();
 
         $this->assertEquals(1, count($recipe->ingredients));
+        $this->assertNotEquals(0, $recipe->kcal);
     }
 
     public function test_recipe_removeIngredients_method()
@@ -138,7 +139,8 @@ class RecipeTest extends TestCase
 
         $recipe->removeIngredients();
 
-        $this->assertEquals(0, count($recipe->ingredients));
+        $this->assertEquals(0, $recipe->ingredients->count());
+        $this->assertEquals(0, $recipe->kcal);
     }
 
     public function test_recipe_addMacrosFromIngredient_method()
