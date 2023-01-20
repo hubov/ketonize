@@ -34,7 +34,7 @@ class UserDietService implements UserDietInterface
 
     public function setUser(int $userId)
     {
-        $this->user = $this->userRepository->get($userId);
+        $this->user = $this->userRepository->getWithProfile($userId);
 
         return $this;
     }

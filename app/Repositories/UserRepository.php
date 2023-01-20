@@ -13,6 +13,11 @@ class UserRepository implements UserRepositoryInterface
         return User::find($id);
     }
 
+    public function getWithProfile(int $id): User
+    {
+        return User::find($id)->with('profile')->first();
+    }
+
     public function getAllActive(): Collection
     {
         return User::has('userDiet')->get();

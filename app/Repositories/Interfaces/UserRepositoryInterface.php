@@ -8,5 +8,6 @@ use Illuminate\Support\Collection;
 interface UserRepositoryInterface
 {
     public function get(int $id) : User;
+    public function getWithProfile(int $id) : User;
     public function getAllActive() : Collection;
 }
