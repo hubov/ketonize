@@ -26,7 +26,6 @@ class ProfileCreateOrUpdateService implements ProfileCreateOrUpdateInterface
     public function setUser(int $userId)
     {
         $this->user = $this->userRepository->get($userId);
-        $this->userDietService->setUser($this->user->id);
 
         return $this;
     }
@@ -89,8 +88,10 @@ class ProfileCreateOrUpdateService implements ProfileCreateOrUpdateInterface
     {
         $profile = $this->profileRepository->createForUser($this->user->id, $attributes['profile']);
 
-        $this->userDietService->setDiet($attributes['user_diet']['diet_type'])
+        $this->userDietService
+            ->setDiet($attributes['user_diet']['diet_type'])
             ->setMealsDivision($attributes['user_diet']['meals_count'])
+            ->setProfile($profile)
             ->create();
 
         return ['profile' => $profile];
@@ -100,8 +101,10 @@ class ProfileCreateOrUpdateService implements ProfileCreateOrUpdateInterface
     {
         $profile = $this->profileRepository->updateForUser($this->user->id, $attributes['profile']);
 
-        $this->userDietService->setDiet($attributes['user_diet']['diet_type'])
+        $this->userDietService
+            ->setDiet($attributes['user_diet']['diet_type'])
             ->setMealsDivision($attributes['user_diet']['meals_count'])
+            ->setProfile($profile)
             ->update();
 
         return ['profile' => $profile];

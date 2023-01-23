@@ -4,6 +4,7 @@ namespace Tests\Unit\Services;
 
 use App\Models\Profile;
 use App\Models\User;
+use App\Models\UserDiet;
 use App\Repositories\Interfaces\ProfileRepositoryInterface;
 use App\Repositories\Interfaces\UserRepositoryInterface;
 use App\Services\Interfaces\UserDietInterface;
@@ -20,7 +21,6 @@ class ProfileCreateOrUpdateServiceTest extends TestCase
     public $profile;
     public $dietType;
     public $mealsCount;
-
 
     public function setUp(): void
     {
@@ -42,12 +42,6 @@ class ProfileCreateOrUpdateServiceTest extends TestCase
             ->method('get')
             ->with($this->userId)
             ->willReturn($this->user);
-
-        $this->userDietService
-            ->expects($this->once())
-            ->method('setUser')
-            ->with($this->userId)
-            ->willReturnSelf();
 
         $this->userDietService
             ->expects($this->atLeastOnce())
@@ -126,9 +120,14 @@ class ProfileCreateOrUpdateServiceTest extends TestCase
             ->willReturn($this->profile);
 
         $this->userDietService
+            ->expects($this->atLeastOnce())
+            ->method('setProfile')
+            ->with($this->profile)
+            ->willReturnSelf();
+        $this->userDietService
             ->expects($this->once())
             ->method($action)
-            ->willReturnSelf();
+            ->willReturn(new UserDiet());
     }
 
     public function provideCompleteData(): array
