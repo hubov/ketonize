@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Services;
 
+use App\Events\DietPlanCreated;
 use App\Models\DietPlan;
 use App\Models\Meal;
 use App\Models\Recipe;
@@ -112,7 +113,7 @@ class DietPlanServiceTest extends TestCase
     /** @test */
     public function missing_diet_plan_on_last_day_of_subscription_creates_new_one()
     {
-        $this->withoutEvents();
+        $this->expectsEvents(DietPlanCreated::class);
         $dietPlanStub = new DietPlan();
 
         $dietPlanService = new DietPlanService($this->dietPlanRepository, $this->mealService);
@@ -140,7 +141,6 @@ class DietPlanServiceTest extends TestCase
     /** @test */
     public function existing_diet_plan_on_last_day_of_subscription_ignores_creation_of_a_new_one()
     {
-        $this->withoutEvents();
         $dietPlanStub = new DietPlan();
 
         $dietPlanService = new DietPlanService($this->dietPlanRepository, $this->mealService);
@@ -166,7 +166,7 @@ class DietPlanServiceTest extends TestCase
     /** @test */
     public function updateAll_method_changes_all_diet_plans_starting_from_today()
     {
-        $this->withoutEvents();
+        $this->expectsEvents(DietPlanCreated::class);
         $newDietPlanCollection = collect([new DietPlan(), new DietPlan()]);
 
         $dietPlanService = new DietPlanService($this->dietPlanRepository, $this->mealService);
@@ -194,7 +194,7 @@ class DietPlanServiceTest extends TestCase
     /** @test */
     public function updateOnDate_method_creates_new_diet_plan()
     {
-        $this->withoutEvents();
+        $this->expectsEvents(DietPlanCreated::class);
         $date = '2022-01-01';
         $newDietPlanStub = new DietPlan();
 
