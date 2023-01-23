@@ -22,7 +22,7 @@ class AddMealsToDietPlanService implements AddMealsToDietPlanInterface
         $this->selectRecipeForDietService = $selectRecipeForDietService;
     }
 
-    public function setDietPlan(DietPlan $dietPlan)
+    public function setDietPlan(DietPlan $dietPlan): self
     {
         $this->dietPlan = $dietPlan;
 
@@ -39,7 +39,7 @@ class AddMealsToDietPlanService implements AddMealsToDietPlanInterface
         $this->mealsDivision = $this->userDiet->mealsDivision();
     }
 
-    public function setUp()
+    public function setUp(): void
     {
         foreach ($this->mealsDivision as $mealOrder => $meal) {
             $recipe = $this->getRecipe($meal['tag']->id);
@@ -58,7 +58,7 @@ class AddMealsToDietPlanService implements AddMealsToDietPlanInterface
             ->get();
     }
 
-    public function addChosenRecipe($recipeId)
+    public function addChosenRecipe($recipeId): void
     {
         $this->chosenRecipes[] = $recipeId;
     }

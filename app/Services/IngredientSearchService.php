@@ -18,14 +18,14 @@ class IngredientSearchService implements IngredientSearchInterface
         return $this;
     }
 
-    public function limit(int $limit)
+    public function limit(int $limit): self
     {
         $this->limit = $limit;
 
         return $this;
     }
 
-    public function query(string $query)
+    public function query(string $query): self
     {
         $this->query = $query;
 

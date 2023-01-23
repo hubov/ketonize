@@ -13,22 +13,24 @@ class RelateIngredientsToRecipeService implements RelateIngredientsToRecipeInter
     protected $recipe;
     protected $ingredients = [];
 
-    public function __construct(RecipeRepositoryInterface $recipeRepository, IngredientRepositoryInterface $ingredientRepository)
-    {
+    public function __construct(
+        RecipeRepositoryInterface $recipeRepository,
+        IngredientRepositoryInterface $ingredientRepository
+    ) {
         $this->recipeRepository = $recipeRepository;
         $this->ingredientRepository = $ingredientRepository;
 
         return $this;
     }
 
-    public function setRecipe(int $recipeId)
+    public function setRecipe(int $recipeId): self
     {
         $this->recipe = $this->recipeRepository->get($recipeId);
 
         return $this;
     }
 
-    public function addIngredient(int $ingredientId, int $amount)
+    public function addIngredient(int $ingredientId, int $amount): self
     {
         if (isset($this->ingredients[$ingredientId])) {
             $this->ingredients[$ingredientId]['amount'] += $amount;

@@ -5,11 +5,13 @@ namespace App\Services;
 use App\Events\DietPlanCreated;
 use App\Http\Traits\DietPlanTimeline;
 use App\Models\DietPlan;
+use App\Models\Meal;
 use App\Models\Recipe;
 use App\Models\User;
 use App\Repositories\Interfaces\DietPlanRepositoryInterface;
 use App\Services\Interfaces\DietPlanInterface;
 use App\Services\Interfaces\MealInterface;
+use Illuminate\Support\Collection;
 
 class DietPlanService implements DietPlanInterface
 {
@@ -22,22 +24,24 @@ class DietPlanService implements DietPlanInterface
     protected $dietPlan;
     protected $meals;
 
-    public function __construct(DietPlanRepositoryInterface $dietPlanRepository, MealInterface $mealService)
-    {
+    public function __construct(
+        DietPlanRepositoryInterface $dietPlanRepository,
+        MealInterface $mealService
+    ) {
         $this->dietPlanRepository = $dietPlanRepository;
         $this->mealService = $mealService;
 
         return $this;
     }
 
-    public function setUser(User $user)
+    public function setUser(User $user): self
     {
         $this->user = $user;
 
         return $this;
     }
 
-    public function getByDate(string|null $date): DietPlan|null
+    public function getByDate(string|null $date): ?DietPlan
     {
         $this->setDate($date);
         $this->dietPlan = $this->dietPlanRepository->getByDate($this->user->id, $this->date);
@@ -60,7 +64,7 @@ class DietPlanService implements DietPlanInterface
         return $dates;
     }
 
-    public function getMeals()
+    public function getMeals(): array
     {
         $this->dietPlan->load('meals');
 
@@ -69,13 +73,13 @@ class DietPlanService implements DietPlanInterface
         }
     }
 
-    public function getMeal($meal)
+    public function getMeal($mealOrder): Meal
     {
         if (!isset($this->meals)) {
             $this->getMeals();
         }
 
-        return $this->meals[$meal];
+        return $this->meals[$mealOrder];
     }
 
     public function changeMeal(int $meal, string $newSlug): Recipe
@@ -85,7 +89,7 @@ class DietPlanService implements DietPlanInterface
                             ->recipe;
     }
 
-    public function createIfNotExists(): DietPlan|null
+    public function createIfNotExists(): ?DietPlan
     {
         if (!$this->getByDate($this->getLastSubscriptionDay())) {
             return $this->createOnDate($this->getLastSubscriptionDay());
@@ -114,13 +118,13 @@ class DietPlanService implements DietPlanInterface
         return $dietPlan;
     }
 
-    public function updateAll()
+    public function updateAll(): Collection
     {
         $this->deleteAfterDate($this->getToday());
         return $this->createAll();
     }
 
-    public function updateOnDate(string $date)
+    public function updateOnDate(string $date): DietPlan
     {
         $this->deleteOnDate($date);
         return $this->createOnDate($date);

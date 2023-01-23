@@ -14,8 +14,11 @@ class ProfileCreateOrUpdateService implements ProfileCreateOrUpdateInterface
     protected $userRepository;
     protected $action = NULL;
 
-    public function __construct(ProfileRepositoryInterface $profileRepository, UserDietInterface $userDietService, UserRepositoryInterface $userRepository)
-    {
+    public function __construct(
+        ProfileRepositoryInterface $profileRepository,
+        UserDietInterface $userDietService,
+        UserRepositoryInterface $userRepository
+    ) {
         $this->profileRepository = $profileRepository;
         $this->userDietService = $userDietService;
         $this->userRepository = $userRepository;
@@ -23,21 +26,21 @@ class ProfileCreateOrUpdateService implements ProfileCreateOrUpdateInterface
         return $this;
     }
 
-    public function setUser(int $userId)
+    public function setUser(int $userId): self
     {
         $this->user = $this->userRepository->get($userId);
 
         return $this;
     }
 
-    public function create()
+    public function create(): self
     {
         $this->action = 'create';
 
         return $this;
     }
 
-    public function update()
+    public function update(): self
     {
         $this->action = 'update';
 

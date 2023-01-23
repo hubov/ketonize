@@ -18,8 +18,11 @@ class UpdateShoppingListService implements UpdateShoppingListInterface
     protected $meals;
     protected $listItems = [];
 
-    public function __construct(ShoppingListRepositoryInterface $shoppingListRepository, MealRepositoryInterface $mealRepository, UserRepositoryInterface $userRepository)
-    {
+    public function __construct(
+        ShoppingListRepositoryInterface $shoppingListRepository,
+        MealRepositoryInterface $mealRepository,
+        UserRepositoryInterface $userRepository
+    ) {
         $this->shoppingListRepository = $shoppingListRepository;
         $this->mealRepository = $mealRepository;
         $this->userRepository = $userRepository;
@@ -27,14 +30,14 @@ class UpdateShoppingListService implements UpdateShoppingListInterface
         return $this;
     }
 
-    public function setUser(int $userId)
+    public function setUser(int $userId): self
     {
         $this->user = $this->userRepository->get($userId);
 
         return $this;
     }
 
-    public function setDates(string $dateFrom, string $dateTo)
+    public function setDates(string $dateFrom, string $dateTo): self
     {
         $this->dateFrom = $dateFrom;
         $this->dateTo = $dateTo;
@@ -42,7 +45,7 @@ class UpdateShoppingListService implements UpdateShoppingListInterface
         return $this;
     }
 
-    public function update()
+    public function update(): void
     {
         $this->meals = $this->mealRepository->getForUserBetweenDates($this->user->id, $this->dateFrom, $this->dateTo);
 

@@ -7,8 +7,11 @@ use App\Repositories\Interfaces\RecipeRepositoryInterface;
 
 interface RelateIngredientsToRecipeInterface
 {
-    public function __construct(RecipeRepositoryInterface $recipeRepository, IngredientRepositoryInterface $ingredientRepository);
-    public function setRecipe(int $recipeId);
-    public function addIngredient(int $ingredientId, int $amount);
+    public function __construct(
+        RecipeRepositoryInterface $recipeRepository,
+        IngredientRepositoryInterface $ingredientRepository
+    );
+    public function setRecipe(int $recipeId): self;
+    public function addIngredient(int $ingredientId, int $amount): self;
     public function sync() : void;
 }

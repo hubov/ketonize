@@ -23,21 +23,21 @@ class SelectRecipeForDietService implements SelectRecipeForDietInterface
         $this->recipeRepository = $recipeRepository;
     }
 
-    public function setTags(array $tags)
+    public function setTags(array $tags): self
     {
         $this->tags = $tags;
 
         return $this;
     }
 
-    public function setUserDiet(UserDiet $userDiet)
+    public function setUserDiet(UserDiet $userDiet): self
     {
         $this->userDiet = $userDiet;
 
         return $this;
     }
 
-    public function ignoreRecipes(array $ignoreRecipeIds)
+    public function ignoreRecipes(array $ignoreRecipeIds): self
     {
         $this->ignoreRecipeIds = $ignoreRecipeIds;
 

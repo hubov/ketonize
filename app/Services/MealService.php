@@ -16,13 +16,15 @@ class MealService implements MealInterface
     protected $dietPlan;
     protected $userDiet;
 
-    public function __construct(RecipeRepositoryInterface $recipeRepository, MealRepositoryInterface $mealRepository)
-    {
+    public function __construct(
+        RecipeRepositoryInterface $recipeRepository,
+        MealRepositoryInterface $mealRepository
+    ) {
         $this->mealRepository = $mealRepository;
         $this->recipeRepository = $recipeRepository;
     }
 
-    public function setDietPlan(DietPlan $dietPlan)
+    public function setDietPlan(DietPlan $dietPlan): self
     {
         $this->dietPlan = $dietPlan;
 

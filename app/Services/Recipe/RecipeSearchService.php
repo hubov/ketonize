@@ -4,18 +4,21 @@ namespace App\Services\Recipe;
 
 use App\Models\Recipe;
 use App\Services\Interfaces\Recipe\RecipeSearchInterface;
+use Illuminate\Support\Collection;
 
 class RecipeSearchService implements RecipeSearchInterface
 {
     protected $filters;
     protected $recipes;
 
-    public function filters($filters = [])
+    public function filters($filters = []): self
     {
         $this->filters = $filters;
+
+        return $this;
     }
 
-    public function search()
+    public function search(): Collection
     {
         $this->recipes = Recipe::select('name', 'slug', 'image', 'preparation_time', 'total_time', 'protein_ratio', 'fat_ratio', 'carbohydrate_ratio');
         $this->applyFilters();

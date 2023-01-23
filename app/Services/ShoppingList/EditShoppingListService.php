@@ -13,15 +13,17 @@ class EditShoppingListService implements EditShoppingListInterface
     protected $user;
     protected $shoppingList;
 
-    public function __construct(ShoppingListRepositoryInterface $shoppingListRepository, UserRepositoryInterface $userRepository)
-    {
+    public function __construct(
+        ShoppingListRepositoryInterface $shoppingListRepository,
+        UserRepositoryInterface $userRepository
+    ) {
         $this->shoppingListRepository = $shoppingListRepository;
         $this->userRepository = $userRepository;
 
         return $this;
     }
 
-    public function setUser(int $userId)
+    public function setUser(int $userId): self
     {
         $this->user = $this->userRepository->get($userId);
 

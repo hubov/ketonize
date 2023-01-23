@@ -16,8 +16,12 @@ class RecipeCreateOrUpdateService implements RecipeCreateOrUpdateInterface
     protected $tagRepository;
     protected $relateIngredientsToRecipe;
 
-    public function __construct(RecipeRepositoryInterface $recipeRepository, IngredientRepositoryInterface $ingredientRepository, TagRepositoryInterface $tagRepository, RelateIngredientsToRecipeInterface $relateIngredientsToRecipe)
-    {
+    public function __construct(
+        RecipeRepositoryInterface $recipeRepository,
+        IngredientRepositoryInterface $ingredientRepository,
+        TagRepositoryInterface $tagRepository,
+        RelateIngredientsToRecipeInterface $relateIngredientsToRecipe
+    ) {
         $this->recipeRepository = $recipeRepository;
         $this->ingredientRepository = $ingredientRepository;
         $this->tagRepository = $tagRepository;

@@ -7,7 +7,10 @@ use App\Repositories\Interfaces\UserRepositoryInterface;
 
 interface DeleteShoppingListInterface
 {
-    public function __construct(ShoppingListRepositoryInterface $shoppingListRepository, UserRepositoryInterface $userRepository);
-    public function setUser(int $userId);
+    public function __construct(
+        ShoppingListRepositoryInterface $shoppingListRepository,
+        UserRepositoryInterface $userRepository
+    );
+    public function setUser(int $userId): self;
     public function delete(int $shoppingListId) : bool;
 }
