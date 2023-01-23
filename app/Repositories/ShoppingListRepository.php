@@ -8,7 +8,7 @@ use Illuminate\Support\Collection;
 
 class ShoppingListRepository implements ShoppingListRepositoryInterface
 {
-    public function get(int $id) : ShoppingList|null
+    public function get(int $id) : ?ShoppingList
     {
         return ShoppingList::find($id);
     }

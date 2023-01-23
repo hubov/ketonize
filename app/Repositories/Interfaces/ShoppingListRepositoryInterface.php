@@ -7,7 +7,7 @@ use Illuminate\Support\Collection;
 
 interface ShoppingListRepositoryInterface
 {
-    public function get(int $id) : ShoppingList|null;
+    public function get(int $id) : ?ShoppingList;
     public function getByUser(int $userId) : Collection;
     public function create(array $attributes) : ShoppingList;
     public function createForUser(int $userId, array $attributes);

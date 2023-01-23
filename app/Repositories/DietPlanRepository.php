@@ -21,7 +21,7 @@ class DietPlanRepository implements DietPlanRepositoryInterface
         return DietPlan::find($id);
     }
 
-    public function getByDate(int $userId, string $date) : DietPlan|null
+    public function getByDate(int $userId, string $date) : ?DietPlan
     {
         return DietPlan::where('user_id', $userId)
                         ->where('date_on', $date)
