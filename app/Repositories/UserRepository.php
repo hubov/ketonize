@@ -15,7 +15,7 @@ class UserRepository implements UserRepositoryInterface
 
     public function getWithProfile(int $id): User
     {
-        return User::find($id)->with('profile')->first();
+        return User::with('profile')->find($id);
     }
 
     public function getAllActive(): Collection
