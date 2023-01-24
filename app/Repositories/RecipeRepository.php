@@ -67,4 +67,12 @@ class RecipeRepository implements RecipeRepositoryInterface
     {
         return Recipe::destroy($id);
     }
+
+    public function syncTags(int $recipeId, array $tags): Recipe
+    {
+        $recipe = Recipe::find($recipeId);
+        $recipe->tags()->sync($tags);
+
+        return $recipe;
+    }
 }

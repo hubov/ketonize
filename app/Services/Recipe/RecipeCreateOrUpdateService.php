@@ -63,13 +63,7 @@ class RecipeCreateOrUpdateService implements RecipeCreateOrUpdateInterface
     {
         $recipe = $this->recipeRepository->create($sortedAttributes['recipe']);
 
-        $this->relateIngredientsToRecipe($recipe->id, $sortedAttributes['ingredients']['ids'], $sortedAttributes['ingredients']['quantity']);
-
-        foreach ($sortedAttributes['tags'] as $tag) {
-            $recipe->tags()->attach($tag);
-        }
-
-        $recipe->save();
+        $this->relateIngredientsAndTagsToRecipe($recipe->id, $sortedAttributes);
 
         return $recipe;
     }
@@ -78,19 +72,28 @@ class RecipeCreateOrUpdateService implements RecipeCreateOrUpdateInterface
     {
         $recipe = $this->recipeRepository->updateBySlug($slug, $sortedAttributes['recipe']);
 
-        $this->relateIngredientsToRecipe($recipe->id, $sortedAttributes['ingredients']['ids'], $sortedAttributes['ingredients']['quantity']);
-
-        $recipe->tags()->sync($sortedAttributes['tags']);
+        $this->relateIngredientsAndTagsToRecipe($recipe->id, $sortedAttributes);
 
         return $recipe;
     }
 
-    protected function relateIngredientsToRecipe(int $recipeId, array $ingredients, array $quantities) : void
+    protected function relateIngredientsToRecipe(int $recipeId, array $ingredientsAttributes) : void
     {
         $relateIngredientsToRecipe = $this->relateIngredientsToRecipe->setRecipe($recipeId);
-        foreach ($ingredients as $key => $ingredientId) {
-            $relateIngredientsToRecipe->addIngredient($ingredientId, $quantities[$key]);
+        foreach ($ingredientsAttributes['ids'] as $key => $ingredientId) {
+            $relateIngredientsToRecipe->addIngredient($ingredientId, $ingredientsAttributes['quantity'][$key]);
         }
         $relateIngredientsToRecipe->sync();
+    }
+
+    protected function relateTagsToRecipe(int $recipeId, array $tags) : void
+    {
+        $this->recipeRepository->syncTags($recipeId, $tags);
+    }
+
+    protected function relateIngredientsAndTagsToRecipe(int $recipeId, array $attributes) : void
+    {
+        $this->relateIngredientsToRecipe($recipeId, $attributes['ingredients']);
+        $this->relateTagsToRecipe($recipeId, $attributes['tags']);
     }
 }

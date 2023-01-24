@@ -13,4 +13,5 @@ interface RecipeRepositoryInterface
     public function update(int $id, array $attributes) : Recipe;
     public function updateBySlug(string $slug, array $attributes) : Recipe;
     public function delete(int $id) : bool;
+    public function syncTags(int $recipeId, array $tags) : Recipe;
 }
