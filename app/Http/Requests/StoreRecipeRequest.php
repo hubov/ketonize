@@ -29,9 +29,11 @@ class StoreRecipeRequest extends FormRequest
             'ids.*' => 'required|numeric|min:1',
             'quantity' => 'required|array|min:1',
             'quantity.*' => 'required|numeric|min:1',
-            'description' => 'required|string',
-            'preparation_time' => 'required|numeric',
-            'cooking_time' => 'required|numeric'
+            'description' => 'required|string|min:1',
+            'preparation_time' => 'required|numeric|min:0',
+            'cooking_time' => 'required|numeric|min:0',
+            'tags' => 'required|array|min:1',
+            'tags.*' => 'required|numeric|min:1'
         ];
     }
 }
