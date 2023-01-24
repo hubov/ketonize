@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Unit\Recipe;
+namespace Tests\Unit\Services\Recipe;
 
 use App\Models\Recipe;
 use App\Repositories\Interfaces\IngredientRepositoryInterface;
