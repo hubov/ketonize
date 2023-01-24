@@ -15,6 +15,7 @@ use App\Repositories\Interfaces\IngredientRepositoryInterface;
 use App\Repositories\Interfaces\MealRepositoryInterface;
 use App\Repositories\Interfaces\ProfileRepositoryInterface;
 use App\Repositories\Interfaces\RecipeRepositoryInterface;
+use App\Repositories\Interfaces\RecipeSearchRepositoryInterface;
 use App\Repositories\Interfaces\ShoppingListRepositoryInterface;
 use App\Repositories\Interfaces\TagRepositoryInterface;
 use App\Repositories\Interfaces\UnitRepositoryInterface;
@@ -23,6 +24,7 @@ use App\Repositories\Interfaces\UserRepositoryInterface;
 use App\Repositories\MealRepository;
 use App\Repositories\ProfileRepository;
 use App\Repositories\RecipeRepository;
+use App\Repositories\RecipeSearchRepository;
 use App\Repositories\ShoppingListRepository;
 use App\Repositories\TagRepository;
 use App\Repositories\UnitRepository;
@@ -66,6 +68,10 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(
             RecipeRepositoryInterface::class,
             RecipeRepository::class
+        );
+        $this->app->bind(
+            RecipeSearchRepositoryInterface::class,
+            RecipeSearchRepository::class
         );
         $this->app->bind(
             ProfileRepositoryInterface::class,
