@@ -36,12 +36,12 @@ class RecipeCreateOrUpdateService implements RecipeCreateOrUpdateInterface
 
         if ($slug === NULL) {
             return $this->create($sortedAttributes);
-        } else {
-            return $this->update($sortedAttributes, $slug);
         }
+
+        return $this->update($sortedAttributes, $slug);
     }
 
-    protected function sortAttributes($attributes)
+    protected function sortAttributes($attributes): array
     {
         return [
             'recipe' => [
@@ -85,7 +85,7 @@ class RecipeCreateOrUpdateService implements RecipeCreateOrUpdateInterface
         return $recipe;
     }
 
-    protected function relateIngredientsToRecipe(int $recipeId, array $ingredients, array $quantities)
+    protected function relateIngredientsToRecipe(int $recipeId, array $ingredients, array $quantities) : void
     {
         $relateIngredientsToRecipe = $this->relateIngredientsToRecipe->setRecipe($recipeId);
         foreach ($ingredients as $key => $ingredientId) {
