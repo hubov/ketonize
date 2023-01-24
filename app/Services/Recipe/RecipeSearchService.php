@@ -3,13 +3,21 @@
 namespace App\Services\Recipe;
 
 use App\Models\Recipe;
+use App\Repositories\Interfaces\RecipeSearchRepositoryInterface;
 use App\Services\Interfaces\Recipe\RecipeSearchInterface;
 use Illuminate\Support\Collection;
 
 class RecipeSearchService implements RecipeSearchInterface
 {
+    protected $recipeSearchRepository;
     protected $filters;
-    protected $recipes;
+
+    public function __construct(RecipeSearchRepositoryInterface $recipeSearchRepository)
+    {
+        $this->recipeSearchRepository = $recipeSearchRepository;
+
+        return $this;
+    }
 
     public function filters($filters = []): self
     {
@@ -18,12 +26,11 @@ class RecipeSearchService implements RecipeSearchInterface
         return $this;
     }
 
-    public function search(): Collection
+    public function search(): ?Collection
     {
-        $this->recipes = Recipe::select('name', 'slug', 'image', 'preparation_time', 'total_time', 'protein_ratio', 'fat_ratio', 'carbohydrate_ratio');
         $this->applyFilters();
 
-        return $this->recipes->get();
+        return $this->recipeSearchRepository->get();
     }
 
     protected function applyFilters()
@@ -40,9 +47,7 @@ class RecipeSearchService implements RecipeSearchInterface
     }
 
     protected function filterByTag($filter) {
-        $this->recipes->whereRelation('tags', function ($query) use ($filter) {
-            return $query->whereIn('tags.id', $filter);
-        });
+        $this->recipeSearchRepository->filterByTags($filter);
     }
 
     protected function filterByQuery($query) {
@@ -51,12 +56,10 @@ class RecipeSearchService implements RecipeSearchInterface
     }
 
     protected function filterByRecipeName($query) {
-        $this->recipes->where('name', 'like', '%'.$query.'%');
+        $this->recipeSearchRepository->filterByRecipeName($query);
     }
 
-    protected function filterByIngredientName($searchQuery) {
-        $this->recipes->orWhereRelation('ingredients', function ($query) use ($searchQuery) {
-            return $query->where('ingredients.name', 'like', '%'.$searchQuery.'%');
-        });
+    protected function filterByIngredientName($query) {
+        $this->recipeSearchRepository->filterByIngredientName($query);
     }
 }

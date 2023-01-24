@@ -55,9 +55,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(MealInterface::class, MealService::class);
         $this->app->bind(ProfileCreateOrUpdateInterface::class, ProfileCreateOrUpdateService::class);
         $this->app->bind(RecipeCreateOrUpdateInterface::class, RecipeCreateOrUpdateService::class);
-        $this->app->bind(RecipeSearchInterface::class, function () {
-            return new RecipeSearchService();
-        });
+        $this->app->bind(RecipeSearchInterface::class, RecipeSearchService::class);
         $this->app->bind(RelateIngredientsToRecipeInterface::class, RelateIngredientsToRecipeService::class);
         $this->app->bind(SelectRecipeForDietInterface::class, SelectRecipeForDietService::class);
         $this->app->bind(UpdateShoppingListInterface::class, UpdateShoppingListService::class);
