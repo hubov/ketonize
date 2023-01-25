@@ -19,4 +19,5 @@ interface MealInterface
     public function change(int $mealOrder, string $recipeSlug) : Meal;
     public function delete(int $mealId) : bool;
     public function calculateModifier(int $mealKcal, int $recipeKcal) : int;
+    public function getIngredientsBetweenDates(int $userId, string $dateFrom, string $dateTo) : array;
 }

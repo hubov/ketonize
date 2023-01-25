@@ -2,17 +2,15 @@
 
 namespace App\Services\ShoppingList;
 
-use App\Repositories\Interfaces\MealRepositoryInterface;
 use App\Repositories\Interfaces\ShoppingListRepositoryInterface;
-use App\Repositories\Interfaces\UserRepositoryInterface;
+use App\Services\Interfaces\MealInterface;
 use App\Services\Interfaces\ShoppingList\UpdateShoppingListInterface;
 
 class UpdateShoppingListService implements UpdateShoppingListInterface
 {
     protected $shoppingListRepository;
-    protected $mealRepository;
-    protected $userRepository;
-    protected $user;
+    protected $mealService;
+    protected $userId;
     protected $dateFrom;
     protected $dateTo;
     protected $meals;
@@ -20,19 +18,17 @@ class UpdateShoppingListService implements UpdateShoppingListInterface
 
     public function __construct(
         ShoppingListRepositoryInterface $shoppingListRepository,
-        MealRepositoryInterface $mealRepository,
-        UserRepositoryInterface $userRepository
+        MealInterface $mealService
     ) {
         $this->shoppingListRepository = $shoppingListRepository;
-        $this->mealRepository = $mealRepository;
-        $this->userRepository = $userRepository;
+        $this->mealService = $mealService;
 
         return $this;
     }
 
     public function setUser(int $userId): self
     {
-        $this->user = $this->userRepository->get($userId);
+        $this->userId = $userId;
 
         return $this;
     }
@@ -47,26 +43,9 @@ class UpdateShoppingListService implements UpdateShoppingListInterface
 
     public function update(): void
     {
-        $this->meals = $this->mealRepository->getForUserBetweenDates($this->user->id, $this->dateFrom, $this->dateTo);
+        $this->listItems = $this->mealService->getIngredientsBetweenDates($this->userId, $this->dateFrom, $this->dateTo);
 
-        $this->getIngredientsFromMeals();
-        $this->shoppingListRepository->deleteForUser($this->user->id);
-        $this->shoppingListRepository->createForUserBulk($this->user->id, $this->listItems);
-    }
-
-    protected function getIngredientsFromMeals()
-    {
-        foreach ($this->meals as $meal) {
-            foreach ($meal->recipe->ingredients as $ingredient) {
-                if (isset($this->listItems[$ingredient->id])) {
-                    $this->listItems[$ingredient->id]['amount'] += round($ingredient->pivot->amount * $meal->modifier / 100);
-                } else {
-                    $this->listItems[$ingredient->id] = [
-                        'ingredient_id' => $ingredient->id,
-                        'amount' => round($ingredient->pivot->amount * $meal->modifier / 100)
-                    ];
-                }
-            }
-        }
+        $this->shoppingListRepository->deleteForUser($this->userId);
+        $this->shoppingListRepository->createForUserBulk($this->userId, $this->listItems);
     }
 }

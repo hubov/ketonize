@@ -66,4 +66,31 @@ class MealService implements MealInterface
     {
         return round($mealKcal / $recipeKcal * 100);
     }
+
+    public function getIngredientsBetweenDates(int $userId, string $dateFrom, string $dateTo): array
+    {
+        $meals = $this->mealRepository->getForUserBetweenDates($userId, $dateFrom, $dateTo);
+
+        return $this->arrangeIngredients($meals);
+    }
+
+    protected function arrangeIngredients($meals)
+    {
+        $list = [];
+
+        foreach ($meals as $meal) {
+            foreach ($meal->ingredients as $ingredient) {
+                if (isset($list[$ingredient->id])) {
+                    $list[$ingredient->id]['amount'] += $ingredient->amount;
+                } else {
+                    $list[$ingredient->id] = [
+                        'ingredient_id' => $ingredient->id,
+                        'amount' => $ingredient->amount
+                    ];
+                }
+            }
+        }
+
+        return $list;
+    }
 }

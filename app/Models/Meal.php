@@ -86,4 +86,17 @@ class Meal extends Model
     {
         return $this->recipe->total_time;
     }
+
+    protected function getIngredientsAttribute()
+    {
+        $i = 0;
+        foreach ($this->recipe->ingredients as $ingredient) {
+            $ingredientsList[$i] = $ingredient;
+            $ingredientsList[$i]->amount = round($ingredientsList[$i]->pivot->amount * $this->modifier / 100);
+
+            $i++;
+        }
+
+        return collect($ingredientsList);
+    }
 }
