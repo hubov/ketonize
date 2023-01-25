@@ -15,7 +15,7 @@ class SelectRecipeForDietService implements SelectRecipeForDietInterface
     protected $recipeRepository;
     protected $tags;
     protected $userDiet;
-    protected $ignoreRecipeIds;
+    protected $ignoreRecipeIds = [];
     protected $recipeAttributes;
 
     public function __construct(RecipeRepositoryInterface $recipeRepository)
