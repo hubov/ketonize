@@ -3,6 +3,7 @@
 namespace Tests\Unit\Services;
 
 use App\Models\DietPlan;
+use App\Models\Ingredient;
 use App\Models\Meal;
 use App\Models\Recipe;
 use App\Repositories\Interfaces\MealRepositoryInterface;
@@ -96,6 +97,69 @@ class MealServiceTest extends TestCase
             $mealService
                 ->setDietPlan($this->dietPlan)
                 ->delete($mealId)
+        );
+    }
+
+    /** @test */
+    public function it_returns_ingredients_list_between_dates()
+    {
+        $userId = 1;
+        $dates = [
+            'from' => '2023-01-01',
+            'to' => '2023-01-01'
+        ];
+//        $dietPlan = new DietPlan();
+//        $dietPlan->id = 1;
+        $ingredient = new Ingredient();
+        $ingredient->id = 1;
+        $recipe = new Recipe();
+        $recipe->ingredients = collect([$ingredient]);
+        $ingredient->pivot = new \stdClass();
+        $ingredient->pivot->amount = 100;
+        $ingredient->recipe = $recipe;
+        $meal = new Meal();
+        $meal->modifier = 100;
+        $meal->recipe = $recipe;
+
+        $this->mealRepository
+            ->expects($this->once())
+            ->method('getForUserBetweenDates')
+            ->with($userId, $dates['from'], $dates['to'])
+            ->willReturn(collect([$meal]));
+
+        $mealService = new MealService($this->recipeRepository, $this->mealRepository);
+
+        $this->assertEquals(
+            [
+                1 => [
+                    'ingredient_id' => 1,
+                    'amount' => 100
+                 ]
+            ],
+            $mealService->getIngredientsBetweenDates($userId, $dates['from'], $dates['to'])
+        );
+    }
+
+    /** @test */
+    public function it_returns_empty_array_between_dates_if_no_meals_planned()
+    {
+        $userId = 1;
+        $dates = [
+            'from' => '2023-01-01',
+            'to' => '2023-01-01'
+        ];
+
+        $this->mealRepository
+            ->expects($this->once())
+            ->method('getForUserBetweenDates')
+            ->with($userId, $dates['from'], $dates['to'])
+            ->willReturn(collect([]));
+
+        $mealService = new MealService($this->recipeRepository, $this->mealRepository);
+
+        $this->assertEquals(
+            [],
+            $mealService->getIngredientsBetweenDates($userId, $dates['from'], $dates['to'])
         );
     }
 }
