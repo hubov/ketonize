@@ -3,28 +3,25 @@
 namespace App\Services\ShoppingList;
 
 use App\Repositories\Interfaces\ShoppingListRepositoryInterface;
-use App\Repositories\Interfaces\UserRepositoryInterface;
 use App\Services\Interfaces\ShoppingList\DeleteShoppingListInterface;
 
 class DeleteShoppingListService implements DeleteShoppingListInterface
 {
     protected $shoppingListRepository;
-    protected $userRepository;
+    protected $userId;
     protected $shoppingList;
 
     public function __construct(
-        ShoppingListRepositoryInterface $shoppingListRepository,
-        UserRepositoryInterface $userRepository
+        ShoppingListRepositoryInterface $shoppingListRepository
     ) {
         $this->shoppingListRepository = $shoppingListRepository;
-        $this->userRepository = $userRepository;
 
         return $this;
     }
 
     public function setUser(int $userId): self
     {
-        $this->user = $this->userRepository->get($userId);
+        $this->userId = $userId;
 
         return $this;
     }
@@ -47,7 +44,7 @@ class DeleteShoppingListService implements DeleteShoppingListInterface
     {
         if (
             ($this->shoppingList) &&
-            ($this->shoppingList->user->id == $this->user->id)
+            ($this->shoppingList->user->id == $this->userId)
         ) {
             return true;
         }
