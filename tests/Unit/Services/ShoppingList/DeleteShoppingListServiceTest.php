@@ -3,7 +3,6 @@
 namespace Tests\Unit\Services\ShoppingList;
 
 use App\Models\ShoppingList;
-use App\Models\User;
 use App\Repositories\Interfaces\ShoppingListRepositoryInterface;
 use App\Services\ShoppingList\DeleteShoppingListService;
 use PHPUnit\Framework\TestCase;
@@ -20,9 +19,9 @@ class DeleteShoppingListServiceTest extends TestCase
     {
         $this->shoppingListId = 1;
         $this->shoppingList = new ShoppingList();
+        $this->shoppingList->id = $this->shoppingListId;
         $this->userId = 1;
-        $this->shoppingList->user = new User();
-        $this->shoppingList->user->id = $this->userId;
+        $this->shoppingList->user_id = $this->userId;
 
         $this->shoppingListRepository = $this->createMock(ShoppingListRepositoryInterface::class);
 

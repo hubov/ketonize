@@ -44,7 +44,7 @@ class DeleteShoppingListService implements DeleteShoppingListInterface
     {
         if (
             ($this->shoppingList) &&
-            ($this->shoppingList->user->id == $this->userId)
+            ($this->shoppingList->user_id == $this->userId)
         ) {
             return true;
         }
