@@ -3,29 +3,25 @@
 namespace App\Services\ShoppingList;
 
 use App\Repositories\Interfaces\ShoppingListRepositoryInterface;
-use App\Repositories\Interfaces\UserRepositoryInterface;
 use App\Services\Interfaces\ShoppingList\EditShoppingListInterface;
 
 class EditShoppingListService implements EditShoppingListInterface
 {
     protected $shoppingListRepository;
-    protected $userRepository;
-    protected $user;
+    protected $userId;
     protected $shoppingList;
 
     public function __construct(
         ShoppingListRepositoryInterface $shoppingListRepository,
-        UserRepositoryInterface $userRepository
     ) {
         $this->shoppingListRepository = $shoppingListRepository;
-        $this->userRepository = $userRepository;
 
         return $this;
     }
 
     public function setUser(int $userId): self
     {
-        $this->user = $this->userRepository->get($userId);
+        $this->userId = $userId;
 
         return $this;
     }
@@ -35,7 +31,7 @@ class EditShoppingListService implements EditShoppingListInterface
         $this->shoppingList = $this->shoppingListRepository->get($shoppingListId);
 
         if ($this->shoppingListExistsForUser()) {
-            $this->updateShoppingListAmount($amount);
+            $this->shoppingListRepository->update($this->shoppingList->id, ['amount' => $amount]);
         } else {
             return false;
         }
@@ -45,16 +41,10 @@ class EditShoppingListService implements EditShoppingListInterface
 
     protected function shoppingListExistsForUser()
     {
-        if (($this->shoppingList) && ($this->shoppingList->user->id == $this->user->id)) {
+        if (($this->shoppingList) && ($this->shoppingList->user_id == $this->userId)) {
             return true;
         } else {
             return false;
         }
-    }
-
-    protected function updateShoppingListAmount($amount)
-    {
-        $this->shoppingList->amount = $amount;
-        $this->shoppingList->save();
     }
 }
