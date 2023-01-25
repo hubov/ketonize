@@ -2,16 +2,14 @@
 
 namespace App\Services\Interfaces\ShoppingList;
 
-use App\Repositories\Interfaces\MealRepositoryInterface;
 use App\Repositories\Interfaces\ShoppingListRepositoryInterface;
-use App\Repositories\Interfaces\UserRepositoryInterface;
+use App\Services\Interfaces\MealInterface;
 
 interface UpdateShoppingListInterface
 {
     public function __construct(
         ShoppingListRepositoryInterface $shoppingListRepository,
-        MealRepositoryInterface $mealRepository,
-        UserRepositoryInterface $userRepository
+        MealInterface $mealService,
     );
     public function setUser(int $userId): self;
     public function setDates(string $dateFrom, string $dateTo): self;
