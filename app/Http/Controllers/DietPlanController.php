@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\UIThrowableException;
 use App\Jobs\GenerateDietPlan;
-use App\Models\DietPlan;
 use App\Models\Unit;
 use App\Repositories\Interfaces\UserRepositoryInterface;
 use App\Services\Interfaces\DietPlanInterface;
@@ -27,9 +27,11 @@ class DietPlanController extends Controller
     public function index(Request $request, $date = NULL)
     {
         $this->dietPlanService->setUser(Auth::user());
-        $dietPlan = $this->dietPlanService->getByDate($date);
-        if (!$dietPlan) {
-            $dietPlan = new DietPlan();
+        try {
+            $dietPlan = $this->dietPlanService->getByDate($date);
+        } catch (UIThrowableException $e) {
+            $errors[] = $e->returnErrorArray();
+            $dietPlan = null;
         }
 
         $dietMealDivision = Auth::user()->userDiet->dietMealDivision;
@@ -39,7 +41,8 @@ class DietPlanController extends Controller
             'units' => Unit::all(),
             'dietPlan' => $dietPlan,
             'userDiet' => Auth::user()->userDiet,
-            'mealsTags' => (isset($dietMealDivision)) ? $dietMealDivision->mealsTags() : []
+            'mealsTags' => (isset($dietMealDivision)) ? $dietMealDivision->mealsTags() : [],
+            'errors' => (isset($errors)) ? $errors : []
         ]);
     }
 

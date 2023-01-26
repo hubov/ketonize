@@ -19,12 +19,24 @@
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-3 bg-white border-b border-gray-200">
                         Your diet: {{ $userDiet->diet->name }} {{ $userDiet->kcal }} kcal Fats: {{ $userDiet->fat }}g ({{ $userDiet->diet->fat }}%) Proteins: {{ $userDiet->protein }}g ({{ $userDiet->diet->protein }}%) Carbs: {{ $userDiet->carbohydrate }}g ({{ $userDiet->diet->carbohydrate }}%)<br />
-                        Proteins: {{ $dietPlan->protein }}g ({{ $dietPlan->shareProtein}}%) | Fats: {{ $dietPlan->fat }}g ({{ $dietPlan->shareFat }}%) | Carbs: {{ $dietPlan->carbohydrate }}g ({{ $dietPlan->shareCarbohydrate }}%) | Kcal: {{ $dietPlan->kcal }} | Preparation time: {{ $dietPlan->preparationTime }}min | Total time: {{ $dietPlan->totalTime }}min
+                        @if ($dietPlan !== null)
+                            Proteins: {{ $dietPlan->protein }}g ({{ $dietPlan->shareProtein}}%) | Fats: {{ $dietPlan->fat }}g ({{ $dietPlan->shareFat }}%) | Carbs: {{ $dietPlan->carbohydrate }}g ({{ $dietPlan->shareCarbohydrate }}%) | Kcal: {{ $dietPlan->kcal }} | Preparation time: {{ $dietPlan->preparationTime }}min | Total time: {{ $dietPlan->totalTime }}min
+                        @endif
                     </div>
                 </div>
             </div>
         </div>
 
+        @if (count($errors))
+            @foreach ($errors as $error)
+                <div class="alert alert-{{ $error['status'] }} d-flex align-items-center" role="alert">
+                    <span class="material-icons inline-icon bi flex-shrink-0 me-2">{{  $error['symbol'] }}</span>
+                    <div>
+                        {{ $error['message'] }}
+                    </div>
+                </div>
+            @endforeach
+        @endif
         @if (($dietPlan) && (count($dietPlan->meals) > 0))
             @foreach ($dietPlan->meals as $meal)
                 <div class="row my-3">
