@@ -50,7 +50,7 @@ class DietPlanService implements DietPlanInterface
         $this->dietPlan = $this->dietPlanRepository->getByDate($this->user->id, $this->date);
 
         if ($this->dietPlan === null) {
-            $this->validateDate($date);
+            $this->validateDate($this->date);
         }
 
         return $this->dietPlan;
@@ -60,7 +60,7 @@ class DietPlanService implements DietPlanInterface
     {
         if (($date > $this->getLastSubscriptionDay()) || $date < $this->getHistoryLimitDate()) {
             throw new DietPlanOutOfDateRangeException();
-        } elseif ($date < $this->user->created_at) {
+        } elseif ($date < substr($this->user->created_at, 0, 10)) {
             throw new DateOlderThanAccountException();
         } else {
             throw new DietPlanUnderConstruction();
