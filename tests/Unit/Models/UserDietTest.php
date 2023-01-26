@@ -1,11 +1,9 @@
 <?php
 
-namespace Tests\Unit;
+namespace Tests\Unit\Models;
 
 use App\Models\DietMealDivision;
-use App\Models\MealEnergyDivision;
 use App\Models\Tag;
-use App\Models\User;
 use App\Models\UserDiet;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
