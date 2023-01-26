@@ -10,17 +10,14 @@ class ProfileTest extends TestCase
 {
     use RefreshDatabase;
 
-    /**
-     * A basic unit test example.
-     *
-     * @return void
-     */
-    public function test_user_profile_relation_existence()
+    /** @test */
+    public function user_profile_relation_existence()
     {
         $this->assertTrue(method_exists(Profile::class, 'user'));
     }
 
-    public function test_age_method_in_profile()
+    /** @test */
+    public function age_method_in_profile()
     {
         $profile = new Profile;
 

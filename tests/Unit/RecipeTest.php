@@ -12,22 +12,20 @@ class RecipeTest extends TestCase
 {
     use RefreshDatabase;
 
-    /**
-     * A basic unit test example.
-     *
-     * @return void
-     */
-    public function test_ingredients_recipe_relation_existence()
+    /** @test */
+    public function ingredients_recipe_relation_existence()
     {
         $this->assertTrue(method_exists(Recipe::class, 'ingredients'));
     }
 
-    public function test_tags_recipe_relation_existence()
+    /** @test */
+    public function tags_recipe_relation_existence()
     {
         $this->assertTrue(method_exists(Recipe::class, 'tags'));
     }
 
-    public function test_setting_slug_name_total_time_for_recipe_at_creating()
+    /** @test */
+    public function setting_slug_name_total_time_for_recipe_at_creating()
     {
         $recipe = Recipe::create([
            'name' => 'grzegżółka stara',
@@ -42,7 +40,8 @@ class RecipeTest extends TestCase
         $this->assertEquals(15, $recipe->total_time);
     }
 
-    public function test_setting_slug_name_total_time_for_recipe_at_updating()
+    /** @test */
+    public function setting_slug_name_total_time_for_recipe_at_updating()
     {
         $recipe = Recipe::create([
             'name' => 'grzegżółka stara',
@@ -63,7 +62,8 @@ class RecipeTest extends TestCase
         $this->assertEquals(30, $recipe->total_time);
     }
 
-    public function test_setting_slug_name_total_time_for_recipe_at_saving()
+    /** @test */
+    public function setting_slug_name_total_time_for_recipe_at_saving()
     {
         $recipe = Recipe::create([
             'name' => 'grzegżółka stara',
@@ -83,7 +83,8 @@ class RecipeTest extends TestCase
         $this->assertEquals(30, $recipe->total_time);
     }
 
-    public function test_tagsIds_method_in_recipe()
+    /** @test */
+    public function tagsIds_method_in_recipe()
     {
         $recipe = Recipe::factory()->has(Tag::factory()->count(3))->create();
 
@@ -92,7 +93,8 @@ class RecipeTest extends TestCase
         $this->assertEquals(3, $result);
     }
 
-    public function test_recipe_resetMacros_method()
+    /** @test */
+    public function recipe_resetMacros_method()
     {
         $recipe = Recipe::factory()->create([
             'protein' => 10,
@@ -143,15 +145,16 @@ class RecipeTest extends TestCase
         $this->assertEquals(0, $recipe->kcal);
     }
 
-    public function test_recipe_addMacrosFromIngredient_method()
+    /** @test */
+    public function recipe_addMacrosFromIngredient_method()
     {
-        $recipe = Recipe::factory()->create([
+        $recipe = Recipe::factory()->make([
             'protein' => 0,
             'fat' => 0,
             'carbohydrate' => 0,
             'kcal' => 0
         ]);
-        $ingredient = Ingredient::factory()->create([
+        $ingredient = Ingredient::factory()->make([
             'protein' => 10,
             'fat' => 20,
             'carbohydrate' => 30,
@@ -173,7 +176,8 @@ class RecipeTest extends TestCase
         ]);
     }
 
-    public function test_recipe_updateMacroRatios_method()
+    /** @test */
+    public function recipe_updateMacroRatios_method()
     {
         $recipe = Recipe::factory()->create([
             'protein' => 10,

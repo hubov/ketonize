@@ -10,12 +10,8 @@ class DietTest extends TestCase
 {
     use RefreshDatabase;
 
-    /**
-     * A basic unit test example.
-     *
-     * @return void
-     */
-    public function test_user_diet_relation_existence()
+    /** @test */
+    public function user_diet_relation_existence()
     {
         $this->assertTrue(method_exists(Diet::class, 'diet'));
     }

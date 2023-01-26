@@ -10,16 +10,13 @@ class ShoppingListTest extends TestCase
 {
     use RefreshDatabase;
 
-    /**
-     * A basic unit test example.
-     *
-     * @return void
-     */
-    public function test_ingredient_shoppingList_relation_existence()
+    /** @test */
+    public function ingredient_shoppingList_relation_existence()
     {
         $this->assertTrue(method_exists(ShoppingList::class, 'ingredient'));
     }
 
+    /** @test */
     public function test_user_shoppingList_relation_existence()
     {
         $this->assertTrue(method_exists(ShoppingList::class, 'user'));

@@ -12,27 +12,26 @@ class UserTest extends TestCase
 {
     use RefreshDatabase;
 
-    /**
-     * A basic unit test example.
-     *
-     * @return void
-     */
-    public function test_roles_user_relation_existence()
+    /** @test */
+    public function roles_user_relation_existence()
     {
         $this->assertTrue(method_exists(User::class, 'roles'));
     }
 
-    public function test_profile_user_relation_existence()
+    /** @test */
+    public function profile_user_relation_existence()
     {
         $this->assertTrue(method_exists(User::class, 'profile'));
     }
 
-    public function test_userDiet_user_relation_existence()
+    /** @test */
+    public function userDiet_user_relation_existence()
     {
         $this->assertTrue(method_exists(User::class, 'userDiet'));
     }
 
-    public function test_is_role_method_in_user_admin()
+    /** @test */
+    public function is_role_method_in_user_admin()
     {
         $user = User::factory()->hasAttached(Role::factory()->state([
             'name' => 'admin'
@@ -41,7 +40,8 @@ class UserTest extends TestCase
         $this->assertTrue($user->is('admin'));
     }
 
-    public function test_is_role_method_in_user_not_admin()
+    /** @test */
+    public function is_role_method_in_user_not_admin()
     {
         $user = User::factory()->hasAttached(Role::factory()->state([
             'name' => 'mod'
