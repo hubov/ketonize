@@ -3,6 +3,9 @@
 namespace App\Services;
 
 use App\Events\DietPlanCreated;
+use App\Exceptions\DateOlderThanAccountException;
+use App\Exceptions\DietPlanOutOfDateRangeException;
+use App\Exceptions\DietPlanUnderConstruction;
 use App\Http\Traits\DietPlanTimeline;
 use App\Models\DietPlan;
 use App\Models\Meal;
@@ -46,7 +49,22 @@ class DietPlanService implements DietPlanInterface
         $this->setDate($date);
         $this->dietPlan = $this->dietPlanRepository->getByDate($this->user->id, $this->date);
 
+        if ($this->dietPlan === null) {
+            $this->validateDate($date);
+        }
+
         return $this->dietPlan;
+    }
+
+    protected function validateDate($date)
+    {
+        if (($date > $this->getLastSubscriptionDay()) || $date < $this->getHistoryLimitDate()) {
+            throw new DietPlanOutOfDateRangeException();
+        } elseif ($date < $this->user->created_at) {
+            throw new DateOlderThanAccountException();
+        } else {
+            throw new DietPlanUnderConstruction();
+        }
     }
 
     protected function setDate(string|null $date): void
@@ -91,7 +109,9 @@ class DietPlanService implements DietPlanInterface
 
     public function createIfNotExists(): ?DietPlan
     {
-        if (!$this->getByDate($this->getLastSubscriptionDay())) {
+        try {
+            $this->getByDate($this->getLastSubscriptionDay());
+        } catch (DietPlanUnderConstruction) {
             return $this->createOnDate($this->getLastSubscriptionDay());
         }
 
