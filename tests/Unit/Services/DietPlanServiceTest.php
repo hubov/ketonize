@@ -3,6 +3,9 @@
 namespace Tests\Unit\Services;
 
 use App\Events\DietPlanCreated;
+use App\Exceptions\DateOlderThanAccountException;
+use App\Exceptions\DietPlanOutOfDateRangeException;
+use App\Exceptions\DietPlanUnderConstruction;
 use App\Models\DietPlan;
 use App\Models\Meal;
 use App\Models\Recipe;
@@ -10,6 +13,7 @@ use App\Models\User;
 use App\Repositories\Interfaces\DietPlanRepositoryInterface;
 use App\Services\DietPlanService;
 use App\Services\Interfaces\MealInterface;
+use Carbon\Carbon;
 use Tests\TestCase;
 
 class DietPlanServiceTest extends TestCase
@@ -59,6 +63,12 @@ class DietPlanServiceTest extends TestCase
             'next' => '2022-01-02',
             'prev' => '2021-12-31',
         ];
+
+        $this->dietPlanRepository
+            ->expects($this->once())
+            ->method('getByDate')
+            ->with($this->user->id, $date)
+            ->willReturn(new DietPlan());
 
         $dietPlanService = new DietPlanService($this->dietPlanRepository, $this->mealService);
         $dietPlanService
@@ -135,7 +145,7 @@ class DietPlanServiceTest extends TestCase
             ->setUser($this->user)
             ->createIfNotExists();
 
-        $this->assertEquals($newDietPlan, $dietPlanStub);
+        $this->assertEquals($dietPlanStub, $newDietPlan);
     }
 
     /** @test */
@@ -314,6 +324,80 @@ class DietPlanServiceTest extends TestCase
             ->isUpdatedAfter($dateTime);
 
         $this->assertSame($expectedStatus, $actualStatus);
+    }
+
+    /** @test */
+    public function date_before_account_activation_throws_exception()
+    {
+        $date = Carbon::yesterday();
+
+        $this->user->created_at = Carbon::today();
+
+        $this->dietPlanRepository
+            ->expects($this->once())
+            ->method('getByDate')
+            ->with($this->user->id, $date)
+            ->willReturn(null);
+
+        $dietPlanService = new DietPlanService($this->dietPlanRepository, $this->mealService);
+        $this->expectException(DateOlderThanAccountException::class);
+        $dietPlanService
+            ->setUser($this->user)
+            ->getByDate($date);
+    }
+
+    /** @test */
+    public function date_earlier_than_2_weeks_throws_exception()
+    {
+        $date = Carbon::today()->subDays(15);
+
+        $this->dietPlanRepository
+            ->expects($this->once())
+            ->method('getByDate')
+            ->with($this->user->id, $date)
+            ->willReturn(null);
+
+        $dietPlanService = new DietPlanService($this->dietPlanRepository, $this->mealService);
+        $this->expectException(DietPlanOutOfDateRangeException::class);
+        $dietPlanService
+            ->setUser($this->user)
+            ->getByDate($date);
+    }
+
+    /** @test */
+    public function date_later_than_4_weeks_throws_exception()
+    {
+        $date = Carbon::today()->addDays(30);
+
+        $this->dietPlanRepository
+            ->expects($this->once())
+            ->method('getByDate')
+            ->with($this->user->id, $date)
+            ->willReturn(null);
+
+        $dietPlanService = new DietPlanService($this->dietPlanRepository, $this->mealService);
+        $this->expectException(DietPlanOutOfDateRangeException::class);
+        $dietPlanService
+            ->setUser($this->user)
+            ->getByDate($date);
+    }
+
+    /** @test */
+    public function diet_plan_not_ready_yet_throws_exception()
+    {
+        $date = Carbon::today();
+
+        $this->dietPlanRepository
+            ->expects($this->once())
+            ->method('getByDate')
+            ->with($this->user->id, $date)
+            ->willReturn(null);
+
+        $dietPlanService = new DietPlanService($this->dietPlanRepository, $this->mealService);
+        $this->expectException(DietPlanUnderConstruction::class);
+        $dietPlanService
+            ->setUser($this->user)
+            ->getByDate($date);
     }
 
     public function updateStatuses()
