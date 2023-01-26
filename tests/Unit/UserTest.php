@@ -31,6 +31,12 @@ class UserTest extends TestCase
     }
 
     /** @test */
+    public function dietPlans_user_relation_exists()
+    {
+        $this->assertTrue(method_exists(User::class, 'dietPlans'));
+    }
+
+    /** @test */
     public function is_role_method_in_user_admin()
     {
         $user = User::factory()->hasAttached(Role::factory()->state([
