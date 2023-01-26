@@ -25,8 +25,8 @@
             </div>
         </div>
 
-        @if (count($meals) > 0)
-            @foreach ($meals as $meal)
+        @if (($dietPlan) && (count($dietPlan->meals) > 0))
+            @foreach ($dietPlan->meals as $meal)
                 <div class="row my-3">
                     <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                         <div class="p-3 bg-white border-b border-gray-200">

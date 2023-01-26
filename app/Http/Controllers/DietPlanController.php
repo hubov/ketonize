@@ -36,7 +36,6 @@ class DietPlanController extends Controller
 
         return View::make('dashboard', [
             'date' => $this->dietPlanService->getDates(),
-            'meals' => $dietPlan->meals,
             'units' => Unit::all(),
             'dietPlan' => $dietPlan,
             'userDiet' => Auth::user()->userDiet,
