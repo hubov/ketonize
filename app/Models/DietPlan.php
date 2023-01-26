@@ -11,16 +11,6 @@ class DietPlan extends Model
 
     protected $fillable = ['user_id', 'date_on'];
     protected $with = ['meals'];
-
-    protected $totalProtein = 0;
-    protected $totalFat = 0;
-    protected $totalCarbohydrate = 0;
-    protected $totalKcal = 0;
-    protected $totalPreparation = 0;
-    protected $totalTime = 0;
-    protected $shareProtein = 0;
-    protected $shareFat = 0;
-    protected $shareCarbohydrate = 0;
     public $timestamps = false;
 
     public function user()

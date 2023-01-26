@@ -51,13 +51,6 @@ class UserDiet extends Model
         return $this->carbohydrate / $this->getMacros() * 100;
     }
 
-    public function getMeals()
-    {
-        $this->meals = $this->dietMealDivision->getMeals();
-
-        return $this->meals;
-    }
-
     public function mealsDivision()
     {
         $result = [];

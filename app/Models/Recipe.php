@@ -51,7 +51,6 @@ class Recipe extends Model
     public function removeIngredients()
     {
         $this->ingredients()->sync([]);
-        $this::resetMacros();
     }
 
     protected function addProtein($amount)
