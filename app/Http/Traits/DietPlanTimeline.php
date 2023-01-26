@@ -11,6 +11,11 @@ trait DietPlanTimeline {
         return 27;
     }
 
+    public function getHistoryLimitDate()
+    {
+        return Carbon::today()->subDays(14);
+    }
+
     public function getDateFormat()
     {
         return 'Y-m-d';
