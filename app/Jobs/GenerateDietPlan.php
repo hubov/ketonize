@@ -46,6 +46,6 @@ class GenerateDietPlan implements ShouldQueue
     protected function createDietPlan(User $user)
     {
         $this->dietPlanService->setUser($user)
-                                ->createIfNotExists();
+            ->createIfNotExists();
     }
 }
