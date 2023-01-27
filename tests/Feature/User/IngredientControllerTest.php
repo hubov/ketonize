@@ -4,8 +4,6 @@ namespace Tests\Feature\User;
 
 use App\Models\Ingredient;
 use App\Models\IngredientCategory;
-use App\Models\Recipe;
-use App\Models\Role;
 use App\Models\Unit;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -91,7 +89,7 @@ class IngredientControllerTest extends TestCase
     }
 
     /** @test */
-    public function ingredient_edit_page_for_no_user_is_redirected()
+    public function ingredient_edit_page_for_no_user_is_forbidden()
     {
         $ingredient = Ingredient::factory()->create();
 
@@ -126,16 +124,33 @@ class IngredientControllerTest extends TestCase
     public function searching_for_ingredient_returns_results_for_user()
     {
         $user = User::factory()->create();
-        $ingredient = Ingredient::factory()->create(['name' => 'Delicious ingredient']);
+        $ingredient = Ingredient::factory()->create([
+            'name' => 'Delicious ingredient',
+            'protein' => 20,
+            'fat' => 30,
+            'carbohydrate' => 10,
+            'kcal' => 100
+        ]);
 
         $response = $this->actingAs($user)->get('/ingredient-autocomplete?name=ingr');
 
         $response->assertStatus(200);
-        $response->assertJsonFragment(['id' => $ingredient->id, 'name' => 'Delicious ingredient']);
+        $response->assertJson([
+            [
+                'id' => $ingredient->id,
+                'name' => 'Delicious ingredient',
+                'protein' => $ingredient->protein,
+                'fat' => $ingredient->fat,
+                'carbohydrate' => $ingredient->carbohydrate,
+                'kcal' => $ingredient->kcal,
+                'ingredient_category_id' => $ingredient->ingredient_category_id,
+                'unit_id' => $ingredient->unit_id
+            ]
+        ]);
     }
 
     /** @test */
-    public function searching_for_ingredient_for_non_user_is_forbidden()
+    public function searching_for_ingredient_for_non_user_is_redirected()
     {
         Ingredient::factory()->create(['name' => 'Delicious ingredient']);
 

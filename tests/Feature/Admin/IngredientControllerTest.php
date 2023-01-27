@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Admin;
 
+use App\Exceptions\DeletingIngredientAssignedToRecipesException;
 use App\Models\Ingredient;
 use App\Models\IngredientCategory;
 use App\Models\Recipe;
@@ -45,9 +46,11 @@ class IngredientControllerTest extends TestCase
         $user = User::factory()->has(Role::factory()->state(['name' => 'admin']))->create();
 
         $response = $this->actingAs($user)->post('/ingredients', $this->requestData);
-
+        $this->assertDatabaseCount('ingredients', 1);
 
         $response->assertRedirectContains('/ingredient/');
+        $this->followRedirects($response)
+            ->assertSee($this->requestData['name']);
     }
 
     /** @test */
@@ -92,18 +95,22 @@ class IngredientControllerTest extends TestCase
         $response = $this->actingAs($user)->get('/ingredient/'.$ingredient->id);
 
         $response->assertStatus(200);
+        $response->assertSee($ingredient->name);
     }
 
     /** @test */
     public function updating_ingredient_as_admin_with_correct_data()
     {
         $user = User::factory()->has(Role::factory()->state(['name' => 'admin']))->create();
-        $ingredient = Ingredient::factory()->create();
+        $ingredient = Ingredient::factory()->create(['name' => 'Need-to-be-updated ingredient']);
 
         $response = $this->actingAs($user)->put('/ingredient/'.$ingredient->id, $this->requestData);
 
-        $response->assertSessionHasNoErrors();
         $response->assertRedirect('/ingredient/'.$ingredient->id);
+        $this->assertDatabaseCount('ingredients', 1);
+        $this->followRedirects($response)
+            ->assertDontSee($ingredient->name)
+            ->assertSee($this->requestData['name']);
     }
 
     /** @test */
@@ -127,6 +134,7 @@ class IngredientControllerTest extends TestCase
         $response = $this->actingAs($user)->delete('/ingredient/'.$ingredient->id.'/delete');
 
         $this->assertModelMissing($ingredient);
+        $this->assertDatabaseCount('ingredients', 0);
         $response->assertStatus(200);
         $response->assertSee('true');
     }
@@ -142,6 +150,7 @@ class IngredientControllerTest extends TestCase
         $response = $this->actingAs($user)->delete('/ingredient/'.$ingredient->id.'/delete');
 
         $this->assertModelExists($ingredient);
+        $this->assertDatabaseCount('ingredients', 1);
         $response->assertStatus(403);
         $response->assertJson(['error' => TRUE]);
     }
