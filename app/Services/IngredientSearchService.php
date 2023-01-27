@@ -55,7 +55,7 @@ class IngredientSearchService implements IngredientSearchInterface
 
         ksort($result);
 
-        return $result;
+        return array_values($result);
     }
 
     protected function getOrderByLevenshtein($name, $order)
