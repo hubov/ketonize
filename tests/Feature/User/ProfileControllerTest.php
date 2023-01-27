@@ -69,35 +69,41 @@ class ProfileControllerTest extends TestCase
         unset($this->requestData);
     }
 
-    /**
-     * A basic feature test example.
-     *
-     * @return void
-     */
-    public function test_profile_screen_for_user_without_profile_can_be_rendered()
+    /** @test */
+    public function profile_screen_for_user_without_profile_can_be_rendered()
     {
         $user = User::factory()->create();
         $response = $this->actingAs($user)->get('/profile/new');
 
         $response->assertStatus(200);
+        $response->assertSee('type="radio"', false);
+        $response->assertSee('type="button"', false);
+        $response->assertSee('type="date"', false);
     }
 
-    public function test_profile_screen_for_user_with_profile_can_be_rendered()
+    /** @test */
+    public function profile_screen_for_user_with_profile_can_be_rendered()
     {
-        $user = User::factory()->has(Profile::factory())->create();
+        $user = User::factory()->has(Profile::factory()->state(['birthday' => '2000-11-11']))->create();
         $response = $this->actingAs($user)->get('/profile');
 
         $response->assertStatus(200);
+        $response->assertSee('type="radio"', false);
+        $response->assertSee('type="button"', false);
+        $response->assertSee('type="date"', false);
+        $response->assertSeeInOrder(['id="birthday"', 'value="2000-11-11"'], false);
     }
 
-    public function test_profile_screen_without_user_is_redirected()
+    /** @test */
+    public function profile_screen_without_user_is_redirected()
     {
         $response = $this->get('/profile');
 
         $response->assertRedirect('/login');
     }
 
-    public function test_saving_new_profile_with_correct_data()
+    /** @test */
+    public function saving_new_profile_with_correct_data()
     {
         $user = User::factory()->create();
         $tags = $user->userDiet->getMealsTags();
@@ -109,10 +115,12 @@ class ProfileControllerTest extends TestCase
         $response = $this->actingAs($user)->post('/profile/new', $this->requestData);
 
         $response->assertStatus(200);
+        $this->assertDatabaseCount('profiles', 1);
         $response->assertSee('true');
     }
 
-    public function test_saving_new_profile_with_incorrect_data()
+    /** @test */
+    public function saving_new_profile_with_incorrect_data()
     {
         $user = User::factory()->create();
         $this->requestData['weight'] = 30;
@@ -120,22 +128,26 @@ class ProfileControllerTest extends TestCase
         $response = $this->actingAs($user)->post('/profile/new', $this->requestData);
 
         $response->assertRedirect();
+        $this->assertDatabaseCount('profiles', 0);
         $response->assertSessionHasErrors('weight');
     }
 
-    public function test_updating_profile_with_correct_data()
+    /** @test */
+    public function updating_profile_with_correct_data()
     {
         $user = User::factory()->has(Profile::factory())->create();
 
         $response = $this->actingAs($user)->post('/profile', $this->requestData);
 
         $response->assertStatus(200);
+        $this->assertDatabaseCount('profiles', 1);
         $response->assertSee('true');
     }
 
-    public function test_updating_profile_with_incorrect_data()
+    /** @test */
+    public function updating_profile_with_incorrect_data()
     {
-        $user = User::factory()->create();
+        $user = User::factory()->has(Profile::factory())->create();
         $this->requestData['weight'] = 30;
 
         $response = $this->actingAs($user)->post('/profile', $this->requestData);
