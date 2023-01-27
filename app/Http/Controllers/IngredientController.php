@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\DeletingIngredientAssignedToRecipesException;
 use App\Http\Requests\StoreIngredientRequest;
 use App\Http\Requests\UpdateIngredientRequest;
 use App\Models\Ingredient;
@@ -124,13 +125,11 @@ class IngredientController extends Controller
      */
     public function destroy($id)
     {
-        $recipes = $this->ingredientService->relatedRecipes($id);
-
-        if (count($recipes) > 0) {
-            return response()->json(['error' => TRUE, 'recipes' => $recipes], 403);
+        try {
+            $this->ingredientService->delete($id);
+        } catch (DeletingIngredientAssignedToRecipesException $e) {
+            return response()->json(['error' => TRUE, 'recipes' => $e->getRecipeList()], 403);
         }
-
-        $this->ingredientRepository->delete($id);
 
         return response()->json(TRUE);
     }
