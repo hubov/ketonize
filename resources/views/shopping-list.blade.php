@@ -66,7 +66,14 @@
 						</tbody>
 					</table>
 			    @else
-			        You have no shopping list yet!
+                    <div class="row mt-4">
+                        <div class="alert alert-success d-flex align-items-center" role="alert">
+                            <span class="material-icons material-icons-outlined bi flex-shrink-0 me-2">task_alt</span>
+                            <div>
+                                Your shopping list is empty! Well done!
+                            </div>
+                        </div>
+                    </div>
 			    @endif
 			</div>
 		</div>
