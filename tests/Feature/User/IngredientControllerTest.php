@@ -4,6 +4,7 @@ namespace Tests\Feature\User;
 
 use App\Models\Ingredient;
 use App\Models\IngredientCategory;
+use App\Models\Profile;
 use App\Models\Unit;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -17,6 +18,7 @@ class IngredientControllerTest extends TestCase
     {
         parent::setUp();
 
+        $this->user = User::factory()->has(Profile::factory())->create();
         $ingredientCategory = IngredientCategory::factory()->create();
         $unit = Unit::factory()->create();
         $this->requestData = [
@@ -48,10 +50,9 @@ class IngredientControllerTest extends TestCase
     /** @test */
     public function ingredient_listing_screen_can_be_rendered_with_user()
     {
-        $user = User::factory()->create();
         $ingredients = Ingredient::factory()->count(2)->create();
 
-        $response = $this->actingAs($user)->get('/ingredients');
+        $response = $this->actingAs($this->user)->get('/ingredients');
 
         $response->assertStatus(200);
         $response->assertSeeInOrder($ingredients->sortBy('name')->pluck('name')->toArray());
@@ -60,9 +61,7 @@ class IngredientControllerTest extends TestCase
     /** @test */
     public function adding_new_ingredient_as_user_is_forbidden()
     {
-        $user = User::factory()->create();
-
-        $response = $this->actingAs($user)->post('/ingredients');
+        $response = $this->actingAs($this->user)->post('/ingredients');
 
         $response->assertStatus(403);
     }
@@ -70,9 +69,7 @@ class IngredientControllerTest extends TestCase
     /** @test */
     public function adding_new_ingredient_via_ajax_as_user_is_forbidden()
     {
-        $user = User::factory()->create();
-
-        $response = $this->actingAs($user)->post('/ingredient/new');
+        $response = $this->actingAs($this->user)->post('/ingredient/new');
 
         $response->assertStatus(403);
     }
@@ -80,10 +77,9 @@ class IngredientControllerTest extends TestCase
     /** @test */
     public function ingredient_edit_page_for_user_is_forbidden()
     {
-        $user = User::factory()->create();
         $ingredient = Ingredient::factory()->create();
 
-        $response = $this->actingAs($user)->get('/ingredient/'.$ingredient->id);
+        $response = $this->actingAs($this->user)->get('/ingredient/'.$ingredient->id);
 
         $response->assertStatus(403);
     }
@@ -101,10 +97,9 @@ class IngredientControllerTest extends TestCase
     /** @test */
     public function updating_ingredient_as_user_is_forbidden()
     {
-        $user = User::factory()->create();
         $ingredient = Ingredient::factory()->create();
 
-        $response = $this->actingAs($user)->put('/ingredient/'.$ingredient->id);
+        $response = $this->actingAs($this->user)->put('/ingredient/'.$ingredient->id);
 
         $response->assertStatus(403);
     }
@@ -112,10 +107,9 @@ class IngredientControllerTest extends TestCase
     /** @test */
     public function deleting_ingredient_not_assigned_to_recipe_as_user_is_forbidden()
     {
-        $user = User::factory()->create();
         $ingredient = Ingredient::factory()->create();
 
-        $response = $this->actingAs($user)->delete('/ingredient/'.$ingredient->id.'/delete');
+        $response = $this->actingAs($this->user)->delete('/ingredient/'.$ingredient->id.'/delete');
 
         $response->assertStatus(403);
     }
@@ -123,7 +117,6 @@ class IngredientControllerTest extends TestCase
     /** @test */
     public function searching_for_ingredient_returns_results_for_user()
     {
-        $user = User::factory()->create();
         $ingredient = Ingredient::factory()->create([
             'name' => 'Delicious ingredient',
             'protein' => 20,
@@ -132,7 +125,7 @@ class IngredientControllerTest extends TestCase
             'kcal' => 100
         ]);
 
-        $response = $this->actingAs($user)->get('/ingredient-autocomplete?name=ingr');
+        $response = $this->actingAs($this->user)->get('/ingredient-autocomplete?name=ingr');
 
         $response->assertStatus(200);
         $response->assertJson([

@@ -6,6 +6,7 @@ use App\Exceptions\DateOlderThanAccountException;
 use App\Exceptions\DietPlanOutOfDateRangeException;
 use App\Exceptions\DietPlanUnderConstructionException;
 use App\Models\DietPlan;
+use App\Models\Profile;
 use App\Models\Recipe;
 use App\Models\Tag;
 use App\Models\User;
@@ -30,12 +31,19 @@ class DietPlanControllerTest extends TestCase
 
         $dateFormat = 'Y-m-d';
 
-        $this->user = User::factory()->create();
+        $this->user = User::factory()->has(Profile::factory())->create();
         $this->today = Carbon::today()->format($dateFormat);
         $this->fifteenDaysAgo = Carbon::today()->subDays(15)->format($dateFormat);
         $this->in30Days = Carbon::today()->addDays(30)->format($dateFormat);
         $this->yesterday = Carbon::yesterday()->format($dateFormat);
         $this->tommorow = Carbon::tomorrow()->format($dateFormat);
+    }
+
+    protected function tearDown(): void
+    {
+        unset($this->user);
+
+        parent::tearDown();
     }
 
     /** @test */
@@ -60,13 +68,12 @@ class DietPlanControllerTest extends TestCase
     /** @test */
     public function diet_plan_with_meals_without_date_given()
     {
-        $user = User::factory()->create();
         DietPlan::factory()->count(4)->create([
-            'user_id' => $user,
+            'user_id' => $this->user,
             'date_on' => $this->today
         ]);
 
-        $response = $this->actingAs($user)->get('/dashboard');
+        $response = $this->actingAs($this->user)->get('/dashboard');
 
         $response->assertStatus(200);
         $response->assertSeeText(['change-meal', 'diet-meal', 'meal-tags']);
@@ -75,13 +82,12 @@ class DietPlanControllerTest extends TestCase
     /** @test */
     public function diet_plan_with_meals_with_date_given()
     {
-        $user = User::factory()->create();
         DietPlan::factory()->count(4)->create([
-            'user_id' => $user,
+            'user_id' => $this->user,
             'date_on' => $this->tommorow
         ]);
 
-        $response = $this->actingAs($user)->get('/dashboard/' . $this->tommorow);
+        $response = $this->actingAs($this->user)->get('/dashboard/' . $this->tommorow);
 
         $response->assertStatus(200);
         $response->assertSeeText(['change-meal', 'diet-meal', 'meal-tags']);
@@ -90,14 +96,13 @@ class DietPlanControllerTest extends TestCase
     /** @test */
     public function diet_plan_generate_user_signed_in()
     {
-        $user = User::factory()->create();
-        $tags = $user->userDiet->getMealsTags();
+        $tags = $this->user->userDiet->getMealsTags();
         $recipes = Recipe::factory()->has(Tag::factory())->count(4)->create();
         foreach ($recipes as $recipe) {
             $recipe->tags()->attach($tags);
         }
 
-        $response = $this->actingAs($user)->get('/dashboard/generate/' . $this->tommorow);
+        $response = $this->actingAs($this->user)->get('/dashboard/generate/' . $this->tommorow);
         $this->assertDatabaseCount('diet_plans', 1);
         $this->assertDatabaseCount('meals', 4);
 
@@ -119,11 +124,10 @@ class DietPlanControllerTest extends TestCase
     /** @test */
     public function diet_plan_update_recipe()
     {
-        $user = User::factory()->create();
-        DietPlan::factory()->create(['user_id' => $user->id, 'date_on' => $this->today]);
+        DietPlan::factory()->create(['user_id' => $this->user->id, 'date_on' => $this->today]);
         $recipe = Recipe::factory()->has(Tag::factory())->create();
 
-        $response = $this->actingAs($user)->post('/diet/update', ['date' => $this->today, 'meal' => 1, 'slug' => $recipe->slug]);
+        $response = $this->actingAs($this->user)->post('/diet/update', ['date' => $this->today, 'meal' => 1, 'slug' => $recipe->slug]);
 
         $response->assertStatus(200);
         $response->assertSeeText($recipe->id);
@@ -133,17 +137,15 @@ class DietPlanControllerTest extends TestCase
     /** @test */
     public function it_returns_false_or_true_if_diet_plan_is_not_ready_or_ready()
     {
-        $user = User::factory()->create();
-
         // diet plan is not ready
-        $response = $this->actingAs($user)->post('/dashboard/is-ready', ['time' => Carbon::now()->getTimestamp()]);
+        $response = $this->actingAs($this->user)->post('/dashboard/is-ready', ['time' => Carbon::now()->getTimestamp()]);
 
         $response->assertSeeText('false');
 
         // diet plan is ready
         $now = Carbon::now()->getTimestamp();
-        DietPlan::factory()->create(['user_id' => $user->id, 'date_on' => $this->today]);
-        $response = $this->actingAs($user)->post('/dashboard/is-ready', ['time' => $now]);
+        DietPlan::factory()->create(['user_id' => $this->user->id, 'date_on' => $this->today]);
+        $response = $this->actingAs($this->user)->post('/dashboard/is-ready', ['time' => $now]);
 
         $response->assertSeeText('true');
     }

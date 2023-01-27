@@ -41,15 +41,11 @@ class UserFactory extends Factory
         return $this->afterMaking(function (User $user) {
             //
         })->afterCreating(function (User $user) {
-            Profile::factory()
-                ->for($user)
-                ->create();
             UserDiet::factory()
                 ->for($user)
                 ->for(Diet::factory())
                 ->for(DietMealDivision::factory())
                 ->create();
-//            DietMealDivision::factory()->create(['meals_count' => 4]);
         });
     }
 

@@ -3,6 +3,7 @@
 namespace Tests\Feature\User;
 
 use App\Models\Ingredient;
+use App\Models\Profile;
 use App\Models\Recipe;
 use App\Models\Role;
 use App\Models\Tag;
@@ -13,6 +14,14 @@ use Tests\TestCase;
 class RecipeTest extends TestCase
 {
     use RefreshDatabase;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->user = User::factory()->has(Profile::factory())->create();
+    }
+
     /**
      * A basic feature test example.
      *
@@ -20,8 +29,7 @@ class RecipeTest extends TestCase
      */
     public function test_recipes_screen_for_user_can_be_rendered()
     {
-        $user = User::factory()->create();
-        $response = $this->actingAs($user)->get('/recipes');
+        $response = $this->actingAs($this->user)->get('/recipes');
 
         $response->assertStatus(200);
     }
@@ -35,18 +43,16 @@ class RecipeTest extends TestCase
 
     public function test_single_recipe_screen_for_user_can_be_rendered()
     {
-        $user = User::factory()->create();
         $recipe = Recipe::factory()->create();
-        $response = $this->actingAs($user)->get('/recipe/'.$recipe->slug);
+        $response = $this->actingAs($this->user)->get('/recipe/'.$recipe->slug);
 
         $response->assertStatus(200);
     }
 
     public function test_single_recipe_screen_with_false_slug_cannot_be_rendered()
     {
-        $user = User::factory()->create();
         $recipe = Recipe::factory()->create();
-        $response = $this->actingAs($user)->get('/recipe/aaaaa'.$recipe->slug);
+        $response = $this->actingAs($this->user)->get('/recipe/aaaaa'.$recipe->slug);
 
         $response->assertStatus(404);
     }
@@ -61,7 +67,7 @@ class RecipeTest extends TestCase
 
     public function test_single_recipe_screen_for_admin_can_be_rendered()
     {
-        $user = User::factory()->has(Role::factory()->state(['name' => 'admin']))->create();
+        $user = User::factory()->has(Profile::factory())->has(Role::factory()->state(['name' => 'admin']))->create();
         $recipe = Recipe::factory()->create();
         $response = $this->actingAs($user)->get('/recipe/'.$recipe->slug);
 
@@ -69,8 +75,9 @@ class RecipeTest extends TestCase
         $response->assertStatus(200);
     }
 
-    public function test_adding_new_recipe_by_admin() {
-        $user = User::factory()->has(Role::factory()->state(['name' => 'admin']))->create();
+    public function test_adding_new_recipe_by_admin()
+    {
+        $user = User::factory()->has(Profile::factory())->has(Role::factory()->state(['name' => 'admin']))->create();
         $ingredient = Ingredient::factory()->create();
         $tag = Tag::factory()->create();
         $amount = 100;
@@ -93,22 +100,23 @@ class RecipeTest extends TestCase
         $request->assertLocation('/recipe/recipe-1');
     }
 
-    public function test_prevent_adding_new_recipe_by_user() {
-        $user = User::factory()->create();
-
-        $request = $this->actingAs($user)->post('/recipes', []);
+    public function test_prevent_adding_new_recipe_by_user()
+    {
+        $request = $this->actingAs($this->user)->post('/recipes', []);
 
         $request->assertStatus(403);
     }
 
-    public function test_prevent_adding_new_recipe_when_not_signed_in() {
+    public function test_prevent_adding_new_recipe_when_not_signed_in()
+    {
         $request = $this->post('/recipes', []);
 
         $request->assertStatus(403);
     }
 
-    public function test_updating_recipe_by_admin() {
-        $user = User::factory()->has(Role::factory()->state(['name' => 'admin']))->create();
+    public function test_updating_recipe_by_admin()
+    {
+        $user = User::factory()->has(Profile::factory())->has(Role::factory()->state(['name' => 'admin']))->create();
         $recipe = Recipe::factory()->hasAttached(Ingredient::factory(), ['amount' => '100'])->has(Tag::factory())->create();
 
         $ingredientNew = Ingredient::factory()->create();
@@ -163,7 +171,6 @@ class RecipeTest extends TestCase
 
     public function test_search_by_query_as_signed_in_user()
     {
-        $user = User::factory()->create();
         Recipe::factory()->create(['name' => 'aaa']);
         Recipe::factory()->create(['name' => 'bbb']);
         $query = [
@@ -173,7 +180,7 @@ class RecipeTest extends TestCase
             ]
         ];
 
-        $response = $this->actingAs($user)->post('/recipes/search', $query);
+        $response = $this->actingAs($this->user)->post('/recipes/search', $query);
 
         $response->assertStatus(200);
         $response->assertJsonFragment(['aaa']);
@@ -181,7 +188,6 @@ class RecipeTest extends TestCase
 
     public function test_search_by_tag_as_signed_in_user()
     {
-        $user = User::factory()->create();
         $recipe = Recipe::factory()->has(Tag::factory())->create(['name' => 'aaa']);
         Recipe::factory()->has(Tag::factory())->create(['name' => 'bbb']);
         $query = [
@@ -190,7 +196,7 @@ class RecipeTest extends TestCase
             ]
         ];
 
-        $response = $this->actingAs($user)->post('/recipes/search', $query);
+        $response = $this->actingAs($this->user)->post('/recipes/search', $query);
 
         $response->assertStatus(200);
         $response->assertJsonFragment(['aaa']);
@@ -207,10 +213,9 @@ class RecipeTest extends TestCase
 
     public function test_returning_raw_recipe_data_as_user()
     {
-        $user = User::factory()->create();
         $recipe = Recipe::factory()->create();
 
-        $response = $this->actingAs($user)->post('/recipe/search', ['slug' => $recipe->slug]);
+        $response = $this->actingAs($this->user)->post('/recipe/search', ['slug' => $recipe->slug]);
 
         $response->assertStatus(200);
         $response->assertJsonFragment([$recipe->name]);
