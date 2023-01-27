@@ -68,7 +68,7 @@ class User extends Authenticatable
         return $this->hasOne(UserDiet::class);
     }
 
-    public function dietPlan()
+    public function dietPlans()
     {
         return $this->hasMany(DietPlan::class);
     }

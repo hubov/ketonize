@@ -1,0 +1,14 @@
+<?php
+
+namespace App\Services\Interfaces\ShoppingList;
+
+use App\Repositories\Interfaces\ShoppingListRepositoryInterface;
+
+interface DeleteShoppingListInterface
+{
+    public function __construct(
+        ShoppingListRepositoryInterface $shoppingListRepository
+    );
+    public function setUser(int $userId): self;
+    public function delete(int $shoppingListId) : bool;
+}

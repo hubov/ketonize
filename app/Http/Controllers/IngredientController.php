@@ -2,31 +2,46 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\DeletingIngredientAssignedToRecipesException;
 use App\Http\Requests\StoreIngredientRequest;
 use App\Http\Requests\UpdateIngredientRequest;
 use App\Models\Ingredient;
 use App\Models\IngredientCategory;
 use App\Models\Unit;
+use App\Repositories\Interfaces\IngredientCategoryRepositoryInterface;
+use App\Repositories\Interfaces\IngredientRepositoryInterface;
+use App\Services\Interfaces\IngredientInterface;
+use App\Services\Interfaces\IngredientSearchInterface;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\View;
 
 class IngredientController extends Controller
 {
+    protected $ingredientService;
+    protected $ingredientRepository;
+    protected $ingredientCategoryRepository;
+
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Contracts\View\View
      */
 
+    public function __construct(IngredientInterface $ingredientService, IngredientRepositoryInterface $ingredientRepository, IngredientCategoryRepositoryInterface $ingredientCategoryRepository)
+    {
+        $this->ingredientService = $ingredientService;
+        $this->ingredientRepository = $ingredientRepository;
+        $this->ingredientCategoryRepository = $ingredientCategoryRepository;
+    }
+
     public function index()
     {
-        $ingredients = Ingredient::all()
-                                ->sortBy('name');
+        $ingredients = $this->ingredientRepository->getAll()->sortBy('name');
 
         return View::make('ingredient.listing', [
             'ingredients' => $ingredients,
             'units' => Unit::all(),
-            'categories' => IngredientCategory::orderBy('name')->get()
+            'categories' => $this->ingredientCategoryRepository->getAll()->sortBy('name')
         ]);
     }
 
@@ -48,14 +63,14 @@ class IngredientController extends Controller
      */
     public function store(StoreIngredientRequest $request)
     {
-        $ingredient = Ingredient::create($request->all());
+        $ingredient = $this->ingredientRepository->create($request->all());
 
         return redirect('/ingredient/'.$ingredient->id);
     }
 
     public function ajaxStore(StoreIngredientRequest $request)
     {
-        $ingredient = Ingredient::create($request->all());
+        $ingredient = $this->ingredientRepository->create($request->all());
 
         return response()->json(['id' => $ingredient->id]);
     }
@@ -79,12 +94,12 @@ class IngredientController extends Controller
      */
     public function edit($id)
     {
-        $ingredient = Ingredient::find($id);
+        $ingredient = $this->ingredientRepository->get($id);
 
         return View::make('ingredient.edit', [
             'ingredient' => $ingredient,
             'units' => Unit::all(),
-            'categories' => IngredientCategory::orderBy('name')->get()
+            'categories' => $this->ingredientCategoryRepository->getAll()->sortBy('name')
         ]);
     }
 
@@ -97,17 +112,7 @@ class IngredientController extends Controller
      */
     public function update(UpdateIngredientRequest $request, $id)
     {
-        $ingredient = Ingredient::find($id);
-        $ingredient->fill([
-            'name' => $request->name,
-            'ingredient_category_id' => $request->ingredient_category_id,
-            'protein' => $request->protein,
-            'fat' => $request->fat,
-            'carbohydrate' => $request->carbohydrate,
-            'kcal' => $request->kcal,
-            'unit_id' => $request->unit_id
-        ]);
-        $ingredient->save();
+        $ingredient = $this->ingredientRepository->update($id, $request->all());
 
         return redirect('/ingredient/'.$ingredient->id);
     }
@@ -120,46 +125,28 @@ class IngredientController extends Controller
      */
     public function destroy($id)
     {
-        $ingredient = Ingredient::find($id);
-        if (count($ingredient->recipes) > 0) {
-            foreach ($ingredient->recipes as $recipe) {
-                $results[] = $recipe->slug;
-            }
-            return response()->json(['error' => TRUE, 'recipes' => $results], 403);
+        try {
+            $this->ingredientService->delete($id);
+        } catch (DeletingIngredientAssignedToRecipesException $e) {
+            return response()->json(['error' => TRUE, 'recipes' => $e->getRecipeList()], 403);
         }
-
-        Ingredient::destroy($id);
 
         return response()->json(TRUE);
     }
 
-    public function search(Request $request)
+    public function search(Request $request, IngredientSearchInterface $ingredientSearch)
     {
-        $ingredients = Ingredient::where('name', 'like', '%'.$request->input('name').'%')->limit(20)->get();
-
-        if (count($ingredients) > 0) {
-            $i = 0;
-            foreach ($ingredients as $ingredient) {
-                $result[levenshtein($request->input('name'), $ingredient->name)*100+$i] = [
-                    'id' => $ingredient->id,
-                    'name' => $ingredient->name,
-                    'unit' => $ingredient->unit->symbol,
-                    'protein' => $ingredient->protein,
-                    'fat' => $ingredient->fat,
-                    'carbohydrate' => $ingredient->carbohydrate,
-                    'kcal' => $ingredient->kcal
-                ];
-                $i++;
-            }
-        } else {
-            $result = [];
-        }
-
-        return response()->json($result);
+        return response()->json(
+            $ingredientSearch->query($request->input('name'))
+                                ->limit(20)
+                                ->return()
+        );
     }
 
     public function upload(Request $request)
     {
+        // deprecated; to do auto upload later
+
         if ($request->file('bulk_upload')->isValid()) {
             $file = fopen($request->file('bulk_upload')->path(), 'r');
             $head = fgetcsv($file, 4096, ',', '"');

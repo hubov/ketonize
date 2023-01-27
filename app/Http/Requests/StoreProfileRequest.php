@@ -24,16 +24,16 @@ class StoreProfileRequest extends FormRequest
     public function rules()
     {
         return [
-            'diet_type' => 'required|integer',
-            'diet_target' => 'required|integer',
+            'diet_type' => 'required|integer|exists:diets,id',
+            'diet_target' => 'required|integer|min:1|max:3',
             'meals_count' => 'required|integer|min:3|max:5',
-            'gender' => 'required|integer',
+            'gender' => 'required|integer|min:1|max:2',
             'birthday' => 'required|date',
             'weight' => 'required|integer|min:45|max:250',
             'height' => 'required|integer|min:120|max:230',
             'target_weight' => 'required|integer|min:45|max:250',
-            'basic_activity' => 'required|integer',
-            'sport_activity' => 'required|integer'
+            'basic_activity' => 'required|integer|min:1|max:4',
+            'sport_activity' => 'required|integer|min:1|max:4',
         ];
     }
 }

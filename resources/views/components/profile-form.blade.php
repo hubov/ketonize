@@ -225,7 +225,9 @@
                             @endif>
                             <label for="sport_activity_high" class="form-check-label">4-5 trainings per week</label>
                         </div>
-                        <input type="submit" class="btn btn-primary mt-3" name="save" id="save" value="Save">
+                        <button type="button" class="btn btn-primary mt-3" name="save" id="save">
+                            Save
+                        </button>
                     </div>
                 </div>
             </p>
@@ -235,6 +237,8 @@
 </div>
 
 <script type="text/javascript">
+    var now = new Date().getTime();
+
     $(document).ready(function() {
         var isEdit = {{ $edit }};
         var url = "/profile/new";
@@ -281,7 +285,11 @@
                 encode: true,
             }).done(function (data) {
                 console.log('success');
-                window.location = '/dashboard';
+                $('#save').prop('disabled', true);
+                $('#save').html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Updating...');
+                now = new Date().getTime();
+
+                checkIfDietPlanReady();
             }) .fail(function(data) {
                 console.log('fail');
                 var errors = data.responseJSON.errors;
@@ -305,4 +313,27 @@
             });
         });
     });
+
+    function checkIfDietPlanReady() {
+        var data = {
+            time: Math.floor(now / 1000),
+            _token: '{{ csrf_token() }}'
+        }
+
+        $.ajax({
+            type: "POST",
+            url: "/dashboard/is-ready",
+            dataType: "json",
+            data: data,
+            success: function (data) {
+                if (data === true) {
+                    window.location = '/dashboard';
+                } else {
+                    setTimeout(function () {
+                        checkIfDietPlanReady();
+                    }, 3000);
+                }
+            }
+        });
+    }
 </script>

@@ -2,15 +2,20 @@
 
 namespace App\Models;
 
+use GeneaLabs\LaravelPivotEvents\Traits\PivotEventTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Str;
 
 class Recipe extends Model
 {
-    use HasFactory;
+    use HasFactory, PivotEventTrait;
+
+    const IMAGE_DEFAULT = 'default';
 
     protected $fillable = ['name', 'image', 'protein', 'fat', 'carbohydrate', 'kcal', 'description', 'preparation_time', 'cooking_time'];
+    protected $attributes = [
+        'image' => self::IMAGE_DEFAULT
+    ];
 
     public function ingredients()
     {
@@ -20,20 +25,6 @@ class Recipe extends Model
     public function tags()
     {
         return $this->belongsToMany(Tag::class);
-    }
-
-    protected static function boot()
-    {
-        $autoValues = function($recipe) {
-            $recipe->slug = Str::of($recipe->name)->slug('-')->__toString();
-            $recipe->name = Str::of($recipe->name)->ucfirst()->__toString();
-            $recipe->total_time = $recipe->preparation_time + $recipe->cooking_time;
-        };
-
-        parent::boot();
-        static::saving($autoValues);
-        static::creating($autoValues);
-        static::updating($autoValues);
     }
 
     public function tagsIds()
@@ -59,23 +50,7 @@ class Recipe extends Model
 
     public function removeIngredients()
     {
-        $this->ingredients()->detach();
-        $this::resetMacros();
-    }
-
-    public function setIngredients($ingredientIds, $amounts)
-    {
-        $this->removeIngredients();
-
-        if ($ingredientIds > 0) {
-            foreach ($ingredientIds as $i => $id) {
-                $this->ingredients()->attach($id, ['amount' => $amounts[$i]]);
-                $ingredient = Ingredient::find($id);
-                $this->addMacrosFromIngredient($ingredient, $amounts[$i]);
-            }
-
-            $this->updateMacroRatios();
-        }
+        $this->ingredients()->sync([]);
     }
 
     protected function addProtein($amount)
@@ -141,9 +116,9 @@ class Recipe extends Model
             $this->ingredients->modelKeys() === $other->ingredients->modelKeys() &&
             $this->tags->modelKeys() === $other->tags->modelKeys()
         ) {
-            return TRUE;
+            return true;
         } else {
-            return FALSE;
+            return false;
         }
     }
 }

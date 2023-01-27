@@ -2,106 +2,81 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\UIThrowableException;
 use App\Jobs\GenerateDietPlan;
-use App\Models\DietPlan;
-use App\Models\Recipe;
 use App\Models\Unit;
+use App\Repositories\Interfaces\UserRepositoryInterface;
+use App\Services\Interfaces\DietPlanInterface;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\View;
 
 class DietPlanController extends Controller
 {
-    protected $dietPlan;
+    protected $dietPlanService;
+    protected $userRepository;
+    protected $planJob;
 
-    public $date;
-    public $dates;
-    public $user;
-    public $meals;
-    protected $totalProtein;
-    protected $totalFat;
-    protected $totalCarbohydrate;
-    protected $totalKcal;
-    protected $totalPreparation;
-    protected $totalTime;
-    protected $shareProtein;
-    protected $shareFat;
-    protected $shareCarbohydrate;
-
-    public function index(Request $request, DietPlan $dietPlan, $date = NULL)
+    public function __construct(DietPlanInterface $dietPlanService, UserRepositoryInterface $userRepository, GenerateDietPlan $planJob)
     {
-        $this->dietPlan = $dietPlan;
-        $this->user = Auth::user();
-        $this->setDate($date);
-        $this->dietPlan = $this->dietPlan
-                                ->where('user_id', $this->user->id)
-                                ->where('date_on', $this->date)
-                                ->firstOrNew();
+        $this->dietPlanService = $dietPlanService;
+        $this->userRepository = $userRepository;
+        $this->planJob = $planJob;
+    }
 
-        $dietMealDivision = $this->user->userDiet->dietMealDivision();
+    public function index(Request $request, $date = NULL)
+    {
+        $this->dietPlanService->setUser(Auth::user());
+        try {
+            $dietPlan = $this->dietPlanService->getByDate($date);
+        } catch (UIThrowableException $e) {
+            $errors[] = $e->returnErrorArray();
+            $dietPlan = null;
+        }
+
+        $dietMealDivision = Auth::user()->userDiet->dietMealDivision;
 
         return View::make('dashboard', [
-            'date' => $this->date,
-            'datePrev' => $this->dates['prev'],
-            'dateNext' => $this->dates['next'],
-            'meals' => $this->dietPlan->meals,
+            'date' => $this->dietPlanService->getDates(),
             'units' => Unit::all(),
-            'protein' => $this->dietPlan->protein,
-            'fat' => $this->dietPlan->fat,
-            'carbohydrate' => $this->dietPlan->carbohydrate,
-            'kcal' => $this->dietPlan->kcal,
-            'preparation_time' => $this->dietPlan->preparationTime,
-            'total_time' => $this->dietPlan->totalTime,
-            'shareProtein' => $this->dietPlan->shareProtein,
-            'shareFat' => $this->dietPlan->shareFat,
-            'shareCarbohydrate' => $this->dietPlan->shareCarbohydrate,
-            'diet' => $this->user->userDiet->diet->name,
-            'dietKcal' => $this->user->userDiet->kcal,
-            'dietProtein' => $this->user->userDiet->protein,
-            'dietFat' => $this->user->userDiet->fat,
-            'dietCarbohydrate' => $this->user->userDiet->carbohydrate,
-            'dietProteinShare' => $this->user->userDiet->diet->protein,
-            'dietFatShare' => $this->user->userDiet->diet->fat,
-            'dietCarbohydrateShare' => $this->user->userDiet->diet->carbohydrate,
-            'mealsTags' => (isset($dietMealDivision)) ? $dietMealDivision->mealsTags() : []
+            'dietPlan' => $dietPlan,
+            'userDiet' => Auth::user()->userDiet,
+            'mealsTags' => (isset($dietMealDivision)) ? $dietMealDivision->mealsTags() : [],
+            'errors' => (isset($errors)) ? $errors : []
         ]);
     }
 
-    public function setDate($date)
+    public function generate(Request $request)
     {
-        $this->date = ($date === NULL) ? date("Y-m-d") : $date;
+        $this->dietPlanService->setUser(Auth::user());
+        $this->dietPlanService->updateOnDate($request->date);
 
-        $this->dates();
-    }
-
-    public function dates()
-    {
-        $dateUnix = strtotime($this->date);
-        $this->dates['next'] = date('Y-m-d', strtotime('+1 day', $dateUnix));
-        $this->dates['prev'] = date('Y-m-d', strtotime('-1 day', $dateUnix));
-    }
-
-    public function generate(Request $request, GenerateDietPlan $plan, $date)
-    {
-        $plan->setDate($date);
-        $plan->handle(Auth::user());
-
-        $url = ($date == date('Y-m-d')) ? '/dashboard' : '/dashboard/' . $date;
+        $url = ($request->date == date('Y-m-d')) ? '/dashboard' : '/dashboard/' . $request->date;
 
         return redirect($url);
     }
 
-    public function update(Request $request, DietPlan $dietPlan)
+    public function update(Request $request)
     {
-        $this->dietPlan = $dietPlan;
+        $this->dietPlanService->setUser(Auth::user());
+        $this->dietPlanService->getByDate($request->date);
 
-        $this->dietPlan = $this->dietPlan
-            ->where('user_id', Auth::user()->id)
-            ->where('date_on', $request->date)
-            ->firstOrFail();
-
-        $newMeal = $this->dietPlan->changeMeal($request->meal, $request->slug);
+        $newMeal = $this->dietPlanService->changeMeal($request->meal, $request->slug);
 
         return response()->json($newMeal->id);
+    }
+
+    public function isReady(Request $request)
+    {
+        $profileUpdatedAt = new \DateTime();
+        $profileUpdatedAt->setTimestamp($request->time);
+
+        return response()->json(
+            $this->dietPlanService
+                ->setUser(Auth::user())
+                ->isUpdatedAfter(
+                    $profileUpdatedAt->format('Y-m-d H:i:s')
+                )
+        );
     }
 }

@@ -8,9 +8,9 @@
     <div class="container">
         <div class="row mb-3">
             <div class="col-8 col-xl-3 col-lg-4 col-md-5 col-sm-8">
-                <a href="/dashboard/{{ $datePrev }}"><span class="date-navigate material-icons material-icons-outlined">navigate_before</span></a>
-                <input type="date" class="form-control" id="date" name="date" value="{{ $date }}">
-                <a href="/dashboard/{{ $dateNext }}"><span class="date-navigate material-icons material-icons-outlined">navigate_next</span></a>
+                <a href="/dashboard/{{ $date['prev'] }}"><span class="date-navigate material-icons material-icons-outlined">navigate_before</span></a>
+                <input type="date" class="form-control" id="date" name="date" value="{{ $date['current'] }}">
+                <a href="/dashboard/{{ $date['next'] }}"><span class="date-navigate material-icons material-icons-outlined">navigate_next</span></a>
             </div>
         </div>
 
@@ -18,15 +18,27 @@
             <div class="mb-3 p-0">
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-3 bg-white border-b border-gray-200">
-                        Your diet: {{ $diet }} {{ $dietKcal }} kcal Fats: {{ $dietFat }}g ({{ $dietFatShare }}%) Proteins: {{ $dietProtein }}g ({{ $dietProteinShare }}%) Carbs: {{ $dietCarbohydrate }}g ({{ $dietCarbohydrateShare }}%)<br />
-                        Proteins: {{ $protein }}g ({{ $shareProtein}}%) | Fats: {{ $fat }}g ({{ $shareFat }}%) | Carbs: {{ $carbohydrate }}g ({{ $shareCarbohydrate }}%) | Kcal: {{ $kcal }} | Preparation time: {{ $preparation_time }}min | Total time: {{ $total_time }}min
+                        Your diet: {{ $userDiet->diet->name }} {{ $userDiet->kcal }} kcal Fats: {{ $userDiet->fat }}g ({{ $userDiet->diet->fat }}%) Proteins: {{ $userDiet->protein }}g ({{ $userDiet->diet->protein }}%) Carbs: {{ $userDiet->carbohydrate }}g ({{ $userDiet->diet->carbohydrate }}%)<br />
+                        @if ($dietPlan !== null)
+                            Proteins: {{ $dietPlan->protein }}g ({{ $dietPlan->shareProtein}}%) | Fats: {{ $dietPlan->fat }}g ({{ $dietPlan->shareFat }}%) | Carbs: {{ $dietPlan->carbohydrate }}g ({{ $dietPlan->shareCarbohydrate }}%) | Kcal: {{ $dietPlan->kcal }} | Preparation time: {{ $dietPlan->preparationTime }}min | Total time: {{ $dietPlan->totalTime }}min
+                        @endif
                     </div>
                 </div>
             </div>
         </div>
 
-        @if (count($meals) > 0)
-            @foreach ($meals as $meal)
+        @if (count($errors))
+            @foreach ($errors as $error)
+                <div class="alert alert-{{ $error['status'] }} d-flex align-items-center" role="alert">
+                    <span class="material-icons inline-icon bi flex-shrink-0 me-2">{{  $error['symbol'] }}</span>
+                    <div>
+                        {{ $error['message'] }}
+                    </div>
+                </div>
+            @endforeach
+        @endif
+        @if (($dietPlan) && (count($dietPlan->meals) > 0))
+            @foreach ($dietPlan->meals as $meal)
                 <div class="row my-3">
                     <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                         <div class="p-3 bg-white border-b border-gray-200">
@@ -44,7 +56,7 @@
                                     @php
                                         $mealOrder = $meal->meal;
                                     @endphp
-                                    <button class="btn btn-outline-secondary btn-sm change-meal" data-bs-toggle="modal" data-bs-target="#recipesModal" diet-meal="{{ $mealOrder }}" diet-date="{{ $date }}" meal-tags="{{ $mealsTags[$mealOrder] }}"><span class="material-icons material-icons-outlined inline-icon">swap_horiz</span></button>
+                                    <button class="btn btn-outline-secondary btn-sm change-meal" data-bs-toggle="modal" data-bs-target="#recipesModal" diet-meal="{{ $mealOrder }}" diet-date="{{ $date['current'] }}" meal-tags="{{ $mealsTags[$mealOrder] }}"><span class="material-icons material-icons-outlined inline-icon">swap_horiz</span></button>
                                 </div>
                             </div>
                             <a href="
@@ -61,7 +73,7 @@
             @endforeach
         @else
             <p>You have no meals planned!</p>
-            <p><a href="/dashboard/generate/{{ $date }}" class="btn btn-primary" name="plan" id="plan">PLAN NOW</a></p>
+            <p><a href="/dashboard/generate/{{ $date['current'] }}" class="btn btn-primary" name="plan" id="plan">PLAN NOW</a></p>
         @endif
     </div>
 </x-app-layout>

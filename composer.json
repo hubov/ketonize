@@ -7,6 +7,7 @@
     "require": {
         "php": "^8.0.2",
         "doctrine/dbal": "^3.4",
+        "genealabs/laravel-pivot-events": "*",
         "guzzlehttp/guzzle": "^7.2",
         "laravel/framework": "^9.19",
         "laravel/sanctum": "^3.0",
@@ -16,6 +17,7 @@
         "symfony/postmark-mailer": "^6.1"
     },
     "require-dev": {
+        "barryvdh/laravel-debugbar": "^3.7",
         "fakerphp/faker": "^1.9.1",
         "laravel/breeze": "^1.12",
         "laravel/pint": "^1.0",
@@ -66,5 +68,12 @@
         }
     },
     "minimum-stability": "dev",
-    "prefer-stable": true
+    "prefer-stable": true,
+    "repositories": [
+
+        {
+            "type": "vcs",
+            "url": "https://github.com/hubov/laravel-pivot-events"
+        }
+    ]
 }

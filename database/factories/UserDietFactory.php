@@ -23,20 +23,11 @@ class UserDietFactory extends Factory
         return [
             'user_id' => User::factory(),
             'diet_id' => Diet::factory(),
-            'meals_count' => 4,
+            'diet_meal_division_id' => DietMealDivision::factory(),
             'kcal' => 1800,
             'protein' => 15,
             'fat' => 77,
             'carbohydrate' => 8,
         ];
-    }
-
-    public function configure()
-    {
-        return $this->afterMaking(function (UserDiet $userDiet) {
-            //
-        })->afterCreating(function (UserDiet $userDiet) {
-            DietMealDivision::factory()->create(['meals_count' => $userDiet->meals_count]);
-        });
     }
 }

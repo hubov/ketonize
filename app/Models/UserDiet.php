@@ -9,9 +9,7 @@ class UserDiet extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['user_id', 'diet_id', 'meals_count', 'kcal', 'protein', 'fat', 'carbohydrate'];
-    protected $meals;
-    protected $dietMealDivision;
+    protected $fillable = ['user_id', 'diet_id', 'diet_meal_division_id', 'meals_count', 'kcal', 'protein', 'fat', 'carbohydrate'];
 
     public function user()
     {
@@ -21,6 +19,21 @@ class UserDiet extends Model
     public function diet()
     {
         return $this->belongsTo(Diet::class);
+    }
+
+    public function dietMealDivision()
+    {
+        return $this->belongsTo(DietMealDivision::class);
+    }
+
+    protected function getMealsAttribute()
+    {
+        return $this->dietMealDivision->mealEnergyDivisions;
+    }
+
+    protected function getMealsCountAttribute()
+    {
+        return $this->dietMealDivision->meals_count;
     }
 
     public function getMacros()
@@ -36,23 +49,6 @@ class UserDiet extends Model
     public function getCarbohydrateRatio()
     {
         return $this->carbohydrate / $this->getMacros() * 100;
-    }
-
-    public function dietMealDivision()
-    {
-        $this->dietMealDivision = DietMealDivision::where('meals_count', $this->meals_count)->first();
-
-        return $this->dietMealDivision;
-    }
-
-    public function getMeals()
-    {
-        if (!isset($this->dietMealDivision)) {
-            $this->dietMealDivision();
-        }
-        $this->meals = $this->dietMealDivision->getMeals;
-
-        return $this->meals;
     }
 
     public function mealsDivision()
@@ -72,10 +68,6 @@ class UserDiet extends Model
 
     public function getMealsTags()
     {
-        if  (!isset($this->meals)) {
-            $this->getMeals();
-        }
-
         $result = [];
 
         foreach ($this->meals as $meal) {
