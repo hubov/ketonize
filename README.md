@@ -1,13 +1,22 @@
-# ketonize v0.0.2
+# ketonize v0.1
 This project is a simple framework of a diet planning app. It has been created on Laravel Framework.
 
 ### Description
-As of v0.0.2 this framework allows to build an app with a custom set of:
+This framework allows to build an app with a custom set of:
 - diets
 - recipes
 - ingredients
 
 It automatically creates diet plans for users based on their calorie needs and dietary purpose.
+
+#### User
+Based on the user's survey: energy and nutrient requirements are calculated. The user decides about the number of meals per day and defines the type of diet (eg. vegan or keto).
+
+#### Meal plan
+A meal plan is prepared automatically based on the results of the user's needs.
+
+#### Shopping lists
+The user can generate shopping lists for meal preparation for a selected period of time with one click. He can freely change the quantities of ingredients on the list and delete them.
 
 ### Getting started
 #### Dependencies
