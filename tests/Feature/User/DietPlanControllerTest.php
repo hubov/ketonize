@@ -39,7 +39,7 @@ class DietPlanControllerTest extends TestCase
     }
 
     /** @test */
-    public function diet_plan_screen_without_meals_can_be_rendered()
+    public function diet_plan_screen_without_meals_can_be_rendered_and_throws_exceptions()
     {
         // without date
         $response = $this->actingAs($this->user)->get('/dashboard');
@@ -58,7 +58,7 @@ class DietPlanControllerTest extends TestCase
     }
 
     /** @test */
-    public function diet_plan_with_meals()
+    public function diet_plan_with_meals_without_date_given()
     {
         $user = User::factory()->create();
         DietPlan::factory()->count(4)->create([
@@ -67,6 +67,21 @@ class DietPlanControllerTest extends TestCase
         ]);
 
         $response = $this->actingAs($user)->get('/dashboard');
+
+        $response->assertStatus(200);
+        $response->assertSeeText(['change-meal', 'diet-meal', 'meal-tags']);
+    }
+
+    /** @test */
+    public function diet_plan_with_meals_with_date_given()
+    {
+        $user = User::factory()->create();
+        DietPlan::factory()->count(4)->create([
+            'user_id' => $user,
+            'date_on' => $this->tommorow
+        ]);
+
+        $response = $this->actingAs($user)->get('/dashboard/' . $this->tommorow);
 
         $response->assertStatus(200);
         $response->assertSeeText(['change-meal', 'diet-meal', 'meal-tags']);
@@ -82,30 +97,54 @@ class DietPlanControllerTest extends TestCase
             $recipe->tags()->attach($tags);
         }
 
-        $response = $this->actingAs($user)->get('/dashboard/generate/2022-09-30');
+        $response = $this->actingAs($user)->get('/dashboard/generate/' . $this->tommorow);
+        $this->assertDatabaseCount('diet_plans', 1);
+        $this->assertDatabaseCount('meals', 4);
 
-        $response->assertRedirect('/dashboard/2022-09-30');
+        $response->assertRedirect('/dashboard/' . $this->tommorow);
     }
 
-    public function test_diet_plan_generate_user_not_signed_in()
+    /** @test */
+    public function diet_plan_generate_user_not_signed_in()
     {
         Recipe::factory()->has(Tag::factory())->count(4)->create();
 
         $response = $this->get('/dashboard/generate/2022-09-30');
+        $this->assertDatabaseCount('diet_plans', 0);
+        $this->assertDatabaseCount('meals', 0);
 
         $response->assertRedirect('/login');
     }
 
-    public function  test_diet_plan_update_recipe()
+    /** @test */
+    public function diet_plan_update_recipe()
     {
         $user = User::factory()->create();
-        $dietPlan = DietPlan::factory()->create(['user_id' => $user->id, 'date_on' => '2022-11-30']);
+        DietPlan::factory()->create(['user_id' => $user->id, 'date_on' => $this->today]);
         $recipe = Recipe::factory()->has(Tag::factory())->create();
 
-        $response = $this->actingAs($user)->post('/diet/update', ['date' => '2022-11-30', 'meal' => 1, 'slug' => $recipe->slug]);
+        $response = $this->actingAs($user)->post('/diet/update', ['date' => $this->today, 'meal' => 1, 'slug' => $recipe->slug]);
 
         $response->assertStatus(200);
-        $response->assertSee($recipe->id);
-        $this->assertEquals(1, count($dietPlan->meals));
+        $response->assertSeeText($recipe->id);
+        $this->assertDatabaseCount('meals', 1);
+    }
+
+    /** @test */
+    public function it_returns_false_or_true_if_diet_plan_is_not_ready_or_ready()
+    {
+        $user = User::factory()->create();
+
+        // diet plan is not ready
+        $response = $this->actingAs($user)->post('/dashboard/is-ready', ['time' => Carbon::now()->getTimestamp()]);
+
+        $response->assertSeeText('false');
+
+        // diet plan is ready
+        $now = Carbon::now()->getTimestamp();
+        DietPlan::factory()->create(['user_id' => $user->id, 'date_on' => $this->today]);
+        $response = $this->actingAs($user)->post('/dashboard/is-ready', ['time' => $now]);
+
+        $response->assertSeeText('true');
     }
 }
