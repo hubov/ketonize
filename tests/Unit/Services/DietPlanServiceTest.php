@@ -5,7 +5,7 @@ namespace Tests\Unit\Services;
 use App\Events\DietPlanCreated;
 use App\Exceptions\DateOlderThanAccountException;
 use App\Exceptions\DietPlanOutOfDateRangeException;
-use App\Exceptions\DietPlanUnderConstruction;
+use App\Exceptions\DietPlanUnderConstructionException;
 use App\Models\DietPlan;
 use App\Models\Meal;
 use App\Models\Recipe;
@@ -394,7 +394,7 @@ class DietPlanServiceTest extends TestCase
             ->willReturn(null);
 
         $dietPlanService = new DietPlanService($this->dietPlanRepository, $this->mealService);
-        $this->expectException(DietPlanUnderConstruction::class);
+        $this->expectException(DietPlanUnderConstructionException::class);
         $dietPlanService
             ->setUser($this->user)
             ->getByDate($date);

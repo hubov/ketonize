@@ -5,7 +5,7 @@ namespace App\Services;
 use App\Events\DietPlanCreated;
 use App\Exceptions\DateOlderThanAccountException;
 use App\Exceptions\DietPlanOutOfDateRangeException;
-use App\Exceptions\DietPlanUnderConstruction;
+use App\Exceptions\DietPlanUnderConstructionException;
 use App\Http\Traits\DietPlanTimeline;
 use App\Models\DietPlan;
 use App\Models\Meal;
@@ -63,7 +63,7 @@ class DietPlanService implements DietPlanInterface
         } elseif ($date < substr($this->user->created_at, 0, 10)) {
             throw new DateOlderThanAccountException();
         } else {
-            throw new DietPlanUnderConstruction();
+            throw new DietPlanUnderConstructionException();
         }
     }
 
@@ -111,7 +111,7 @@ class DietPlanService implements DietPlanInterface
     {
         try {
             $this->getByDate($this->getLastSubscriptionDay());
-        } catch (DietPlanUnderConstruction) {
+        } catch (DietPlanUnderConstructionException) {
             return $this->createOnDate($this->getLastSubscriptionDay());
         }
 

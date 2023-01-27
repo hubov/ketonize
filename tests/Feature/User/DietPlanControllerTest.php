@@ -4,7 +4,7 @@ namespace Tests\Feature\User;
 
 use App\Exceptions\DateOlderThanAccountException;
 use App\Exceptions\DietPlanOutOfDateRangeException;
-use App\Exceptions\DietPlanUnderConstruction;
+use App\Exceptions\DietPlanUnderConstructionException;
 use App\Models\DietPlan;
 use App\Models\Recipe;
 use App\Models\Tag;
@@ -44,7 +44,7 @@ class DietPlanControllerTest extends TestCase
         // without date
         $response = $this->actingAs($this->user)->get('/dashboard');
         $response->assertStatus(200);
-        $response->assertSeeText((new DietPlanUnderConstruction())->getMessage());
+        $response->assertSeeText((new DietPlanUnderConstructionException())->getMessage());
 
         //with a date
         $response = $this->actingAs($this->user)->get('/dashboard/' . $this->fifteenDaysAgo);

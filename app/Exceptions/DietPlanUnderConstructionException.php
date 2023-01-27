@@ -2,7 +2,7 @@
 
 namespace App\Exceptions;
 
-class DietPlanUnderConstruction extends UIThrowableException
+class DietPlanUnderConstructionException extends UIThrowableException
 {
     protected $status = 'primary';
     protected $symbol = 'construction';
