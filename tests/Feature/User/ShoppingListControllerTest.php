@@ -11,7 +11,7 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
-class ShoppingListTest extends TestCase
+class ShoppingListControllerTest extends TestCase
 {
     use RefreshDatabase;
 
@@ -22,37 +22,38 @@ class ShoppingListTest extends TestCase
         $this->user = User::factory()->has(Profile::factory())->create();
     }
 
-    /**
-     * A basic feature test example.
-     *
-     * @return void
-     */
-    public function test_shopping_list_without_products_can_be_rendered_with_user()
+    /** @test */
+    public function shopping_list_without_products_can_be_rendered_with_user()
     {
         $response = $this->actingAs($this->user)->get('/shopping-list');
 
         $response->assertStatus(200);
+        $response->assertSee('alert-success');
     }
 
-    public function test_shopping_list_with_products_can_be_rendered_with_user()
+    /** @test */
+    public function shopping_list_with_products_can_be_rendered_with_user()
     {
-        ShoppingList::factory()
-                    ->has(Ingredient::factory())
-                    ->create(['user_id' => $this->user->id]);
+        $shoppingList = ShoppingList::factory()
+            ->has(Ingredient::factory())
+            ->create(['user_id' => $this->user->id]);
 
         $response = $this->actingAs($this->user)->get('/shopping-list');
 
         $response->assertStatus(200);
+        $response->assertSeeInOrder([$shoppingList->ingredient->name, $shoppingList->amount]);
     }
 
-    public function test_shopping_list_screen_without_user_is_redirected()
+    /** @test */
+    public function shopping_list_screen_without_user_is_redirected()
     {
         $response = $this->get('/shopping-list');
 
         $response->assertRedirect('/login');
     }
 
-    public function test_updating_shopping_list_for_period_with_recipes_as_user()
+    /** @test */
+    public function updating_shopping_list_for_period_with_recipes_as_user()
     {
         $recipe = Recipe::factory()->hasAttached(Ingredient::factory(), ['amount' => 100])
                         ->create();
@@ -73,9 +74,13 @@ class ShoppingListTest extends TestCase
 
         $this->assertDatabaseCount(ShoppingList::class, 1);
         $response->assertRedirect('/shopping-list');
+        $this->followRedirects($response)
+            ->assertDontSee('alert-success')
+            ->assertSee($recipe->ingredients->first()->name);
     }
 
-    public function test_updating_shopping_list_for_period_without_recipes_as_user()
+    /** @test */
+    public function updating_shopping_list_for_period_without_recipes_as_user()
     {
         $response = $this->actingAs($this->user)
             ->post(
@@ -87,16 +92,20 @@ class ShoppingListTest extends TestCase
 
         $this->assertDatabaseCount(ShoppingList::class, 0);
         $response->assertRedirect('/shopping-list');
+        $this->followRedirects($response)
+            ->assertSee('alert-success');
     }
 
-    public function test_updating_shopping_list_as_guest_is_redirected()
+    /** @test */
+    public function updating_shopping_list_as_guest_is_redirected()
     {
         $response = $this->post('/shopping-list');
 
         $response->assertRedirect('/login');
     }
 
-    public function test_changing_ingredient_amount_on_shopping_list_by_user()
+    /** @test */
+    public function changing_ingredient_amount_on_shopping_list_by_user()
     {
         $ingredient = Ingredient::factory()->create();
         $shoppingList = ShoppingList::factory()->create([
@@ -112,7 +121,8 @@ class ShoppingListTest extends TestCase
         $this->assertEquals(105, $shoppingList->amount);
     }
 
-    public function test_changing_non_existing_ingredient_amount_on_shopping_list_by_user_throws_error()
+    /** @test */
+    public function changing_non_existing_ingredient_amount_on_shopping_list_by_user_throws_error()
     {
         $response = $this->actingAs($this->user)->put('shopping-list/update', ['id' => 1, 'amount' => 105]);
 
@@ -120,14 +130,16 @@ class ShoppingListTest extends TestCase
         $response->assertSee('false');
     }
 
-    public function test_changing_ingredient_amount_on_shopping_list_by_guest_is_redirected()
+    /** @test */
+    public function changing_ingredient_amount_on_shopping_list_by_guest_is_redirected()
     {
         $response = $this->put('shopping-list/update');
 
         $response->assertRedirect('/login');
     }
 
-    public function test_removing_shopping_list_element_by_user()
+    /** @test */
+    public function removing_shopping_list_element_by_user()
     {
         $ingredient = Ingredient::factory()->create();
         $shoppingList = ShoppingList::factory()->create([
@@ -140,12 +152,16 @@ class ShoppingListTest extends TestCase
 
         $response->assertSee('true');
         $this->assertModelMissing($shoppingList);
+        $this->assertDatabaseCount('shopping_lists', 0);
     }
 
-    public function test_removing_shopping_list_element_by_guest_is_redirected()
+    /** @test */
+    public function removing_shopping_list_element_by_guest_is_redirected()
     {
+        ShoppingList::factory()->create();
         $response = $this->delete('shopping-list/delete');
 
         $response->assertRedirect('/login');
+        $this->assertDatabaseCount('shopping_lists', 1);
     }
 }
