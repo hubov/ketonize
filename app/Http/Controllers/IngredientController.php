@@ -111,15 +111,7 @@ class IngredientController extends Controller
      */
     public function update(UpdateIngredientRequest $request, $id)
     {
-        $ingredient = $this->ingredientRepository->update($id, [
-            'name' => $request->name,
-            'ingredient_category_id' => $request->ingredient_category_id,
-            'protein' => $request->protein,
-            'fat' => $request->fat,
-            'carbohydrate' => $request->carbohydrate,
-            'kcal' => $request->kcal,
-            'unit_id' => $request->unit_id
-        ]);
+        $ingredient = $this->ingredientRepository->update($id, $request->all());
 
         return redirect('/ingredient/'.$ingredient->id);
     }
