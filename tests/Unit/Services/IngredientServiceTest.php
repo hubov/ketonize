@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Services;
 
+use App\Exceptions\DeletingIngredientAssignedToRecipesException;
 use App\Models\Ingredient;
 use App\Models\Recipe;
 use App\Repositories\Interfaces\IngredientRepositoryInterface;
@@ -61,5 +62,54 @@ class IngredientServiceTest extends TestCase
         $ingredientService = new IngredientService($this->ingredientRepository);
 
         $this->assertEquals($expectedResult, $ingredientService->relatedRecipes($this->ingredientId));
+    }
+
+    /** @test */
+    public function returns_true_after_successful_deletion()
+    {
+        $ingredient = new Ingredient();
+        $ingredient->id = 1;
+        $ingredient->recipes = collect([]);
+
+        $this->ingredientRepository
+            ->expects($this->once())
+            ->method('get')
+            ->with($ingredient->id)
+            ->willReturn($ingredient);
+
+        $this->ingredientRepository
+            ->expects($this->once())
+            ->method('delete')
+            ->with($ingredient->id)
+            ->willReturn(true);
+
+        $ingredientService = new IngredientService($this->ingredientRepository);
+
+        $this->assertTrue($ingredientService->delete($ingredient->id));
+    }
+
+    /** @test */
+    public function throws_exception_while_deleting_ingredient_related_to_recipes()
+    {
+        $recipe1 = new Recipe();
+        $recipe1->slug = 'related-recipe';
+        $recipe2 = new Recipe();
+        $recipe2->slug = 'another-related-recipe';
+        $this->ingredient->setRelation('recipes', [$recipe1, $recipe2]);
+
+        $this->ingredientRepository
+            ->expects($this->once())
+            ->method('get')
+            ->with($this->ingredient->id)
+            ->willReturn($this->ingredient);
+
+        $this->ingredientRepository
+            ->expects($this->never())
+            ->method('delete');
+
+        $ingredientService = new IngredientService($this->ingredientRepository);
+
+        $this->expectException(DeletingIngredientAssignedToRecipesException::class);
+        $this->assertTrue($ingredientService->delete($this->ingredient->id));
     }
 }

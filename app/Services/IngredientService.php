@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Exceptions\DeletingIngredientAssignedToRecipesException;
 use App\Repositories\Interfaces\IngredientRepositoryInterface;
 use App\Services\Interfaces\IngredientInterface;
 
@@ -28,5 +29,22 @@ class IngredientService implements IngredientInterface
         }
 
         return $recipes;
+    }
+
+    public function delete(int $ingredientId) : bool
+    {
+        $recipeList = $this->checkIfIngredientHasRecipes($ingredientId);
+        if (isset($recipeList[0])) {
+            throw new DeletingIngredientAssignedToRecipesException($recipeList);
+        }
+
+        $this->ingredientRepository->delete($ingredientId);
+
+        return true;
+    }
+
+    protected function checkIfIngredientHasRecipes(int $ingredientId): array
+    {
+        return $this->relatedRecipes($ingredientId);
     }
 }
