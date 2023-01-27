@@ -4,7 +4,6 @@ namespace App\Services;
 
 use App\Repositories\Interfaces\IngredientRepositoryInterface;
 use App\Services\Interfaces\IngredientInterface;
-use Illuminate\Support\Collection;
 
 class IngredientService implements IngredientInterface
 {
@@ -17,7 +16,7 @@ class IngredientService implements IngredientInterface
         return $this;
     }
 
-    public function relatedRecipes (int $id) : Collection
+    public function relatedRecipes (int $id) : array
     {
         $recipes = [];
         $ingredient = $this->ingredientRepository->get($id);
@@ -28,6 +27,6 @@ class IngredientService implements IngredientInterface
             }
         }
 
-        return collect($recipes);
+        return $recipes;
     }
 }

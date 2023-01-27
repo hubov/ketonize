@@ -24,7 +24,7 @@ class IngredientServiceTest extends TestCase
     }
 
     /** @test */
-    public function returns_collection_of_slugs_of_related_recipes_if_any_exist()
+    public function returns_array_of_slugs_of_related_recipes_if_any_exist()
     {
         $recipe1 = new Recipe();
         $recipe1->slug = 'related-recipe';
@@ -32,7 +32,7 @@ class IngredientServiceTest extends TestCase
         $recipe2->slug = 'another-related-recipe';
         $this->ingredient->setRelation('recipes', [$recipe1, $recipe2]);
 
-        $expectedResult = collect([$recipe1->slug, $recipe2->slug]);
+        $expectedResult = [$recipe1->slug, $recipe2->slug];
 
         $this->ingredientRepository
             ->expects($this->once())
@@ -46,11 +46,11 @@ class IngredientServiceTest extends TestCase
     }
 
     /** @test */
-    public function returns_empty_collection_if_no_related_recipes_exist()
+    public function returns_empty_array_if_no_related_recipes_exist()
     {
         $this->ingredient->setRelation('recipes', []);
 
-        $expectedResult = collect([]);
+        $expectedResult = [];
 
         $this->ingredientRepository
             ->expects($this->once())
