@@ -45,7 +45,7 @@ class MealService implements MealInterface
     {
         $kcalSum = 0;
 
-        foreach ($this->mealRepository->getByMeal($mealOrder) as $mealPart) {
+        foreach ($this->mealRepository->getByMeal($this->dietPlan->id, $mealOrder) as $mealPart) {
             $kcalSum += $mealPart->kcal;
             $this->delete($mealPart->id);
         }
