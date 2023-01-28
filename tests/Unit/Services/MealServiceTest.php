@@ -81,6 +81,58 @@ class MealServiceTest extends TestCase
     }
 
     /** @test */
+    public function it_changes_a_meal()
+    {
+        $oldMeal = new Meal();
+        $oldMeal->id = 1;
+        $oldMeal->recipe = new Recipe();
+        $oldMeal->recipe->kcal = 300;
+        $oldMeal->modifier = 100;
+        $recipe = new Recipe();
+        $recipe->id = 1;
+        $recipe->kcal = 600;
+        $recipe->slug = 'new-recipe';
+        $mealOrder = 1;
+
+        $this->mealRepository
+            ->expects($this->once())
+            ->method('getByMeal')
+            ->with($this->dietPlan->id, $mealOrder)
+            ->willReturn(collect([$oldMeal]));
+        $this->mealRepository
+            ->expects($this->once())
+            ->method('delete')
+            ->with($oldMeal->id)
+            ->willReturn(true);
+
+        $this->recipeRepository
+            ->expects($this->once())
+            ->method('getBySlug')
+            ->with($recipe->slug)
+            ->willReturn($recipe);
+
+        $this->mealRepository
+            ->expects($this->once())
+            ->method('create')
+            ->with([
+                'diet_plan_id' => $this->dietPlan->id,
+                'modifier' => 50,
+                'recipe_id' => $recipe->id,
+                'meal' => $mealOrder
+            ])
+            ->willReturn(new Meal());
+
+        $mealService = new MealService($this->recipeRepository, $this->mealRepository);
+
+        $this->assertEquals(
+            new Meal(),
+            $mealService
+                ->setDietPlan($this->dietPlan)
+                ->change($mealOrder, $recipe->slug)
+        );
+    }
+
+        /** @test */
     public function it_deletes_a_meal()
     {
         $mealId = 1;
@@ -108,8 +160,6 @@ class MealServiceTest extends TestCase
             'from' => '2023-01-01',
             'to' => '2023-01-01'
         ];
-//        $dietPlan = new DietPlan();
-//        $dietPlan->id = 1;
         $ingredient = new Ingredient();
         $ingredient->id = 1;
         $recipe = new Recipe();

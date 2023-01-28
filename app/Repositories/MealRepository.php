@@ -13,10 +13,11 @@ class MealRepository implements MealRepositoryInterface
         return Meal::find($id);
     }
 
-    public function getByMeal(int $meal): Collection
+    public function getByMeal(int $dietPlanId, int $meal): Collection
     {
-        return Meal::where('meal', $meal)
-                    ->get();
+        return Meal::where('diet_plan_id', $dietPlanId)
+            ->where('meal', $meal)
+            ->get();
     }
 
     public function create(array $attributes) : Meal
