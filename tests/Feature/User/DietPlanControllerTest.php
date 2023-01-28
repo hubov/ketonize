@@ -6,6 +6,7 @@ use App\Exceptions\DateOlderThanAccountException;
 use App\Exceptions\DietPlanOutOfDateRangeException;
 use App\Exceptions\DietPlanUnderConstructionException;
 use App\Models\DietPlan;
+use App\Models\Meal;
 use App\Models\Profile;
 use App\Models\Recipe;
 use App\Models\Tag;
@@ -124,14 +125,16 @@ class DietPlanControllerTest extends TestCase
     /** @test */
     public function diet_plan_update_recipe()
     {
+        DietPlan::factory()->create(['user_id' => $this->user->id, 'date_on' => $this->yesterday]);
         DietPlan::factory()->create(['user_id' => $this->user->id, 'date_on' => $this->today]);
+        DietPlan::factory()->create(['user_id' => $this->user->id, 'date_on' => $this->tommorow]);
         $recipe = Recipe::factory()->has(Tag::factory())->create();
 
         $response = $this->actingAs($this->user)->post('/diet/update', ['date' => $this->today, 'meal' => 1, 'slug' => $recipe->slug]);
 
         $response->assertStatus(200);
         $response->assertSeeText($recipe->id);
-        $this->assertDatabaseCount('meals', 1);
+        $this->assertDatabaseCount('meals', 3);
     }
 
     /** @test */
