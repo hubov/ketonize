@@ -15,6 +15,8 @@ class RecipeCreateOrUpdateService implements RecipeCreateOrUpdateInterface
     protected $ingredientRepository;
     protected $tagRepository;
     protected $relateIngredientsToRecipe;
+    protected $attributes;
+    protected $recipe;
 
     public function __construct(
         RecipeRepositoryInterface $recipeRepository,
@@ -32,68 +34,51 @@ class RecipeCreateOrUpdateService implements RecipeCreateOrUpdateInterface
 
     public function perform(array $attributes, string $slug = NULL) : Recipe
     {
-        $sortedAttributes = $this->sortAttributes($attributes);
+        $this->attributes = $attributes;
 
         if ($slug === NULL) {
-            return $this->create($sortedAttributes);
+            return $this->create();
         }
 
-        return $this->update($sortedAttributes, $slug);
+        return $this->update($slug);
     }
 
-    protected function sortAttributes($attributes): array
+    protected function create() : Recipe
     {
-        return [
-            'recipe' => [
-                'name' => $attributes['name'],
-                'image' => $attributes['image'],
-                'description' => $attributes['description'],
-                'preparation_time' => $attributes['preparation_time'],
-                'cooking_time' => $attributes['cooking_time']
-            ],
-            'ingredients' => [
-                'ids' => $attributes['ids'],
-                'quantity' => $attributes['quantity']
-            ],
-            'tags' => $attributes['tags']
-        ];
+        $this->recipe = $this->recipeRepository->create($this->attributes['recipe']);
+
+        $this->relateIngredientsAndTagsToRecipe();
+
+        return $this->recipe;
     }
 
-    protected function create(array $sortedAttributes) : Recipe
+    protected function update(string $slug) : Recipe
     {
-        $recipe = $this->recipeRepository->create($sortedAttributes['recipe']);
+        $this->recipe = $this->recipeRepository->updateBySlug($slug, $this->attributes['recipe']);
 
-        $this->relateIngredientsAndTagsToRecipe($recipe->id, $sortedAttributes);
+        $this->relateIngredientsAndTagsToRecipe();
 
-        return $recipe;
+        return $this->recipe;
     }
 
-    protected function update(array $sortedAttributes, string $slug) : Recipe
+    protected function relateIngredientsToRecipe() : void
     {
-        $recipe = $this->recipeRepository->updateBySlug($slug, $sortedAttributes['recipe']);
+        $relateIngredientsToRecipe = $this->relateIngredientsToRecipe->setRecipe($this->recipe);
 
-        $this->relateIngredientsAndTagsToRecipe($recipe->id, $sortedAttributes);
-
-        return $recipe;
-    }
-
-    protected function relateIngredientsToRecipe(int $recipeId, array $ingredientsAttributes) : void
-    {
-        $relateIngredientsToRecipe = $this->relateIngredientsToRecipe->setRecipe($recipeId);
-        foreach ($ingredientsAttributes['ids'] as $key => $ingredientId) {
-            $relateIngredientsToRecipe->addIngredient($ingredientId, $ingredientsAttributes['quantity'][$key]);
+        foreach ($this->attributes['ingredients'] as $ingredient) {
+            $relateIngredientsToRecipe->addIngredient($ingredient['id'], $ingredient['quantity']);
         }
         $relateIngredientsToRecipe->sync();
     }
 
-    protected function relateTagsToRecipe(int $recipeId, array $tags) : void
+    protected function relateTagsToRecipe() : void
     {
-        $this->recipeRepository->syncTags($recipeId, $tags);
+        $this->recipeRepository->syncTags($this->recipe->id, $this->attributes['tags']);
     }
 
-    protected function relateIngredientsAndTagsToRecipe(int $recipeId, array $attributes) : void
+    protected function relateIngredientsAndTagsToRecipe() : void
     {
-        $this->relateIngredientsToRecipe($recipeId, $attributes['ingredients']);
-        $this->relateTagsToRecipe($recipeId, $attributes['tags']);
+        $this->relateIngredientsToRecipe();
+        $this->relateTagsToRecipe();
     }
 }

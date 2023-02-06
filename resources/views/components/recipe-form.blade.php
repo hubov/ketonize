@@ -3,7 +3,7 @@
     @method($method)
     <div class="mb-3">
         <label for="name" class="form-label">Name</label>
-        <input type="text" name="name" id="recipe-name" class="form-control" value="{{ $name ?? '' }}">
+        <input type="text" name="recipe[name]" id="recipe-name" class="form-control" value="{{ $name ?? '' }}">
         @if ($errors->has('name'))
             <div class="invalid-feedback">
                 {{ $errors->first('name') }}
@@ -12,7 +12,7 @@
     </div>
     <div class="mb-3">
         <label for="image" class="form-label">Image</label>
-        <input type="text" name="image" id="recipe-image" class="form-control" value="{{ $image ?? '' }}">
+        <input type="file" name="recipe[image]" id="recipe-image" class="form-control" value="{{ $image ?? '' }}">
         @if ($errors->has('image'))
             <div class="invalid-feedback">
                 {{ $errors->first('image') }}
@@ -65,7 +65,7 @@
     <div><input type="button" class="btn btn-secondary" value="Add ingredient" name="addIngredient" id="addIngredient"></div>
     <div class="mb-3">
         <label for="description" class="form-label">Description</label>
-        <textarea name="description" class="form-control" id="description">{{ $description ?? '' }}</textarea>
+        <textarea name="recipe[description]" class="form-control" id="description">{{ $description ?? '' }}</textarea>
         @if ($errors->has('description'))
             <div class="error">
                 {{ $errors->first('description') }}
@@ -91,7 +91,7 @@
     </div>
     <div class="my-3">
         <label for="preparation_time">Preparation time</label>
-        <input type="text" name="preparation_time" id="recipe-preparation_time" class="form-control" value="{{ $preparationTime ?? '' }}">
+        <input type="text" name="recipe[preparation_time]" id="recipe-preparation_time" class="form-control" value="{{ $preparationTime ?? '' }}">
         @if ($errors->has('preparation_time'))
             <div class="invalid-feedback">
                 {{ $errors->first('preparation_time') }}
@@ -100,7 +100,7 @@
     </div>
     <div class="mb-3">
         <label for="cooking_time">Cooking time</label>
-        <input type="text" name="cooking_time" id="recipe-cooking_time" class="form-control" value="{{ $cookingTime ?? '' }}">
+        <input type="text" name="recipe[cooking_time]" id="recipe-cooking_time" class="form-control" value="{{ $cookingTime ?? '' }}">
         @if ($errors->has('cooking_time'))
             <div class="invalid-feedback">
                 {{ $errors->first('cooking_time') }}
@@ -292,10 +292,10 @@
             html += '<div class="row mb-3 inputFormRow">';
             html += '<div class="input-group">';
             html += '<input type="text" id="ingredient' + ingredientsCount + '" class="form-control typeahead w-75" placeholder="Name" autocomplete="off" value="' + name + '">';
-            html += '<input type="text" name="quantity[]" id="ingredient_q_' + ingredientsCount + '" class="form-control quantity w-25" placeholder="Quantity" value="' + quantity + '">';
+            html += '<input type="text" name="ingredients[' + ingredientsCount + '][quantity]" id="ingredient_q_' + ingredientsCount + '" class="form-control quantity w-25" placeholder="Quantity" value="' + quantity + '">';
             html += '<span class="input-group-text" id="ingredient' + ingredientsCount + '_unit">' + unit + '</span>';
             html += '<button type="button" id="ingredient_r_' + ingredientsCount + '" class="btn btn-danger removeRow"><span class="material-icons material-icons-outline inline-icon" style="font-size: 1.2em">close</span></button>';
-            html += '</div><input type="hidden" name="ids[]" id="ingredient' + ingredientsCount + '_id" value="' + id + '"></div>';
+            html += '</div><input type="hidden" name="ingredients[' + ingredientsCount + '][id]" id="ingredient' + ingredientsCount + '_id" value="' + id + '"></div>';
 
             $('.typeahead').typeahead('destroy','NoCached')
             $('#rows').append(html);

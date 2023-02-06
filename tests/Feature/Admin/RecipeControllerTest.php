@@ -40,14 +40,20 @@ class RecipeControllerTest extends TestCase
         $amount = 100;
 
         $requestData = [
-            'name' => 'Recipe #1',
-            'slug' => 'recipe-1',
-            'image' => '',
-            'description' => 'Some recipe description.',
-            'preparation_time' => 10,
-            'cooking_time' => 5,
-            'ids' => [$ingredient->id],
-            'quantity' => [$amount],
+            'recipe' => [
+                'name' => 'Recipe #1',
+                'slug' => 'recipe-1',
+                'image' => '',
+                'description' => 'Some recipe description.',
+                'preparation_time' => 10,
+                'cooking_time' => 5
+            ],
+            'ingredients' => [
+                [
+                    'id' => $ingredient->id,
+                    'quantity' => $amount
+                ]
+            ],
             'tags' => [$tag->id]
         ];
 
@@ -56,8 +62,8 @@ class RecipeControllerTest extends TestCase
         $request->assertRedirect('/recipe/recipe-1');
         $request->assertLocation('/recipe/recipe-1');
         $this->followRedirects($request)
-            ->assertSee($requestData['name'])
-            ->assertSee($requestData['description']);
+            ->assertSee($requestData['recipe']['name'])
+            ->assertSee($requestData['recipe']['description']);
     }
 
     /** @test */
@@ -69,12 +75,12 @@ class RecipeControllerTest extends TestCase
         $tagNew = Tag::factory()->create();
         $amount = 100;
 
-        foreach ($recipe->ingredients as $ingredient) {
-            $ingredients[] = $ingredient->id;
-            $amounts[] = $ingredient->pivot->amount;
+        foreach ($recipe->ingredients as $key => $ingredient) {
+            $ingredients[$key]['id'] = $ingredient->id;
+            $ingredients[$key]['quantity'] = $ingredient->pivot->amount;
         }
-        $ingredients[] = $ingredientNew->id;
-        $amounts[] = $amount;
+        $ingredients[count($ingredients)]['id'] = $ingredientNew->id;
+        $ingredients[count($ingredients)-1]['quantity'] = $amount;
 
         foreach ($recipe->tags as $tag) {
             $tags[] = $tag->id;
@@ -82,14 +88,15 @@ class RecipeControllerTest extends TestCase
         $tags[] = $tagNew->id;
 
         $requestData = [
-            'name' => 'Recipe #1',
-            'slug' => 'recipe-1',
-            'image' => '',
-            'description' => 'Some recipe description.',
-            'preparation_time' => 10,
-            'cooking_time' => 5,
-            'ids' => $ingredients,
-            'quantity' => $amounts,
+            'recipe' => [
+                'name' => 'Recipe #1',
+                'slug' => 'recipe-1',
+                'image' => '',
+                'description' => 'Some recipe description.',
+                'preparation_time' => 10,
+                'cooking_time' => 5
+            ],
+            'ingredients' => $ingredients,
             'tags' => $tags
         ];
 
@@ -98,7 +105,7 @@ class RecipeControllerTest extends TestCase
         $request->assertRedirect('/recipe/recipe-1');
         $request->assertLocation('/recipe/recipe-1');
         $this->followRedirects($request)
-            ->assertSee($requestData['name'])
-            ->assertSee($requestData['description']);
+            ->assertSee($requestData['recipe']['name'])
+            ->assertSee($requestData['recipe']['description']);
     }
 }
