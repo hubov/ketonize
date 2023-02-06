@@ -137,7 +137,7 @@ class IngredientControllerTest extends TestCase
                 'carbohydrate' => $ingredient->carbohydrate,
                 'kcal' => $ingredient->kcal,
                 'ingredient_category_id' => $ingredient->ingredient_category_id,
-                'unit_id' => $ingredient->unit_id
+                'unit' => $ingredient->unit->symbol
             ]
         ]);
     }
