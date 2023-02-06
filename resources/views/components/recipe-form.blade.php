@@ -61,8 +61,8 @@
             {{ $errors->first('ingredients') }}
         </div>
     @endif
-    <div><input type="button" class="btn btn-secondary" value="Add ingredient" name="addIngredient" id="addIngredient"></div>
     <div id="rows"></div>
+    <div><input type="button" class="btn btn-secondary" value="Add ingredient" name="addIngredient" id="addIngredient"></div>
     <div class="mb-3">
         <label for="description" class="form-label">Description</label>
         <textarea name="description" class="form-control" id="description">{{ $description ?? '' }}</textarea>
@@ -164,19 +164,6 @@
             typeaheadInitialize();
             calculateMacro();
         @endif
-
-        $.ajax({
-            url: route,
-            type: 'GET',
-            dataType: 'json',
-            success: function (json) {
-                let arrayLength = json.length;
-                for (let i = 0; i < arrayLength; i++) {
-                    ingredients.push(json[i]);
-                }
-                return ingredients;
-            }
-        });
 
         substringMatcher = function (strs) {
             return function findMatches(q, cb) {
