@@ -27,7 +27,6 @@ class RecipeCreateOrUpdateServiceTest extends TestCase
         $this->attributes = [
             'recipe' => [
                 'name' => 'Delicious recipe',
-                'image' => 'default',
                 'description' => '1. Mix all ingredients.',
                 'preparation_time' => 5,
                 'cooking_time' => 1
@@ -79,6 +78,8 @@ class RecipeCreateOrUpdateServiceTest extends TestCase
     /** @test */
     public function it_creates_recipe_with_complete_data()
     {
+        $this->attributes['image'] = 'default';
+
         $this->recipeRepository
             ->expects($this->once())
             ->method('create')
@@ -93,6 +94,38 @@ class RecipeCreateOrUpdateServiceTest extends TestCase
 
     /** @test */
     public function it_updates_recipe_with_complete_data()
+    {
+        $this->attributes['image'] = 'default';
+
+        $this->recipeRepository
+            ->expects($this->once())
+            ->method('updateBySlug')
+            ->with($this->recipe->slug, $this->attributes['recipe'])
+            ->willReturn($this->recipe);
+
+        $result = $this->recipeCreateOrUpdateService
+            ->perform($this->attributes, $this->recipe->slug);
+
+        $this->assertEquals($result, $this->recipe);
+    }
+
+    /** @test */
+    public function it_creates_recipe_without_images()
+    {
+        $this->recipeRepository
+            ->expects($this->once())
+            ->method('create')
+            ->with($this->attributes['recipe'])
+            ->willReturn($this->recipe);
+
+        $result = $this->recipeCreateOrUpdateService
+            ->perform($this->attributes);
+
+        $this->assertEquals($result, $this->recipe);
+    }
+
+    /** @test */
+    public function it_updates_recipe_without_images()
     {
         $this->recipeRepository
             ->expects($this->once())
