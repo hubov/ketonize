@@ -65,7 +65,7 @@ class RecipeController extends Controller
      */
     public function store(StoreRecipeRequest $request)
     {
-        $recipe = $this->recipeCreateOrUpdate->perform($request->input());
+        $recipe = $this->recipeCreateOrUpdate->perform($request->all());
 
         return redirect('/recipe/'.$recipe->slug);
     }
