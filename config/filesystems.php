@@ -56,6 +56,20 @@ return [
             'throw' => false,
         ],
 
+        'local_recipe_images' => [
+            'driver' => 'local',
+            'root' => storage_path('app/images'),
+            'throw' => false,
+        ],
+
+        'public_recipe_images' => [
+            'driver' => 'local',
+            'root' => storage_path('app/public/images/recipe'),
+            'url' => env('APP_URL').'/storage/images/recipe',
+            'visibility' => 'public',
+            'throw' => false,
+        ],
+
     ],
 
     /*
