@@ -9,4 +9,6 @@ interface ImageParserInterface
     public function setFile(UploadedFile $file) : self;
     public function getName(?string $name) : string;
     public function keepOriginal() : self;
+    public function makeRecipeThumbnail() : bool;
+    public function makeRecipeCover() : bool;
 }

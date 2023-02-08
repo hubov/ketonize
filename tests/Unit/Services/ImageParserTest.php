@@ -5,6 +5,8 @@ namespace Tests\Unit\Services;
 use App\Services\ImageParser;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
+use Intervention\Image\Image;
+use Intervention\Image\ImageManager;
 use Tests\TestCase;
 
 class ImageParserTest extends TestCase
@@ -47,5 +49,39 @@ class ImageParserTest extends TestCase
 
         $this->assertEquals($imageParser, $result);
         Storage::disk('local_recipe_images')->assertExists($imageName . '.' . $rawImage->extension());
+    }
+
+    /** @test */
+    public function makes_recipe_cover(): void
+    {
+        $rawImage = UploadedFile::fake()->image('recipe-1.jpg', 4032, 3024)->size(1950);
+
+        $newImage = $this->getMockBuilder(Image::class)
+            ->onlyMethods(['save'])
+            ->addMethods(['resize'])
+            ->getMock();
+
+        $this->imageManager
+            ->expects($this->once())
+            ->method('make')
+            ->with($rawImage->getPathname())
+            ->willReturn($newImage);
+        $newImage
+            ->expects($this->once())
+            ->method('resize')
+            ->with(2560, null)
+            ->willReturnSelf();
+        $newImage
+            ->expects($this->exactly(2))
+            ->method('save')
+            ->withAnyParameters()
+            ->willReturnSelf();
+
+        $imageParser = new ImageParser($this->imageManager);
+        $result = $imageParser
+            ->setFile($rawImage)
+            ->makeRecipeCover();
+
+        $this->assertTrue($result);
     }
 }

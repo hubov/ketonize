@@ -6,13 +6,22 @@ use App\Services\Interfaces\ImageParserInterface;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Intervention\Image\ImageManager;
 
 class ImageParser implements ImageParserInterface
 {
     const STORAGE_DISK_LOCAL = 'local_recipe_images';
     const STORAGE_DISK_PUBLIC = 'public_recipe_images';
+    protected $imageManager;
     protected $file;
     protected $name;
+
+    public function __construct(ImageManager $imageManager)
+    {
+        $this->imageManager = $imageManager;
+
+        return $this;
+    }
 
     public function getName(?string $name): string
     {
@@ -28,6 +37,32 @@ class ImageParser implements ImageParserInterface
         shuffle($characterList);
 
         return implode('', array_slice($characterList, 0, $length));
+    }
+
+    public function makeRecipeThumbnail(): bool
+    {
+
+    }
+
+    public function makeRecipeCover(): bool
+    {
+        try {
+            $image = $this->imageManager
+                ->make($this->file->getPathname())
+                ->resize(2560, null, function ($constraint) {
+                    $constraint->aspectRatio();
+                    $constraint->upsize();
+                })
+                ->save($this->getPublicPath(), 100, $this->name . '.jpg');
+
+            $image
+                ->save($this->getPublicPath(), 100, $this->name . '.webp');
+        } catch (\Exception $e) {
+            print $e->getMessage();
+            return false;
+        }
+
+        return true;
     }
 
     public function setFile(UploadedFile $file): self
