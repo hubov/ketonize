@@ -54,6 +54,8 @@ class ImageParserTest extends TestCase
     /** @test */
     public function makes_recipe_cover(): void
     {
+        Storage::fake('public_recipe_images');
+        $path = Storage::disk('public_recipe_images')->path('');
         $rawImage = UploadedFile::fake()->image('recipe-1.jpg', 4032, 3024)->size(1950);
 
         $newImage = $this->getMockBuilder(Image::class)
@@ -71,17 +73,28 @@ class ImageParserTest extends TestCase
             ->method('resize')
             ->with(2560, null)
             ->willReturnSelf();
-        $newImage
-            ->expects($this->exactly(2))
-            ->method('save')
-            ->withAnyParameters()
-            ->willReturnSelf();
 
         $imageParser = new ImageParser($this->imageManager);
+        $imageName = $imageParser->getName('Recipe 1');
+
+        $newImage
+            ->expects($this->at(1))
+            ->method('save')
+            ->with($path . $imageName . '.jpg', 100)
+            ->willReturnSelf();
+
+        $newImage
+            ->expects($this->at(2))
+            ->method('save')
+            ->with($path . $imageName . '.webp', 100)
+            ->willReturnSelf();
+
         $result = $imageParser
             ->setFile($rawImage)
             ->makeRecipeCover();
 
         $this->assertTrue($result);
+//        Storage::disk('public_recipe_images')->assertExists($imageName . '.jpg');
+//        Storage::disk('public_recipe_images')->assertExists($imageName . '.webp');
     }
 }

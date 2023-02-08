@@ -49,16 +49,8 @@ class RecipeCreateOrUpdateService implements RecipeCreateOrUpdateInterface
 
     protected function create() : Recipe
     {
-        if (isset($this->attributes['recipe']['image'])) {
-            $imageName = $this->imageParser
-                ->getName($this->attributes['recipe']['name']);
+        $this->parseImage();
 
-            $this->imageParser
-                ->setFile($this->attributes['recipe']['image'])
-                ->keepOriginal();
-
-            $this->attributes['recipe']['image'] = $imageName;
-        }
         $this->recipe = $this->recipeRepository->create($this->attributes['recipe']);
 
         $this->relateIngredientsAndTagsToRecipe();
@@ -94,5 +86,22 @@ class RecipeCreateOrUpdateService implements RecipeCreateOrUpdateInterface
     {
         $this->relateIngredientsToRecipe();
         $this->relateTagsToRecipe();
+    }
+
+    protected function parseImage(): void
+    {
+        if (isset($this->attributes['recipe']['image'])) {
+            $imageName = $this->imageParser
+                ->setFile($this->attributes['recipe']['image'])
+                ->getName($this->attributes['recipe']['name']);
+
+            $this->imageParser
+                ->makeRecipeCover();
+
+            $this->imageParser
+                ->keepOriginal();
+
+            $this->attributes['recipe']['image'] = $imageName;
+        }
     }
 }

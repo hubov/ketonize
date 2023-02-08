@@ -6,12 +6,15 @@ use App\Services\Interfaces\ImageParserInterface;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Intervention\Image\Image;
 use Intervention\Image\ImageManager;
 
 class ImageParser implements ImageParserInterface
 {
     const STORAGE_DISK_LOCAL = 'local_recipe_images';
     const STORAGE_DISK_PUBLIC = 'public_recipe_images';
+    const RECIPE_COVER_WIDTH = 2560;
+    const RECIPE_COVER_HEIGHT = null;
     protected $imageManager;
     protected $file;
     protected $name;
@@ -48,15 +51,14 @@ class ImageParser implements ImageParserInterface
     {
         try {
             $image = $this->imageManager
-                ->make($this->file->getPathname())
-                ->resize(2560, null, function ($constraint) {
+                ->make($this->file)
+                ->resize(self::RECIPE_COVER_WIDTH, self::RECIPE_COVER_HEIGHT, function ($constraint) {
                     $constraint->aspectRatio();
                     $constraint->upsize();
-                })
-                ->save($this->getPublicPath(), 100, $this->name . '.jpg');
+                });
 
-            $image
-                ->save($this->getPublicPath(), 100, $this->name . '.webp');
+            $this->saveAs($image, 'jpg');
+            $this->saveAs($image, 'webp');
         } catch (\Exception $e) {
             print $e->getMessage();
             return false;
@@ -100,5 +102,14 @@ class ImageParser implements ImageParserInterface
     protected function getFullName(): string
     {
         return $this->name . '.' . $this->file->extension();
+    }
+
+    protected function saveAs(Image $image, string $extension)
+    {
+        $image
+            ->save(
+                $this->getPublicPath() . $this->name . '.' . $extension,
+                100
+            );
     }
 }
