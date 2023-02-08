@@ -6,6 +6,7 @@ use App\Models\Recipe;
 use App\Repositories\Interfaces\IngredientRepositoryInterface;
 use App\Repositories\Interfaces\RecipeRepositoryInterface;
 use App\Repositories\Interfaces\TagRepositoryInterface;
+use App\Services\Interfaces\ImageParserInterface;
 use App\Services\Interfaces\Recipe\RecipeCreateOrUpdateInterface;
 use App\Services\Interfaces\Recipe\RelateIngredientsToRecipeInterface;
 
@@ -15,6 +16,7 @@ class RecipeCreateOrUpdateService implements RecipeCreateOrUpdateInterface
     protected $ingredientRepository;
     protected $tagRepository;
     protected $relateIngredientsToRecipe;
+    protected $imageParser;
     protected $attributes;
     protected $recipe;
 
@@ -22,12 +24,14 @@ class RecipeCreateOrUpdateService implements RecipeCreateOrUpdateInterface
         RecipeRepositoryInterface $recipeRepository,
         IngredientRepositoryInterface $ingredientRepository,
         TagRepositoryInterface $tagRepository,
-        RelateIngredientsToRecipeInterface $relateIngredientsToRecipe
+        RelateIngredientsToRecipeInterface $relateIngredientsToRecipe,
+        ImageParserInterface $imageParser
     ) {
         $this->recipeRepository = $recipeRepository;
         $this->ingredientRepository = $ingredientRepository;
         $this->tagRepository = $tagRepository;
         $this->relateIngredientsToRecipe = $relateIngredientsToRecipe;
+        $this->imageParser = $imageParser;
 
         return $this;
     }
@@ -45,6 +49,16 @@ class RecipeCreateOrUpdateService implements RecipeCreateOrUpdateInterface
 
     protected function create() : Recipe
     {
+        if (isset($this->attributes['recipe']['image'])) {
+            $imageName = $this->imageParser
+                ->getName($this->attributes['recipe']['name']);
+
+            $this->imageParser
+                ->setFile($this->attributes['recipe']['image'])
+                ->keepOriginal();
+
+            $this->attributes['recipe']['image'] = $imageName;
+        }
         $this->recipe = $this->recipeRepository->create($this->attributes['recipe']);
 
         $this->relateIngredientsAndTagsToRecipe();

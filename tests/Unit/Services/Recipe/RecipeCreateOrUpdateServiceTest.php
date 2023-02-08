@@ -6,6 +6,7 @@ use App\Models\Recipe;
 use App\Repositories\Interfaces\IngredientRepositoryInterface;
 use App\Repositories\Interfaces\RecipeRepositoryInterface;
 use App\Repositories\Interfaces\TagRepositoryInterface;
+use App\Services\Interfaces\ImageParserInterface;
 use App\Services\Interfaces\Recipe\RelateIngredientsToRecipeInterface;
 use App\Services\Recipe\RecipeCreateOrUpdateService;
 use PHPUnit\Framework\TestCase;
@@ -21,6 +22,7 @@ class RecipeCreateOrUpdateServiceTest extends TestCase
     public $tagRepository;
     public $relateIngredientsToRecipe;
     public $recipeCreateOrUpdateService;
+    public $imageParser;
 
     public function setUp(): void
     {
@@ -48,12 +50,14 @@ class RecipeCreateOrUpdateServiceTest extends TestCase
         $this->ingredientRepository = $this->createMock(IngredientRepositoryInterface::class);
         $this->tagRepository  = $this->createMock(TagRepositoryInterface::class);
         $this->relateIngredientsToRecipe = $this->createMock(RelateIngredientsToRecipeInterface::class);
+        $this->imageParser = $this->createMock(ImageParserInterface::class);
 
         $this->recipeCreateOrUpdateService = new RecipeCreateOrUpdateService(
             $this->recipeRepository,
             $this->ingredientRepository,
             $this->tagRepository,
-            $this->relateIngredientsToRecipe
+            $this->relateIngredientsToRecipe,
+            $this->imageParser
         );
 
         $this->recipeRepository

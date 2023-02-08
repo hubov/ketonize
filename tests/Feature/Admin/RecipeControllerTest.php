@@ -9,6 +9,7 @@ use App\Models\Role;
 use App\Models\Tag;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
 use Tests\TestCase;
 
 class RecipeControllerTest extends TestCase
@@ -32,18 +33,53 @@ class RecipeControllerTest extends TestCase
         $response->assertStatus(200);
     }
 
-    /** @test */
-    public function adding_new_recipe_by_admin()
+    /**
+     * @test
+     * @dataProvider provideRecipeData
+     */
+    public function adding_new_recipe_by_admin($providedData)
+    {
+        [$requestData, $expectedResult] = $providedData();
+
+        $request = $this->actingAs($this->user)->post('/recipes', $requestData);
+
+        $request->assertRedirect($expectedResult['uri']);
+        $request->assertLocation($expectedResult['uri']);
+        $this->followRedirects($request)
+            ->assertSee($expectedResult['name'])
+            ->assertSee($expectedResult['description']);
+//            ->assertSee($expectedResult['ingredient']);
+    }
+
+    /**
+     * @test
+     * @dataProvider provideRecipeData
+     */
+    public function updating_recipe_by_admin($providedData)
+    {
+        [$requestData, $expectedResult] = $providedData();
+
+        $recipe = Recipe::factory()->hasAttached(Ingredient::factory(), ['amount' => '100'])->has(Tag::factory())->create();
+
+        $request = $this->actingAs($this->user)->put('/recipe/'.$recipe->slug.'/edit', $requestData);
+
+        $request->assertRedirect('/recipe/recipe-1');
+        $request->assertLocation('/recipe/recipe-1');
+        $this->followRedirects($request)
+            ->assertSee($requestData['recipe']['name'])
+            ->assertSee($requestData['recipe']['description']);
+    }
+
+    protected function getRequestData()
     {
         $ingredient = Ingredient::factory()->create();
         $tag = Tag::factory()->create();
         $amount = 100;
 
-        $requestData = [
+        $requestDataWithoutImage = [
             'recipe' => [
                 'name' => 'Recipe #1',
                 'slug' => 'recipe-1',
-                'image' => '',
                 'description' => 'Some recipe description.',
                 'preparation_time' => 10,
                 'cooking_time' => 5
@@ -54,58 +90,52 @@ class RecipeControllerTest extends TestCase
                     'quantity' => $amount
                 ]
             ],
-            'tags' => [$tag->id]
+            'tags' => [$tag->id],
+            'ingredientsNames' => [
+                [
+                    'name' => $ingredient->name
+                ]
+            ]
         ];
 
-        $request = $this->actingAs($this->user)->post('/recipes', $requestData);
-
-        $request->assertRedirect('/recipe/recipe-1');
-        $request->assertLocation('/recipe/recipe-1');
-        $this->followRedirects($request)
-            ->assertSee($requestData['recipe']['name'])
-            ->assertSee($requestData['recipe']['description']);
+        return $requestDataWithoutImage;
     }
 
-    /** @test */
-    public function updating_recipe_by_admin()
+    public function provideRecipeData()
     {
-        $recipe = Recipe::factory()->hasAttached(Ingredient::factory(), ['amount' => '100'])->has(Tag::factory())->create();
+        return
+            [
+                'without image' => [ // data set 1
+                    function () {
+                        $requestData = $this->getRequestData();
 
-        $ingredientNew = Ingredient::factory()->create();
-        $tagNew = Tag::factory()->create();
-        $amount = 100;
+                        return [
+                            $requestData,
+                            [
+                                'uri' => '/recipe/' . $requestData['recipe']['slug'],
+                                'name' => $requestData['recipe']['name'],
+                                'description' => $requestData['recipe']['description'],
+                                'ingredient' => $requestData['ingredientsNames'][0]['name']
+                            ]
+                        ];
+                    }
+                ],
+                'with an image' => [ // data set 2
+                    function () {
+                        $requestData = $this->getRequestData();
+                        $image = UploadedFile::fake()->image('recipe-img.jpg', 2560, 1)->size(1950);
 
-        foreach ($recipe->ingredients as $key => $ingredient) {
-            $ingredients[$key]['id'] = $ingredient->id;
-            $ingredients[$key]['quantity'] = $ingredient->pivot->amount;
-        }
-        $ingredients[count($ingredients)]['id'] = $ingredientNew->id;
-        $ingredients[count($ingredients)-1]['quantity'] = $amount;
-
-        foreach ($recipe->tags as $tag) {
-            $tags[] = $tag->id;
-        }
-        $tags[] = $tagNew->id;
-
-        $requestData = [
-            'recipe' => [
-                'name' => 'Recipe #1',
-                'slug' => 'recipe-1',
-                'image' => '',
-                'description' => 'Some recipe description.',
-                'preparation_time' => 10,
-                'cooking_time' => 5
-            ],
-            'ingredients' => $ingredients,
-            'tags' => $tags
-        ];
-
-        $request = $this->actingAs($this->user)->put('/recipe/'.$recipe->slug.'/edit', $requestData);
-
-        $request->assertRedirect('/recipe/recipe-1');
-        $request->assertLocation('/recipe/recipe-1');
-        $this->followRedirects($request)
-            ->assertSee($requestData['recipe']['name'])
-            ->assertSee($requestData['recipe']['description']);
+                        return [
+                            array_merge_recursive($requestData, ['recipe' => ['image' => $image]]),
+                            [
+                                'uri' => 'recipe/recipe-1',
+                                'name' => 'Recipe #1',
+                                'description' => 'Some recipe description.',
+                                'ingredient' => $requestData['ingredientsNames'][0]['name']
+                            ]
+                        ];
+                    }
+                ]
+            ];
     }
 }
