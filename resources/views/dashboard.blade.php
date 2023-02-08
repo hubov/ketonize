@@ -40,33 +40,82 @@
         @if (($dietPlan) && (count($dietPlan->meals) > 0))
             @foreach ($dietPlan->meals as $meal)
                 <div class="row my-3">
-                    <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                        <div class="p-3 bg-white border-b border-gray-200">
-                            <div class="row">
-                                <div class="col-8">
+                    <div class="card mb-2 px-0" style="min-height: 300px">
+                        <div class="row g-0">
+                            <div class="col-md-4" style="position: relative;">
+                                <a href="
+                                    @if ($meal->modifier != 100)
+                                        /recipe/{{ $meal->recipe->slug }}/{{ $meal->modifier }}
+                                    @else
+                                        /recipe/{{ $meal->recipe->slug }}
+                                    @endif
+                                    ">
+                                    <div style="width: 100%; height: 100%; position: absolute; top: 0; left: 0; z-index: 10; background: linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(21,82,99,0.3) 80%, rgba(21,82,99,0.6) 100%);"></div>
+                                </a>
+                                <img src="{{ asset('storage/images/recipe/aaaasasd000141234-u9zl02.jpg') }}" class="img-fluid rounded-start">
+                                <div style="position: absolute; bottom: 16px; left: 16px; z-index: 15; color: #fff">
+                                    <span class="material-icons material-icons-outlined inline-icon">schedule</span><span class="mr-5"> {{ $meal->recipe->total_time }} min</span>
+                                </div>
+                                <div style="position: absolute; bottom: 16px; right: 16px; z-index: 15">
+                                    @php
+                                        $mealOrder = $meal->meal;
+                                    @endphp
+                                    <button class="btn btn-outline-light btn-sm change-meal" data-bs-toggle="modal" data-bs-target="#recipesModal" diet-meal="{{ $mealOrder }}" diet-date="{{ $date['current'] }}" meal-tags="{{ $mealsTags[$mealOrder] }}"><span class="material-icons material-icons-outlined inline-icon">swap_horiz</span></button>
+                                </div>
+                            </div>
+                            <div class="col-md-8">
+                                <div class="card-body">
                                     <a href="
                                     @if ($meal->modifier != 100)
                                         /recipe/{{ $meal->recipe->slug }}/{{ $meal->modifier }}
                                     @else
                                         /recipe/{{ $meal->recipe->slug }}
                                     @endif
-                                    "><h2>Meal {{ $meal->meal }}</h2></a>
-                                </div>
-                                <div class="col-4 d-flex flex-row flex-row-reverse">
-                                    @php
-                                        $mealOrder = $meal->meal;
-                                    @endphp
-                                    <button class="btn btn-outline-secondary btn-sm change-meal" data-bs-toggle="modal" data-bs-target="#recipesModal" diet-meal="{{ $mealOrder }}" diet-date="{{ $date['current'] }}" meal-tags="{{ $mealsTags[$mealOrder] }}"><span class="material-icons material-icons-outlined inline-icon">swap_horiz</span></button>
+                                    "><h2 class="card-title">Meal {{ $meal->meal }}</h2>
+                                    <h3 class="card-title mb-4">{{ $meal->recipe->name }}</h3></a>
+                                    <p class="card-text">
+                                        @foreach ($meal->tags as $tag)
+                                            <span class="badge bg-warning">{{ $tag->name }}</span>
+                                        @endforeach
+                                    </p>
+                                    <p class="card-text">
+                                        <div class="row mb-2">
+                                            <div class="col-3">
+                                                <span class="material-icons material-icons-outlined inline-icon teal">egg_alt</span> <small class="text-muted"><span class="d-none d-sm-inline-block">Proteins:</span> <strong>{{ $meal->protein }}g</strong></small>
+                                            </div>
+                                            <div class="col-9">
+                                                <div class="progress">
+                                                    <div class="progress-bar progress-bar-striped" role="progressbar" style="background-color: #ffc93c; width: {{ $meal->shareProtein }}%" aria-valuenow="{{ $meal->shareProtein }}" aria-valuemin="0" aria-valuemax="100"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row mb-2">
+                                            <div class="col-3">
+                                                <span class="material-icons material-icons-outlined inline-icon teal">water_drop</span> <small class="text-muted"><span class="d-none d-sm-inline-block">Fats:</span> <strong>{{ $meal->fat }}g</strong></small>
+                                            </div>
+                                            <div class="col-9">
+                                                <div class="progress">
+                                                    <div class="progress-bar progress-bar-striped" role="progressbar" style="background-color: #ffc93c; width: {{ $meal->shareFat }}%" aria-valuenow="{{ $meal->shareFat }}" aria-valuemin="0" aria-valuemax="100"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row mb-2">
+                                            <div class="col-3">
+                                                <span class="material-icons material-icons-outlined inline-icon teal">breakfast_dining</span> <small class="text-muted"><span class="d-none d-sm-inline-block">Carbs:</span> <strong>{{ $meal->carbohydrate }}g</strong></small>
+                                            </div>
+                                            <div class="col-9">
+                                                <div class="progress flex-fill align-self-center">
+                                                    <div class="progress-bar progress-bar-striped" role="progressbar" style="background-color: #ffc93c; width: {{ $meal->shareCarbohydrate }}%" aria-valuenow="{{ $meal->shareCarbohydrate }}" aria-valuemin="0" aria-valuemax="100"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </p>
+                                    <hr>
+                                    <p class="card-text"><small class="text-muted">
+                                            <span class="material-icons material-icons-outlined inline-icon teal">local_fire_department</span>Kcal: <strong>{{ $meal->kcal }}</strong>
+                                    </small></p>
                                 </div>
                             </div>
-                            <a href="
-                            @if ($meal->modifier != 100)
-                                /recipe/{{ $meal->recipe->slug }}/{{ $meal->modifier }}
-                            @else
-                                /recipe/{{ $meal->recipe->slug }}
-                            @endif
-                            "><h3>{{ $meal->recipe->name }}</h3></a>
-                            Proteins: {{ $meal->protein }}g ({{ $meal->shareProtein }}%) | Fats: {{ $meal->fat }}g ({{ $meal->shareFat }}%) | Carbs: {{ $meal->carbohydrate }}g ({{ $meal->shareCarbohydrate }}%) | Kcal: {{ $meal->kcal }} | Time: {{ $meal->recipe->total_time }} min
                         </div>
                     </div>
                 </div>

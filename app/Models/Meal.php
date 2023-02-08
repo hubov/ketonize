@@ -99,4 +99,9 @@ class Meal extends Model
 
         return collect($ingredientsList);
     }
+
+    protected function getTagsAttribute()
+    {
+        return $this->recipe->tags;
+    }
 }
