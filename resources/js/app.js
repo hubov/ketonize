@@ -1,14 +1,10 @@
-import './bootstrap';
+import * as bootstrap from 'bootstrap';
 
-import * as bootstrap from 'bootstrap'
+import '../sass/app.scss';
+
 import jQuery from 'jquery';
+
 window.$ = jQuery;
 window.bootstrap = bootstrap;
 
-import Alpine from 'alpinejs';
-
-window.Alpine = Alpine;
-
-Alpine.start();
-
-export { jQuery, bootstrap };
+import '../css/styles.css';

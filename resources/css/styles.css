@@ -12,8 +12,8 @@ nav.navbar {
 }
 
 a {
-	color: #155263;
-	text-decoration: none;
+	color: #155263 !important;
+	text-decoration: none !important;
 }
 
 .btn-primary {
