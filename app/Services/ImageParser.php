@@ -15,6 +15,8 @@ class ImageParser implements ImageParserInterface
     const STORAGE_DISK_PUBLIC = 'public_recipe_images';
     const RECIPE_COVER_WIDTH = 2560;
     const RECIPE_COVER_HEIGHT = null;
+    const RECIPE_THUMBNAIL_WIDTH = 860;
+    const RECIPE_THUMBNAIL_HEIGHT = null;
     protected $imageManager;
     protected $file;
     protected $name;
@@ -44,21 +46,26 @@ class ImageParser implements ImageParserInterface
 
     public function makeRecipeThumbnail(): bool
     {
+        try {
+            $image = $this->generateImageType('thumbnail');
 
+            $this->saveAs($image, 'jpg', 'thumbnail');
+            $this->saveAs($image, 'webp', 'thumbnail');
+        } catch (\Exception $e) {
+            print $e->getMessage();
+            return false;
+        }
+
+        return true;
     }
 
     public function makeRecipeCover(): bool
     {
         try {
-            $image = $this->imageManager
-                ->make($this->file)
-                ->resize(self::RECIPE_COVER_WIDTH, self::RECIPE_COVER_HEIGHT, function ($constraint) {
-                    $constraint->aspectRatio();
-                    $constraint->upsize();
-                });
+            $image = $this->generateImageType('cover');
 
-            $this->saveAs($image, 'jpg');
-            $this->saveAs($image, 'webp');
+            $this->saveAs($image, 'jpg', 'cover');
+            $this->saveAs($image, 'webp', 'cover');
         } catch (\Exception $e) {
             print $e->getMessage();
             return false;
@@ -104,12 +111,22 @@ class ImageParser implements ImageParserInterface
         return $this->name . '.' . $this->file->extension();
     }
 
-    protected function saveAs(Image $image, string $extension)
+    protected function saveAs(Image $image, string $extension, string $imageType)
     {
         $image
             ->save(
-                $this->getPublicPath() . $this->name . '.' . $extension,
+                $this->getPublicPath() . $imageType.'s/' . $this->name . '.' . $extension,
                 100
             );
+    }
+
+    protected function generateImageType(string $imageType)
+    {
+        return $this->imageManager
+            ->make($this->file)
+            ->resize(constant('self::RECIPE_' . mb_strtoupper($imageType) . '_WIDTH'), constant('self::RECIPE_' . mb_strtoupper($imageType) . '_HEIGHT'), function ($constraint) {
+                $constraint->aspectRatio();
+                $constraint->upsize();
+            });
     }
 }

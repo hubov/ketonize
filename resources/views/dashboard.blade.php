@@ -52,7 +52,7 @@
                                     ">
                                     <div class="img-overlay"></div>
                                 </a>
-                                <img src="{{ asset('storage/images/recipe/aaaasasd000141234-u9zl02.jpg') }}" class="img-fluid rounded-start">
+                                <img src="{{ asset($meal->thumbnail) }}" class="img-fluid rounded-start">
                                 <div class="overlay-content-bl white d-flex align-items-center">
                                     <span class="material-icons material-icons-outlined inline-icon">schedule</span><div class="ps-1"> {{ $meal->recipe->total_time }} min</div>
                                 </div>

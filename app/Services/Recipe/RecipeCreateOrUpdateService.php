@@ -40,20 +40,22 @@ class RecipeCreateOrUpdateService implements RecipeCreateOrUpdateInterface
     {
         $this->attributes = $attributes;
 
+        $this->parseImage();
+
         if ($slug === NULL) {
-            return $this->create();
+            $this->create();
+        } else {
+            $this->update($slug);
         }
 
-        return $this->update($slug);
+        $this->relateIngredientsAndTagsToRecipe();
+
+        return $this->recipe;
     }
 
     protected function create() : Recipe
     {
-        $this->parseImage();
-
         $this->recipe = $this->recipeRepository->create($this->attributes['recipe']);
-
-        $this->relateIngredientsAndTagsToRecipe();
 
         return $this->recipe;
     }
@@ -61,8 +63,6 @@ class RecipeCreateOrUpdateService implements RecipeCreateOrUpdateInterface
     protected function update(string $slug) : Recipe
     {
         $this->recipe = $this->recipeRepository->updateBySlug($slug, $this->attributes['recipe']);
-
-        $this->relateIngredientsAndTagsToRecipe();
 
         return $this->recipe;
     }
@@ -97,6 +97,9 @@ class RecipeCreateOrUpdateService implements RecipeCreateOrUpdateInterface
 
             $this->imageParser
                 ->makeRecipeCover();
+
+            $this->imageParser
+                ->makeRecipeThumbnail();
 
             $this->imageParser
                 ->keepOriginal();

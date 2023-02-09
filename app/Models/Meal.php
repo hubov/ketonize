@@ -104,4 +104,9 @@ class Meal extends Model
     {
         return $this->recipe->tags;
     }
+
+    protected function getThumbnailAttribute()
+    {
+        return $this->recipe->thumbnail;
+    }
 }
