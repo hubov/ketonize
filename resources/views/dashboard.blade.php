@@ -40,9 +40,9 @@
         @if (($dietPlan) && (count($dietPlan->meals) > 0))
             @foreach ($dietPlan->meals as $meal)
                 <div class="row my-3">
-                    <div class="card mb-2 px-0" style="min-height: 300px">
+                    <div class="card mb-2 px-0">
                         <div class="row g-0">
-                            <div class="col-md-4" style="position: relative;">
+                            <div class="col-md-4 img-container">
                                 <a href="
                                     @if ($meal->modifier != 100)
                                         /recipe/{{ $meal->recipe->slug }}/{{ $meal->modifier }}
@@ -50,17 +50,17 @@
                                         /recipe/{{ $meal->recipe->slug }}
                                     @endif
                                     ">
-                                    <div style="width: 100%; height: 100%; position: absolute; top: 0; left: 0; z-index: 10; background: linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(21,82,99,0.3) 80%, rgba(21,82,99,0.6) 100%);"></div>
+                                    <div class="img-overlay"></div>
                                 </a>
                                 <img src="{{ asset('storage/images/recipe/aaaasasd000141234-u9zl02.jpg') }}" class="img-fluid rounded-start">
-                                <div style="position: absolute; bottom: 16px; left: 16px; z-index: 15; color: #fff">
-                                    <span class="material-icons material-icons-outlined inline-icon">schedule</span><span class="mr-5"> {{ $meal->recipe->total_time }} min</span>
+                                <div class="overlay-content-bl white d-flex align-items-center">
+                                    <span class="material-icons material-icons-outlined inline-icon">schedule</span><div class="ps-1"> {{ $meal->recipe->total_time }} min</div>
                                 </div>
-                                <div style="position: absolute; bottom: 16px; right: 16px; z-index: 15">
+                                <div class="overlay-content-br">
                                     @php
                                         $mealOrder = $meal->meal;
                                     @endphp
-                                    <button class="btn btn-outline-light btn-sm change-meal" data-bs-toggle="modal" data-bs-target="#recipesModal" diet-meal="{{ $mealOrder }}" diet-date="{{ $date['current'] }}" meal-tags="{{ $mealsTags[$mealOrder] }}"><span class="material-icons material-icons-outlined inline-icon">swap_horiz</span></button>
+                                    <button class="btn btn-sm change-meal" data-bs-toggle="modal" data-bs-target="#recipesModal" diet-meal="{{ $mealOrder }}" diet-date="{{ $date['current'] }}" meal-tags="{{ $mealsTags[$mealOrder] }}"><span class="material-icons material-icons-outlined inline-icon">swap_horiz</span></button>
                                 </div>
                             </div>
                             <div class="col-md-8">
@@ -72,47 +72,47 @@
                                         /recipe/{{ $meal->recipe->slug }}
                                     @endif
                                     "><h2 class="card-title">Meal {{ $meal->meal }}</h2>
-                                    <h3 class="card-title mb-4">{{ $meal->recipe->name }}</h3></a>
+                                    <h3 class="card-title mb-3">{{ $meal->recipe->name }}</h3></a>
                                     <p class="card-text">
                                         @foreach ($meal->tags as $tag)
-                                            <span class="badge bg-warning">{{ $tag->name }}</span>
+                                            <span class="badge bg-yellow">{{ $tag->name }}</span>
                                         @endforeach
                                     </p>
                                     <p class="card-text">
                                         <div class="row mb-2">
                                             <div class="col-3">
-                                                <span class="material-icons material-icons-outlined inline-icon teal">egg_alt</span> <small class="text-muted"><span class="d-none d-sm-inline-block">Proteins:</span> <strong>{{ $meal->protein }}g</strong></small>
+                                                <span class="material-icons material-icons-outlined inline-icon teal">egg_alt</span> <small class="text-muted"><span class="d-none d-sm-inline-block">proteins:</span> <strong>{{ $meal->protein }}g</strong></small>
                                             </div>
                                             <div class="col-9">
                                                 <div class="progress">
-                                                    <div class="progress-bar progress-bar-striped" role="progressbar" style="background-color: #ffc93c; width: {{ $meal->shareProtein }}%" aria-valuenow="{{ $meal->shareProtein }}" aria-valuemin="0" aria-valuemax="100"></div>
+                                                    <div class="progress-bar progress-bar-striped bg-yellow" role="progressbar" style="width: {{ $meal->shareProtein }}%" aria-valuenow="{{ $meal->shareProtein }}" aria-valuemin="0" aria-valuemax="100"></div>
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="row mb-2">
                                             <div class="col-3">
-                                                <span class="material-icons material-icons-outlined inline-icon teal">water_drop</span> <small class="text-muted"><span class="d-none d-sm-inline-block">Fats:</span> <strong>{{ $meal->fat }}g</strong></small>
+                                                <span class="material-icons material-icons-outlined inline-icon teal">water_drop</span> <small class="text-muted"><span class="d-none d-sm-inline-block">fats:</span> <strong>{{ $meal->fat }}g</strong></small>
                                             </div>
                                             <div class="col-9">
                                                 <div class="progress">
-                                                    <div class="progress-bar progress-bar-striped" role="progressbar" style="background-color: #ffc93c; width: {{ $meal->shareFat }}%" aria-valuenow="{{ $meal->shareFat }}" aria-valuemin="0" aria-valuemax="100"></div>
+                                                    <div class="progress-bar progress-bar-striped bg-yellow" role="progressbar" style="width: {{ $meal->shareFat }}%" aria-valuenow="{{ $meal->shareFat }}" aria-valuemin="0" aria-valuemax="100"></div>
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="row mb-2">
                                             <div class="col-3">
-                                                <span class="material-icons material-icons-outlined inline-icon teal">breakfast_dining</span> <small class="text-muted"><span class="d-none d-sm-inline-block">Carbs:</span> <strong>{{ $meal->carbohydrate }}g</strong></small>
+                                                <span class="material-icons material-icons-outlined inline-icon teal">breakfast_dining</span> <small class="text-muted"><span class="d-none d-sm-inline-block">carbs:</span> <strong>{{ $meal->carbohydrate }}g</strong></small>
                                             </div>
                                             <div class="col-9">
                                                 <div class="progress flex-fill align-self-center">
-                                                    <div class="progress-bar progress-bar-striped" role="progressbar" style="background-color: #ffc93c; width: {{ $meal->shareCarbohydrate }}%" aria-valuenow="{{ $meal->shareCarbohydrate }}" aria-valuemin="0" aria-valuemax="100"></div>
+                                                    <div class="progress-bar progress-bar-striped bg-yellow" role="progressbar" style="width: {{ $meal->shareCarbohydrate }}%" aria-valuenow="{{ $meal->shareCarbohydrate }}" aria-valuemin="0" aria-valuemax="100"></div>
                                                 </div>
                                             </div>
                                         </div>
                                     </p>
                                     <hr>
                                     <p class="card-text"><small class="text-muted">
-                                            <span class="material-icons material-icons-outlined inline-icon teal">local_fire_department</span>Kcal: <strong>{{ $meal->kcal }}</strong>
+                                            <span class="material-icons material-icons-outlined inline-icon red">local_fire_department</span>kcal: <strong>{{ $meal->kcal }}</strong>
                                     </small></p>
                                 </div>
                             </div>
