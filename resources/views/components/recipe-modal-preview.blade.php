@@ -37,7 +37,7 @@
         }).done(function (data) {
             $('#recipeIngredients').html('');
             var listElem = '<x-ingredients-list-element />';
-            $('#recipeImage').attr('src', '/storage/images/recipe/' + data.image + '.png');
+            $('#recipeImage').attr('src', data.image);
             $('#recipeName').html(data.name);
 
             data.ingredients.forEach(function (item) {

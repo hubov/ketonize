@@ -14,6 +14,7 @@ class Recipe extends Model
     const IMAGE_DEFAULT = 'default';
     const IMAGES_PATH = 'storage/images/recipe/';
     const THUMBNAIL_PATH = 'thumbnails/';
+    const COVER_PATH = 'covers/';
 
     protected $fillable = ['name', 'image', 'protein', 'fat', 'carbohydrate', 'kcal', 'description', 'preparation_time', 'cooking_time'];
     protected $attributes = [
@@ -129,6 +130,13 @@ class Recipe extends Model
     {
         return $this->getPath('thumbnail') . $this->image . $this->getImageExtension();
     }
+
+    protected function getCoverAttribute(): string
+    {
+        return $this->getPath('cover') . $this->image . $this->getImageExtension();
+    }
+
+    protected function getImageExtension(): string
     {
         if ($this->image == 'default') {
             return '.png';

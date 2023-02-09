@@ -93,7 +93,7 @@ class RecipeController extends Controller
 
         return View::make('recipe.single', [
             'name' => $recipe->name,
-            'image' => $recipe->image,
+            'image' => $recipe->cover,
             'protein' => round($recipe->protein),
             'fat' => round($recipe->fat),
             'carbohydrate' => round($recipe->carbohydrate),
@@ -134,7 +134,7 @@ class RecipeController extends Controller
      */
     public function update(UpdateRecipeRequest $request, $slug)
     {
-        $recipe = $this->recipeCreateOrUpdate->perform($request->input(), $slug);
+        $recipe = $this->recipeCreateOrUpdate->perform($request->all(), $slug);
 
         return redirect('/recipe/'.$recipe->slug);
     }
@@ -183,7 +183,7 @@ class RecipeController extends Controller
 
         return response()->json([
             'name' => $recipe->name,
-            'image' => $recipe->image,
+            'image' => $recipe->cover,
             'ingredients' => $recipe->ingredients,
             'description' => $recipe->description
          ]);

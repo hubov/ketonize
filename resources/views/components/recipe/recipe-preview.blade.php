@@ -1,4 +1,4 @@
-<img src="{{ asset('storage/images/recipe/default.png') }}" id="recipeImage" class="card-img-top" alt="...">
+<img src="{{ asset($image) }}" id="recipeImage" class="card-img-top" alt="...">
 <div class="card-body">
     <h1 class="card-title" id="recipeName">{{ $name }}
         @if ($admin)
