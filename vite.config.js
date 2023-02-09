@@ -15,7 +15,7 @@ export default defineConfig({
     resolve: {
         alias: {
             '~bootstrap': 'node_modules/bootstrap',
-            '~jQuiery': 'node_modules/jquery'
+            '~jQuery': 'node_modules/jquery'
         }
     },
 });
