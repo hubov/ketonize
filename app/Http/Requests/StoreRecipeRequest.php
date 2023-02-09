@@ -25,7 +25,7 @@ class StoreRecipeRequest extends FormRequest
     {
         return [
             'recipe.name' => 'required|unique:recipes,name',
-            'recipe.image' => 'mimetypes:image/jpeg|max:3072',
+            'recipe.image' => 'mimetypes:image/jpeg|max:10240',
             'ingredients' => 'required|array|min:1',
             'ingredients.*' => 'required|array|min:2|max:2',
             'ingredients.*.id' => 'required|numeric|min:1',
