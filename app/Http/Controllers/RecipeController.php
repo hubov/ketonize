@@ -99,10 +99,12 @@ class RecipeController extends Controller
             'carbohydrate' => round($recipe->carbohydrate),
             'preparationTime' => $recipe->preparation_time,
             'cookingTime' => $recipe->cooking_time,
+            'totalTime' => $recipe->total_time,
             'kcal' => round($recipe->kcal),
             'ingredients' => $recipe->ingredients,
             'description' => $recipe->description,
             'weightTotal' => $weightTotal,
+            'tags' => $recipe->tags,
             'admin' => Auth()->user()->is('admin'),
             'categories' => $this->ingredientCategoryRepository->getAll()->sortBy('name'),
             'displayMacros' => true

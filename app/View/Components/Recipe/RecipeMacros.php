@@ -56,6 +56,20 @@ class RecipeMacros extends Component
     public $cookingTime;
 
     /**
+     * The recipe total time.
+     *
+     * @var integer
+     */
+    public $totalTime;
+
+    /**
+     * The recipe tags.
+     *
+     * @var array
+     */
+    public $tags;
+
+    /**
      * Create a new component instance.
      *
      * @param integer protein
@@ -65,6 +79,8 @@ class RecipeMacros extends Component
      * @param integer weightTotal
      * @param integer preparationTime
      * @param integer cookingTime
+     * @param integer totalTime
+     * @param array tags
      * @return void
      */
 
@@ -73,7 +89,7 @@ class RecipeMacros extends Component
      *
      * @return void
      */
-    public function __construct($protein = NULL, $fat = NULL, $carbohydrate = NULL, $kcal = NULL, $weightTotal = NULL, $preparationTime = NULL, $cookingTime = NULL)
+    public function __construct($protein = NULL, $fat = NULL, $carbohydrate = NULL, $kcal = NULL, $weightTotal = NULL, $preparationTime = NULL, $cookingTime = NULL, $totalTime = NULL, $tags = NULL)
     {
         $this->protein = $protein;
         $this->fat = $fat;
@@ -82,6 +98,8 @@ class RecipeMacros extends Component
         $this->weightTotal = $weightTotal;
         $this->preparationTime = $preparationTime;
         $this->cookingTime = $cookingTime;
+        $this->totalTime = $totalTime;
+        $this->tags = $tags;
     }
 
     /**
