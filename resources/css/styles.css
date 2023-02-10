@@ -42,13 +42,43 @@ a {
 }
 
 .macros {
-	padding-bottom: 20px;
     text-align: center;
+    color: #fff;
+}
+
+.macros .row {
+    margin: 0;
+}
+
+.macros span {
+    font-size: 1.2rem;
+}
+
+.macros .badge {
+    font-size: 1rem;
+    background-color: #ffc93c;
+}
+
+.macros .material-symbols-outlined {
+    font-size: 24px;
+    color: #ffc93c;
+}
+
+.macros .material-icons {
+    font-size: 24px;
+    color: #ffc93c;
 }
 
 .macros span.label {
 	font-size: 0.8em;
-	color: #6c757d;
+	color: #ced4da;
+}
+
+.papersheet {
+    margin-top: 0;
+    margin-left: 20px;
+    margin-right: 20px;
+    border: 1px solid ;
 }
 
 .ingredients {
