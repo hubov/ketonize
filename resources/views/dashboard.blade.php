@@ -81,7 +81,7 @@
                                     <p class="card-text">
                                         <div class="row mb-2">
                                             <div class="col-3">
-                                                <span class="material-icons material-icons-outlined inline-icon teal">egg_alt</span> <small class="text-muted"><span class="d-none d-sm-inline-block">proteins:</span> <strong>{{ $meal->protein }}g</strong></small>
+                                                <span class="material-symbols-outlined inline-icon teal">egg_alt</span> <small class="text-muted"><span class="d-none d-sm-inline-block">proteins:</span> <strong>{{ $meal->protein }}g</strong></small>
                                             </div>
                                             <div class="col-9">
                                                 <div class="progress">
@@ -91,7 +91,7 @@
                                         </div>
                                         <div class="row mb-2">
                                             <div class="col-3">
-                                                <span class="material-icons material-icons-outlined inline-icon teal">water_drop</span> <small class="text-muted"><span class="d-none d-sm-inline-block">fats:</span> <strong>{{ $meal->fat }}g</strong></small>
+                                                <span class="material-symbols-outlined inline-icon teal">water_drop</span> <small class="text-muted"><span class="d-none d-sm-inline-block">fats:</span> <strong>{{ $meal->fat }}g</strong></small>
                                             </div>
                                             <div class="col-9">
                                                 <div class="progress">
@@ -101,7 +101,7 @@
                                         </div>
                                         <div class="row mb-2">
                                             <div class="col-3">
-                                                <span class="material-icons material-icons-outlined inline-icon teal">breakfast_dining</span> <small class="text-muted"><span class="d-none d-sm-inline-block">carbs:</span> <strong>{{ $meal->carbohydrate }}g</strong></small>
+                                                <span class="material-symbols-outlined inline-icon teal">breakfast_dining</span> <small class="text-muted"><span class="d-none d-sm-inline-block">carbs:</span> <strong>{{ $meal->carbohydrate }}g</strong></small>
                                             </div>
                                             <div class="col-9">
                                                 <div class="progress flex-fill align-self-center">
