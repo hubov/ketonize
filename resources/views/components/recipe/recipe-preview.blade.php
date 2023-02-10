@@ -17,38 +17,61 @@
     </div>
 </div>
 </div>
-<div class="card-text mt-4">
-    <div class="row ingredients">
-        <div class="col">
-            <div class="row">
-                <h5>Ingredients</h5>
-            </div>
-            <div class="row mx-sm-4" id="recipeIngredients">
-                @php
-                    $scalableCount = 5;
-                @endphp
-                @if ($ingredients)
-                    @foreach ($ingredients as $ingredient)
-                        <x-ingredients-list-element :name="$ingredient->name" :scalableCount="$scalableCount" :amount="$ingredient->pivot->amount" :symbol="$ingredient->unit->symbol" />
-                        @php
-                            $scalableCount++;
-                        @endphp
-                    @endforeach
-                @endif
-            </div>
-        </div>
-    </div>
-</div>
-<hr>
-<div class="card-text mt-4">
+<div class="mt-0 mx-3 p-4 p-md-5 bg-white overflow-hidden shadow-sm sm:rounded-lg">
     <div class="row">
-        <h5>Preparation</h5>
-    </div>
-    <div class="row mx-sm-4">
-        <div class="col" id="recipeDescription">
-            @if ($description)
-                {!! nl2br($description) !!}
-            @endif
+        <div class="col-md-4">
+            <div class="row ingredients">
+                <div class="col">
+                    <div class="row">
+                        <h5 class="mb-3" style="font-weight: bold">Ingredients</h5>
+                    </div>
+                    <div class="row" id="recipeIngredients">
+                        @php
+                            $scalableCount = 5;
+                        @endphp
+                        @if ($ingredients)
+                            @foreach ($ingredients as $ingredient)
+                                <x-ingredients-list-element :name="$ingredient->name" :scalableCount="$scalableCount" :amount="$ingredient->pivot->amount" :symbol="$ingredient->unit->symbol" />
+                                @php
+                                    $scalableCount++;
+                                @endphp
+                            @endforeach
+                        @endif
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-1 d-none d-md-block">
+            <div class="vr" style="height: 50%; margin-top: 100%; margin-left: 50%"></div>
+        </div>
+        <div class="col-md-7">
+            <div class="card-text">
+                <div class="row">
+                    <h5 class="mb-3" style="font-weight: bold">Preparation</h5>
+                </div>
+                <div class="row mx-sm-4">
+                    <div class="col" id="recipeDescription" style="color: #495057">
+                        @if ($description)
+                            {!! nl2br($description) !!}
+                        @endif
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
+
+<script>
+    $('.usable').on('click', function (e) {
+        e.preventDefault();
+        var parent = $(this).parentsUntil('.row').parent();
+        if (parent.hasClass('list-element-used')) {
+        if ($(this.hasClass))
+            parent.removeClass('list-element-used');
+            $(this).find('input').removeAttr('checked');
+        } else {
+            parent.addClass('list-element-used');
+            $(this).find('input').attr('checked', 'checked');
+        }
+    });
+</script>

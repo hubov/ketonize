@@ -74,15 +74,21 @@ a {
 	color: #ced4da;
 }
 
-.papersheet {
-    margin-top: 0;
-    margin-left: 20px;
-    margin-right: 20px;
-    border: 1px solid ;
+.ingredients {
+	color: #495057;
+    text-transform: lowercase;
 }
 
-.ingredients {
-	padding-bottom: 20px;
+.ingredients .bold {
+    color: #155263;
+}
+
+.ingredients .list-element-used .bold {
+    color: #ced4da;
+}
+
+.list-element-used {
+    color: #ced4da;
 }
 
 input[type=date].form-control {
