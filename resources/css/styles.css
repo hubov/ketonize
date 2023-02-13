@@ -41,6 +41,30 @@ a {
 	color: #6c757d;
 }
 
+.meal-plan-summary {
+    background-color: #155263;
+    color: #fff;
+    border-radius: 0.375rem
+}
+
+.meal-plan-summary small {
+    color: #ced4da;
+}
+
+.meal-plan-summary .times .material-symbols-outlined {
+    font-size: 2rem;
+    color: #ffc93c;
+}
+
+.meal-plan-summary .times .material-icons {
+    font-size: 2rem;
+    color: #ffc93c;
+}
+
+.meal-plan-summary .times span {
+    font-size: 1.2rem;
+}
+
 .recipe-card {
     background-color: #155263;
     color: #fff;
@@ -147,9 +171,12 @@ a {
 }
 
 .separator .vr {
+    position: relative;
     height: 50%;
-    margin-top: 100%;
+    top: 50%;
     margin-left: 50%;
+    -ms-transform: translateY(-50%);
+    transform: translateY(-50%);
 }
 
 .separator hr {
@@ -220,7 +247,7 @@ hr.yellow {
 }
 
 .yellow {
-    color: #ffc93c;
+    color: #ffc93c !important;
 }
 
 .bg-yellow {

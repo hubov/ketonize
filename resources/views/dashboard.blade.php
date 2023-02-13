@@ -16,12 +16,90 @@
 
         <div class="row">
             <div class="mb-3 p-0">
-                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                    <div class="p-3 bg-white border-b border-gray-200">
-                        Your diet: {{ $userDiet->diet->name }} {{ $userDiet->kcal }} kcal Fats: {{ $userDiet->fat }}g ({{ $userDiet->diet->fat }}%) Proteins: {{ $userDiet->protein }}g ({{ $userDiet->diet->protein }}%) Carbs: {{ $userDiet->carbohydrate }}g ({{ $userDiet->diet->carbohydrate }}%)<br />
-                        @if ($dietPlan !== null)
-                            Proteins: {{ $dietPlan->protein }}g ({{ $dietPlan->shareProtein}}%) | Fats: {{ $dietPlan->fat }}g ({{ $dietPlan->shareFat }}%) | Carbs: {{ $dietPlan->carbohydrate }}g ({{ $dietPlan->shareCarbohydrate }}%) | Kcal: {{ $dietPlan->kcal }} | Preparation time: {{ $dietPlan->preparationTime }}min | Total time: {{ $dietPlan->totalTime }}min
-                        @endif
+                <div class="meal-plan-summary shadow-sm sm:rounded-lg">
+                    <div class="p-3 border-b border-gray-200">
+                        <div class="row m-0">
+                            <div class="col-md-3 p-3">
+                                <small>your personal diet plan</small><br />
+                                <h3 class="mb-3">{{ $userDiet->diet->name }}</h3>
+                                <div class="row">
+                                    <span>
+                                        <strong>{{ $userDiet->kcal }}</strong>
+                                        <small>kcal</small>
+                                    </span>
+                                </div>
+                                <div class="row">
+                                    <span>
+                                        <strong>{{ count($userDiet->meals) }}</strong>
+                                        <small>meals</small>
+                                    </span>
+                                </div>
+                                <div class="row">
+                                    <small class="yellow">per day</small>
+                                </div>
+                            </div>
+                            <div class="col-md-5">
+                                <div class="row pb-4">
+                                    <div class="col-3 text-center">
+                                        <canvas id="kcalChart"></canvas>
+                                        <span class="material-icons material-icons-outlined inline-icon yellow">local_fire_department</span><br />
+                                        <small>kcal</small>
+                                    </div>
+                                    <div class="col-3 text-center">
+                                        <canvas id="proteinChart"></canvas>
+                                        <span class="material-symbols-outlined inline-icon yellow">egg_alt</span><br />
+                                        <small>protein</small>
+                                    </div>
+                                    <div class="col-3 text-center">
+                                        <canvas id="fatChart"></canvas>
+                                        <span class="material-symbols-outlined inline-icon yellow">water_drop</span><br />
+                                        <small>fat</small>
+                                    </div>
+                                    <div class="col-3 text-center">
+                                        <canvas id="carbohydrateChart"></canvas>
+                                        <span class="material-symbols-outlined inline-icon yellow">breakfast_dining</span><br />
+                                        <small>carbs</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-1 separator d-none d-md-inline-block">
+                                <div class="vr"></div>
+                            </div>
+                            <div class="col-1 separator d-md-none d-inline-block w-100 pb-4">
+                                <hr>
+                            </div>
+                            <div class="col-md-3 times">
+                                <div class="row d-flex justify-content-between text-center h-100 align-items-center">
+                                    <div class="col">
+                                        <div class="row">
+                                            <span class="material-symbols-outlined">surgical</span>
+                                        </div>
+                                        <div class="row">
+                                            <span class="py-2"><strong>{{ $dietPlan->preparationTime }}</strong> min</span><br />
+                                            <small>preparation</small>
+                                        </div>
+                                    </div>
+                                    <div class="col">
+                                        <div class="row">
+                                            <span class="material-symbols-outlined">oven_gen</span>
+                                        </div>
+                                        <div class="row">
+                                            <span class="py-2"><strong>{{ $dietPlan->cookingTime }}</strong> min</span><br />
+                                            <small>cooking</small>
+                                        </div>
+                                    </div>
+                                    <div class="col">
+                                        <div class="row">
+                                            <span class="material-icons material-icons-outlined">schedule</span>
+                                        </div>
+                                        <div class="row">
+                                            <span class="py-2"><strong>{{ $dietPlan->totalTime }}</strong> min</span><br />
+                                            <small>total</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -147,4 +225,137 @@
             }
         });
     });
+</script>
+
+
+
+
+
+
+
+
+
+
+
+<script src="
+https://cdn.jsdelivr.net/npm/chart.js@4.2.0/dist/chart.umd.min.js
+"></script>
+<script>
+    var macroCenter = {
+        'id': 'center_macro_value',
+        beforeDraw: function(chart) {
+            var width = chart.width,
+                height = chart.height,
+                ctx = chart.ctx,
+                value = chart.data.datasets[0].data[0];
+
+            ctx.restore();
+            var fontSize = (height / 90).toFixed(2);
+            ctx.font = fontSize + "em sans-serif";
+            ctx.textBaseline = "middle";
+
+            var text = value + "g",
+                textX = Math.round((width - ctx.measureText(text).width) / 2),
+                textY = height / 1.25;
+
+            ctx.fillStyle = '#fff';
+            ctx.fillText(text, textX, textY);
+            ctx.save();
+        }
+    };
+
+    var kcalCenter = {
+        'id': 'center_kcal_value',
+        beforeDraw: function(chart) {
+            var width = chart.width,
+                height = chart.height,
+                ctx = chart.ctx,
+                value = chart.data.datasets[0].data[0];
+
+            ctx.restore();
+            var fontSize = (height / 90).toFixed(2);
+            ctx.font = fontSize + "em sans-serif";
+            ctx.textBaseline = "middle";
+
+            var text = value,
+                textX = Math.round((width - ctx.measureText(text).width) / 2),
+                textY = height / 1.25;
+
+            ctx.fillStyle = '#fff';
+            ctx.fillText(text, textX, textY);
+            ctx.save();
+        }
+    };
+
+    var options = {
+        rotation: 270,
+        circumference: 180,
+        responsive: true,
+        legend: {
+            display: false
+        },
+        elements: {
+            arc: {
+                borderWidth: 0
+            }
+        },
+        cutout: '75%',
+        events: []
+    };
+
+    var kcalOptions = {
+        type: 'doughnut',
+        data: {
+            datasets: [{
+                data: [{{ $dietPlan->kcal }}, {{ $userDiet->kcal }}],
+                backgroundColor: ['#ffc93c', '#2d6170']
+            }]
+        },
+        options: options,
+        plugins: [kcalCenter]
+    }
+    var kcalCtx = document.getElementById('kcalChart').getContext('2d');
+    new Chart(kcalCtx, kcalOptions);
+
+    var proteinOptions = {
+        type: 'doughnut',
+        data: {
+            datasets: [{
+                data: [{{ $dietPlan->protein }}, {{ $userDiet->protein }}],
+                backgroundColor: ['#ffc93c', '#2d6170']
+            }]
+        },
+        options: options,
+        plugins: [macroCenter]
+    }
+    var proteinCtx = document.getElementById('proteinChart').getContext('2d');
+    new Chart(proteinCtx, proteinOptions);
+
+    var fatOptions = {
+        type: 'doughnut',
+        data: {
+            datasets: [{
+                data: [{{ $dietPlan->fat }}, {{ $userDiet->fat }}],
+                backgroundColor: ['#ffc93c', '#2d6170']
+            }]
+        },
+        options: options,
+        plugins: [macroCenter]
+    }
+    var fatCtx = document.getElementById('fatChart').getContext('2d');
+    new Chart(fatCtx, fatOptions);
+
+    var carbohydrateOptions = {
+        type: 'doughnut',
+        data: {
+            datasets: [{
+                data: [{{ $dietPlan->carbohydrate }}, {{ $userDiet->carbohydrate }}],
+                backgroundColor: ['#ffc93c', '#2d6170']
+            }]
+        },
+        options: options,
+        plugins: [macroCenter]
+    }
+    var carbohydrateCtx = document.getElementById('carbohydrateChart').getContext('2d');
+    new Chart(carbohydrateCtx, carbohydrateOptions);
 </script>
