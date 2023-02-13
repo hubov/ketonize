@@ -1,5 +1,5 @@
-<div class="card-text macros" style="height: 100%">
-    <div class="row" style="height: 100%;  display: flex; justify-content: space-between">
+<div class="card-text macros h-100">
+    <div class="row h-100 d-flex justify-content-between">
         <div class="row mb-3">
             <div class="col-4">
                 <canvas id="proteinChart"></canvas>
@@ -56,7 +56,7 @@
         <hr>
         <div class="row mb-3 px-0">
             <div class="col px-1">
-                <div class="card" style="background-color: #155263; color: #fff; padding: 10px">
+                <div class="card">
                         <div class="row">
                             <span class="material-icons material-icons-outlined yellow">local_fire_department</span>
                         </div>
@@ -70,7 +70,7 @@
                 </div>
             </div>
             <div class="col">
-                <div class="card" style="background-color: #155263; color: #fff; padding: 10px">
+                <div class="card">
                     <div class="row">
                         <span class="material-symbols-outlined yellow">scale</span>
                     </div>
