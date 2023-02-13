@@ -149,7 +149,7 @@
                                     @else
                                         /recipe/{{ $meal->recipe->slug }}
                                     @endif
-                                    "><h2 class="card-title">Meal {{ $meal->meal }}</h2>
+                                    "><h2 class="card-title">{{ $mealsNames[$meal->meal] ?? $mealsNames[4] }}</h2>
                                     <h3 class="card-title mb-3">{{ $meal->recipe->name }}</h3></a>
                                     <p class="card-text">
                                         @foreach ($meal->tags as $tag)
