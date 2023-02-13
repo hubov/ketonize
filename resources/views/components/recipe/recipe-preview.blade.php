@@ -62,16 +62,15 @@
 </div>
 
 <script>
-    $('.usable').on('click', function (e) {
-        e.preventDefault();
-        var parent = $(this).parentsUntil('.row').parent();
-        if (parent.hasClass('list-element-used')) {
-        if ($(this.hasClass))
-            parent.removeClass('list-element-used');
-            $(this).find('input').removeAttr('checked');
+    $('.ingredient-list-element').on('click', function () {
+        var checkbox = $(this).find('input[type=checkbox]');
+
+        if ($(this).hasClass('list-element-used')) {
+            $(this).removeClass('list-element-used');
+            checkbox.prop("checked", false).trigger("change");
         } else {
-            parent.addClass('list-element-used');
-            $(this).find('input').attr('checked', 'checked');
+            $(this).addClass('list-element-used');
+            checkbox.prop("checked", true).trigger("change");
         }
     });
 </script>
