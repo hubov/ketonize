@@ -70,6 +70,11 @@ return [
             'throw' => false,
         ],
 
+        'logo' => [
+            'driver' => 'local',
+            'root' => storage_path('app/logo'),
+            'throw' => false,
+        ],
     ],
 
     /*

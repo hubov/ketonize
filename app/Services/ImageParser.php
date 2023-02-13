@@ -122,11 +122,31 @@ class ImageParser implements ImageParserInterface
 
     protected function generateImageType(string $imageType)
     {
-        return $this->imageManager
+        $image = $this->imageManager
             ->make($this->file)
             ->resize(constant('self::RECIPE_' . mb_strtoupper($imageType) . '_WIDTH'), constant('self::RECIPE_' . mb_strtoupper($imageType) . '_HEIGHT'), function ($constraint) {
                 $constraint->aspectRatio();
                 $constraint->upsize();
             });
+
+        $image = $this->addWatermark($image);
+
+        return $image;
+    }
+
+    protected function addWatermark(Image $image): Image
+    {
+        $watermark = $this->imageManager
+            ->make(Storage::disk('logo')->path('') . 'black-logo-no-background.png');
+        $watermark->resize(
+            $image->width() * 0.25,
+            null,
+            function ($constraint) {
+                $constraint->aspectRatio();
+            });
+
+        $image->insert($watermark, 'bottom-right', 10, 10);
+
+        return $image;
     }
 }
