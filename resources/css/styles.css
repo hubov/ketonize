@@ -69,6 +69,22 @@ a {
     }
 }
 
+.recipe-card .card-title {
+    color: #fff;
+}
+
+.recipe-card .card-title:hover {
+    color: #ffc93c;
+}
+
+.recipe-card .progress {
+    position: relative;
+    background-color: rgba(255, 255, 255, 0.08);
+    top: 50%;
+    -ms-transform: translateY(-50%);
+    transform: translateY(-50%);
+}
+
 .macros {
     text-align: center;
     color: #fff;
@@ -97,7 +113,7 @@ a {
     color: #ffc93c;
 }
 
-.macros span.label {
+.recipe-card span.label {
 	font-size: 0.8em;
 	color: #ced4da;
 }
