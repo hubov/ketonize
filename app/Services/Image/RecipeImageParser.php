@@ -1,37 +1,53 @@
 <?php
 
-namespace App\Services;
+namespace App\Services\Image;
 
-use App\Services\Interfaces\ImageParserInterface;
+use App\Services\File\JPGSaver;
+use App\Services\File\WebpSaver;
+use App\Services\Interfaces\Image\ImageParserInterface;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Intervention\Image\Image;
 use Intervention\Image\ImageManager;
 use Throwable;
 
-class ImageParser implements ImageParserInterface
+class RecipeImageParser implements ImageParserInterface
 {
-    const STORAGE_DISK_LOCAL = 'local_recipe_images';
-    const STORAGE_DISK_PUBLIC = 'public_recipe_images';
-    const RECIPE_COVER_WIDTH = 2560;
-    const RECIPE_COVER_HEIGHT = null;
-    const RECIPE_THUMBNAIL_WIDTH = 860;
-    const RECIPE_THUMBNAIL_HEIGHT = null;
+    public const STORAGE_DISK_LOCAL = 'local_recipe_images';
+    public const STORAGE_DISK_PUBLIC = 'public_recipe_images';
+    public const WATERMARK_DISK = 'logo';
+    public const WATERMARK_FILENAME = 'black-logo-no-background.png';
     protected $imageManager;
-    protected $file;
+    protected $cover;
+    protected $thumbnail;
+    protected $jpgSaver;
+    protected $webpSaver;
+    protected $watermark;
     protected $name;
 
-    public function __construct(ImageManager $imageManager)
+    public function __construct(ImageManager $imageManager, RecipeCover $cover, RecipeThumbnail $thumbnail, JPGSaver $jpgSaver, WebpSaver $webpSaver, Watermark $watermark)
     {
         $this->imageManager = $imageManager;
+        $this->cover = $cover;
+        $this->thumbnail = $thumbnail;
+        $this->jpgSaver = $jpgSaver;
+        $this->webpSaver = $webpSaver;
+        $this->watermark = $watermark;
 
         return $this;
     }
 
     public function getName(?string $name): string
     {
-        $this->name = Str::slug($name) . '-' . $this->getHash(6);
+        if (isset($name)) {
+            $this->name = Str::slug($name);
+        } else {
+            $this->name = md5(uniqid(rand(),true));
+        }
+
+        $this->name .=  '-' . $this->getHash(6);
 
         return $this->name;
     }
@@ -45,56 +61,51 @@ class ImageParser implements ImageParserInterface
         return implode('', array_slice($characterList, 0, $length));
     }
 
-    public function makeRecipeThumbnail(): bool
+    public function generate(UploadedFile $file) : bool
     {
         try {
-            $image = $this->generateImageType('thumbnail');
+            $image = $this->imageManager
+                ->make($file);
 
-            $this->saveAs($image, 'jpg', 'thumbnail');
-            $this->saveAs($image, 'webp', 'thumbnail');
-        } catch (\Exception $e) {
-            print $e->getMessage();
-            return false;
-        }
-
-        return true;
-    }
-
-    public function makeRecipeCover(): bool
-    {
-        try {
-            $image = $this->generateImageType('cover');
-
-            $this->saveAs($image, 'jpg', 'cover');
-            $this->saveAs($image, 'webp', 'cover');
-        } catch (\Exception $e) {
-            print $e->getMessage();
-            return false;
-        }
-
-        return true;
-    }
-
-    public function setFile(UploadedFile $file): self
-    {
-        $this->file = $file;
-
-        return $this;
-    }
-
-    public function keepOriginal(): self
-    {
-        try {
-            $this->file->move(
-                $this->getLocalPath(),
-                $this->getFullName()
+            $this->watermark->create(
+                $this->imageManager
+                    ->make(Storage::disk(self::WATERMARK_DISK)->path('') . self::WATERMARK_FILENAME)
             );
-        } catch (\Exception $e) {
-            print '.ERROR: ' . $e->getMessage();
-            exit;
+
+            $fileTypes = ['cover', 'thumbnail'];
+            $fileFormats = ['jpg', 'webp'];
+
+            foreach ($fileTypes as $fileType) {
+                foreach ($fileFormats as $fileFormat) {
+                    $this->saveImage($image, $fileType, $fileFormat);
+                }
+            }
+
+            // keep original
+            $this->jpgSaver->save(
+                $image,
+                $this->getLocalPath() . $this->name
+            );
+        } catch (Throwable $e) {
+            Log::notice($e->getMessage());
+            print $e->getMessage();
+
+            return false;
         }
 
-        return $this;
+        return true;
+    }
+
+    protected function saveImage(Image $image, string $fileType, string $fileFormat)
+    {
+        $saverName = $fileFormat . 'Saver';
+
+        $this->$saverName->save(
+            $this->watermark->generate(
+                $this->$fileType->generate($image)
+            ),
+            $this->getPublicPath() . $fileType . 's/' . $this->name
+        );
     }
 
     protected function getLocalPath(): string
@@ -105,49 +116,5 @@ class ImageParser implements ImageParserInterface
     protected function getPublicPath(): string
     {
         return Storage::disk(self::STORAGE_DISK_PUBLIC)->path('');
-    }
-
-    protected function getFullName(): string
-    {
-        return $this->name . '.' . $this->file->extension();
-    }
-
-    protected function saveAs(Image $image, string $extension, string $imageType)
-    {
-        $image
-            ->save(
-                $this->getPublicPath() . $imageType.'s/' . $this->name . '.' . $extension,
-                100
-            );
-    }
-
-    protected function generateImageType(string $imageType)
-    {
-        $image = $this->imageManager
-            ->make($this->file)
-            ->resize(constant('self::RECIPE_' . mb_strtoupper($imageType) . '_WIDTH'), constant('self::RECIPE_' . mb_strtoupper($imageType) . '_HEIGHT'), function ($constraint) {
-                $constraint->aspectRatio();
-                $constraint->upsize();
-            });
-
-        $image = $this->addWatermark($image);
-
-        return $image;
-    }
-
-    protected function addWatermark(Image $image): Image
-    {
-        $watermark = $this->imageManager
-            ->make(Storage::disk('logo')->path('') . 'black-logo-no-background.png');
-        $watermark->resize(
-            $image->width() * 0.25,
-            null,
-            function ($constraint) {
-                $constraint->aspectRatio();
-            });
-
-        $image->insert($watermark, 'bottom-right', 10, 10);
-
-        return $image;
     }
 }

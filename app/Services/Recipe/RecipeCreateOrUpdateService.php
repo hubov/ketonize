@@ -92,17 +92,8 @@ class RecipeCreateOrUpdateService implements RecipeCreateOrUpdateInterface
     {
         if (isset($this->attributes['recipe']['image'])) {
             $imageName = $this->imageParser
-                ->setFile($this->attributes['recipe']['image'])
                 ->getName($this->attributes['recipe']['name']);
-
-            $this->imageParser
-                ->makeRecipeCover();
-
-            $this->imageParser
-                ->makeRecipeThumbnail();
-
-            $this->imageParser
-                ->keepOriginal();
+            $this->imageParser->generate($this->attributes['recipe']['image']);
 
             $this->attributes['recipe']['image'] = $imageName;
         }
