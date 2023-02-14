@@ -1,6 +1,6 @@
 <div class="card-text macros h-100">
     <div class="row h-100 d-flex justify-content-between">
-        <div class="row mb-3">
+        <div class="row p-0 mb-3">
             <div class="col-4">
                 <canvas id="proteinChart"></canvas>
                 <div class="visually-hidden">
@@ -24,7 +24,7 @@
             </div>
         </div>
         <hr>
-        <div class="row mb-3">
+        <div class="row p-0 mb-3">
             <div class="col">
                 <div class="row">
                     <span class="material-symbols-outlined">surgical</span>
@@ -55,13 +55,13 @@
         </div>
         <hr>
         <div class="row mb-3 px-0">
-            <div class="col px-1">
+            <div class="col ps-0 pe-1">
                 <div class="card">
-                        <div class="row">
+                        <div class="row mb-2">
                             <span class="material-icons material-icons-outlined yellow">local_fire_department</span>
                         </div>
                         <div class="row">
-                            <span class="py-2">
+                            <span class="p-0">
                                 <i class="material-icons material-icons-outlined inline-icon scale" direction="down">remove</i> <strong class="scalable" id="scalable0">{{ $kcal }}</strong> kcal <i class="material-icons material-icons-outlined inline-icon scale" direction="up">add</i>
                             </span>
                             <br />
@@ -69,13 +69,13 @@
                         </div>
                 </div>
             </div>
-            <div class="col">
+            <div class="col ps-1 pe-0">
                 <div class="card">
-                    <div class="row">
+                    <div class="row mb-2">
                         <span class="material-symbols-outlined yellow">scale</span>
                     </div>
                     <div class="row">
-                        <span class="py-2">
+                        <span class="py-0">
                             <i class="material-icons material-icons-outlined inline-icon scale" direction="down">remove</i> <strong class="scalable" id="scalable4">{{ $weightTotal }}</strong> g <i class="material-icons material-icons-outlined inline-icon scale" direction="up">add</i>
                         </span>
                         <br />

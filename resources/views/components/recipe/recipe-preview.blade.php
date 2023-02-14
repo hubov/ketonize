@@ -17,7 +17,7 @@
     </div>
 </div>
 </div>
-<div class="mt-0 mx-3 p-4 p-md-5 bg-white overflow-hidden shadow-sm sm:rounded-lg recipe-paper">
+<div class="mt-0 mx-md-3 p-4 p-md-5 bg-white overflow-hidden shadow-sm sm:rounded-lg recipe-paper">
     <div class="row">
         <div class="col-md-4">
             <div class="row ingredients">

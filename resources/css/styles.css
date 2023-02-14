@@ -97,7 +97,7 @@ a {
     color: #fff;
 }
 
-.recipe-card .card-title:hover {
+.recipe-card a .card-title:hover {
     color: #ffc93c;
 }
 

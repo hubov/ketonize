@@ -7,7 +7,7 @@
 
     <div class="container">
         <div class="row mb-3">
-            <div class="col-8 col-xl-3 col-lg-4 col-md-5 col-sm-8">
+            <div class="col-10 col-xl-3 col-lg-4 col-md-5 col-sm-8">
                 <a href="/dashboard/{{ $date['prev'] }}"><span class="date-navigate material-icons material-icons-outlined">navigate_before</span></a>
                 <input type="date" class="form-control" id="date" name="date" value="{{ $date['current'] }}">
                 <a href="/dashboard/{{ $date['next'] }}"><span class="date-navigate material-icons material-icons-outlined">navigate_next</span></a>
@@ -19,43 +19,47 @@
                 <div class="meal-plan-summary shadow-sm sm:rounded-lg">
                     <div class="p-3 border-b border-gray-200">
                         <div class="row m-0">
-                            <div class="col-md-3 p-3">
-                                <small>your personal diet plan</small><br />
-                                <h3 class="mb-3">{{ $userDiet->diet->name }}</h3>
-                                <div class="row">
+                            <div class="col-md-4 p-0 p-md-3">
+                                <div class="row m-0">
+                                    <div class="col-6">
+                                        <small class="text-truncate">your personal diet plan</small><br />
+                                        <h3 class="mb-3">{{ $userDiet->diet->name }}</h3>
+                                        <div class="row">
                                     <span>
                                         <strong>{{ $userDiet->kcal }}</strong>
                                         <small>kcal</small>
                                     </span>
-                                </div>
-                                <div class="row">
+                                        </div>
+                                        <div class="row">
                                     <span>
                                         <strong>{{ count($userDiet->meals) }}</strong>
                                         <small>meals</small>
                                     </span>
-                                </div>
-                                <div class="row">
-                                    <small class="yellow">per day</small>
-                                </div>
-                            </div>
-                            <div class="col-md-5">
-                                <div class="row pb-4">
-                                    <div class="col-3 text-center">
+                                        </div>
+                                        <div class="row">
+                                            <small class="yellow">per day</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-6 text-center" style="margin-top: -2rem">
                                         <canvas id="kcalChart"></canvas>
                                         <span class="material-icons material-icons-outlined inline-icon yellow">local_fire_department</span><br />
                                         <small>kcal</small>
                                     </div>
-                                    <div class="col-3 text-center">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="row pb-4">
+                                    <div class="col-4 text-center">
                                         <canvas id="proteinChart"></canvas>
                                         <span class="material-symbols-outlined inline-icon yellow">egg_alt</span><br />
                                         <small>protein</small>
                                     </div>
-                                    <div class="col-3 text-center">
+                                    <div class="col-4 text-center">
                                         <canvas id="fatChart"></canvas>
                                         <span class="material-symbols-outlined inline-icon yellow">water_drop</span><br />
                                         <small>fat</small>
                                     </div>
-                                    <div class="col-3 text-center">
+                                    <div class="col-4 text-center">
                                         <canvas id="carbohydrateChart"></canvas>
                                         <span class="material-symbols-outlined inline-icon yellow">breakfast_dining</span><br />
                                         <small>carbs</small>
