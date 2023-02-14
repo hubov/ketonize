@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Intervention\Image\Image;
 use Intervention\Image\ImageManager;
+use Throwable;
 
 class ImageParser implements ImageParserInterface
 {

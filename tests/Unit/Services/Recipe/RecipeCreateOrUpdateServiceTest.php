@@ -6,7 +6,7 @@ use App\Models\Recipe;
 use App\Repositories\Interfaces\IngredientRepositoryInterface;
 use App\Repositories\Interfaces\RecipeRepositoryInterface;
 use App\Repositories\Interfaces\TagRepositoryInterface;
-use App\Services\Interfaces\ImageParserInterface;
+use App\Services\Interfaces\Image\ImageParserInterface;
 use App\Services\Interfaces\Recipe\RelateIngredientsToRecipeInterface;
 use App\Services\Recipe\RecipeCreateOrUpdateService;
 use PHPUnit\Framework\TestCase;

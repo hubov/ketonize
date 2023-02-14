@@ -2,7 +2,7 @@
 
 namespace Tests\Unit\Services;
 
-use App\Services\ImageParser;
+use App\Services\Image\RecipeImageParser;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Intervention\Image\Image;
@@ -23,7 +23,7 @@ class ImageParserTest extends TestCase
     /** @test */
     public function generates_file_name_with_salt(): void
     {
-        $imageParser = new ImageParser($this->imageManager);
+        $imageParser = new RecipeImageParser($this->imageManager);
 
         $expectedValue = 'recipe-1-XXXXXX';
 
@@ -41,7 +41,7 @@ class ImageParserTest extends TestCase
         $rawImage = UploadedFile::fake()->image('recipe-1.jpg', 4032, 3024)->size(1950);
         $tmpFile = $rawImage->getFilename();
 
-        $imageParser = new ImageParser($this->imageManager);
+        $imageParser = new RecipeImageParser($this->imageManager);
         $imageName = $imageParser->getName('Recipe #1');
         $result = $imageParser
             ->setFile($rawImage)
@@ -64,7 +64,7 @@ class ImageParserTest extends TestCase
             ->getMock();
 
         $this->imageManager
-            ->expects($this->once())
+            ->expects($this->at(1))
             ->method('make')
             ->with($rawImage->getPathname())
             ->willReturn($newImage);
@@ -74,7 +74,13 @@ class ImageParserTest extends TestCase
             ->with(2560, null)
             ->willReturnSelf();
 
-        $imageParser = new ImageParser($this->imageManager);
+        $this->imageManager
+            ->expects(($this->at(2)))
+            ->method('make')
+            ->with('black-logo-no-background.png')
+            ->willReturn(UploadedFile::fake());
+
+        $imageParser = new RecipeImageParser($this->imageManager);
         $imageName = $imageParser->getName('Recipe 1');
 
         $newImage
