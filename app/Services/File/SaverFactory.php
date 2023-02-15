@@ -2,9 +2,13 @@
 
 namespace App\Services\File;
 
+use App\Http\Traits\VariableClassName;
+
 class SaverFactory
 {
-    const SAVER_NAMESPACE = 'App\Services\File\\';
+    use VariableClassName;
+
+    const SAVER_NAMESPACE = 'App\Services\File';
     protected $saver;
 
     public function __construct(Saver $saver)
@@ -14,17 +18,15 @@ class SaverFactory
 
     public function get(string $fileFormat): Saver
     {
-        $saverClassName = $this->saverClassName($fileFormat);
+        $saverClassName = $this->getClassName(
+            self::SAVER_NAMESPACE,
+            $fileFormat . 'Saver'
+        );
 
         $this->saver->setSaver(
             new $saverClassName()
         );
 
         return $this->saver;
-    }
-
-    protected function saverClassName($fileFormat) : string
-    {
-        return self::SAVER_NAMESPACE . ucfirst($fileFormat) . 'Saver';
     }
 }
