@@ -19,25 +19,25 @@ class RecipeImageParser implements ImageParserInterface
     public const WATERMARK_DISK = 'logo';
     public const WATERMARK_FILENAME = 'black-logo-no-background.png';
     protected $imageManager;
-    protected $cover;
-    protected $thumbnail;
     protected $watermark;
+    protected $imageFactory;
     protected $saverFactory;
     protected $name;
     protected $image;
-    protected $fileTypes = ['cover', 'thumbnail'];
+    protected $fileTypes = [
+        'cover' => 'RecipeCover',
+        'thumbnail' => 'RecipeThumbnail'
+    ];
     protected $fileFormats = ['jpg', 'webp'];
 
     public function __construct(
         ImageManager $imageManager,
-        RecipeCover $cover,
-        RecipeThumbnail $thumbnail,
+        ImageFactory $imageFactory,
         SaverFactory $saverFactory,
         Watermark $watermark
     ) {
         $this->imageManager = $imageManager;
-        $this->cover = $cover;
-        $this->thumbnail = $thumbnail;
+        $this->imageFactory = $imageFactory;
         $this->saverFactory = $saverFactory;
         $this->watermark = $watermark;
 
@@ -92,7 +92,7 @@ class RecipeImageParser implements ImageParserInterface
 
     protected function generateAndSaveImages()
     {
-        foreach ($this->fileTypes as $fileType) {
+        foreach ($this->fileTypes as $fileType => $imageClass) {
             foreach ($this->fileFormats as $fileFormat) {
                 $this->saveImage($this->image, $fileType, $fileFormat);
             }
@@ -115,7 +115,9 @@ class RecipeImageParser implements ImageParserInterface
             ->get($fileFormat)
             ->save(
                 $this->watermark->generate(
-                    $this->$fileType->generate($image)
+                    $this->imageFactory
+                        ->get($this->fileTypes[$fileType])
+                        ->generate($image)
                 ),
                 $this->getPublicPath() . $fileType . 's/' . $this->name
             );
