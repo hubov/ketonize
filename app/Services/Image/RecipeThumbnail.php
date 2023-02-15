@@ -4,7 +4,7 @@ namespace App\Services\Image;
 
 use Intervention\Image\Image;
 
-class RecipeThumbnail extends ImageFactory
+class RecipeThumbnail extends ImageAbstract
 {
     public const IMAGE_WIDTH = 2560;
     public const IMAGE_HEIGHT = null;

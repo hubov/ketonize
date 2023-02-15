@@ -4,7 +4,7 @@ namespace App\Services\Image;
 
 use Intervention\Image\Image;
 
-class Watermark extends ImageFactory
+class Watermark extends ImageAbstract
 {
     protected $watermark;
 

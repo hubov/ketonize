@@ -4,7 +4,7 @@ namespace App\Services\Image;
 
 use Intervention\Image\Image;
 
-class RecipeCover extends ImageFactory
+class RecipeCover extends ImageAbstract
 {
     public const IMAGE_WIDTH = 860;
     public const IMAGE_HEIGHT = null;

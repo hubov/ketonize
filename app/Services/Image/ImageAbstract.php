@@ -6,7 +6,7 @@ use App\Services\Interfaces\Image\ImageFactoryInterface;
 use Closure;
 use Intervention\Image\Image;
 
-abstract class ImageFactory implements ImageFactoryInterface
+abstract class ImageAbstract implements ImageFactoryInterface
 {
     public function generate(Image $file) : Image
     {
