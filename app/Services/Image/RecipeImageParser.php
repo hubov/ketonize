@@ -2,8 +2,7 @@
 
 namespace App\Services\Image;
 
-use App\Services\File\JPGSaver;
-use App\Services\File\WebpSaver;
+use App\Services\File\SaverFactory;
 use App\Services\Interfaces\Image\ImageParserInterface;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Log;
@@ -22,18 +21,24 @@ class RecipeImageParser implements ImageParserInterface
     protected $imageManager;
     protected $cover;
     protected $thumbnail;
-    protected $jpgSaver;
-    protected $webpSaver;
     protected $watermark;
+    protected $saverFactory;
     protected $name;
+    protected $image;
+    protected $fileTypes = ['cover', 'thumbnail'];
+    protected $fileFormats = ['jpg', 'webp'];
 
-    public function __construct(ImageManager $imageManager, RecipeCover $cover, RecipeThumbnail $thumbnail, JPGSaver $jpgSaver, WebpSaver $webpSaver, Watermark $watermark)
-    {
+    public function __construct(
+        ImageManager $imageManager,
+        RecipeCover $cover,
+        RecipeThumbnail $thumbnail,
+        SaverFactory $saverFactory,
+        Watermark $watermark
+    ) {
         $this->imageManager = $imageManager;
         $this->cover = $cover;
         $this->thumbnail = $thumbnail;
-        $this->jpgSaver = $jpgSaver;
-        $this->webpSaver = $webpSaver;
+        $this->saverFactory = $saverFactory;
         $this->watermark = $watermark;
 
         return $this;
@@ -64,7 +69,7 @@ class RecipeImageParser implements ImageParserInterface
     public function generate(UploadedFile $file) : bool
     {
         try {
-            $image = $this->imageManager
+            $this->image = $this->imageManager
                 ->make($file);
 
             $this->watermark->create(
@@ -72,20 +77,9 @@ class RecipeImageParser implements ImageParserInterface
                     ->make(Storage::disk(self::WATERMARK_DISK)->path('') . self::WATERMARK_FILENAME)
             );
 
-            $fileTypes = ['cover', 'thumbnail'];
-            $fileFormats = ['jpg', 'webp'];
+            $this->generateAndSaveImages();
 
-            foreach ($fileTypes as $fileType) {
-                foreach ($fileFormats as $fileFormat) {
-                    $this->saveImage($image, $fileType, $fileFormat);
-                }
-            }
-
-            // keep original
-            $this->jpgSaver->save(
-                $image,
-                $this->getLocalPath() . $this->name
-            );
+            $this->saveOriginalImage();
         } catch (Throwable $e) {
             Log::notice($e->getMessage());
             print $e->getMessage();
@@ -96,16 +90,35 @@ class RecipeImageParser implements ImageParserInterface
         return true;
     }
 
+    protected function generateAndSaveImages()
+    {
+        foreach ($this->fileTypes as $fileType) {
+            foreach ($this->fileFormats as $fileFormat) {
+                $this->saveImage($this->image, $fileType, $fileFormat);
+            }
+        }
+    }
+
+    protected function saveOriginalImage()
+    {
+        $this->saverFactory
+            ->get('jpg')
+            ->save(
+                $this->image,
+                $this->getLocalPath() . $this->name
+            );
+    }
+
     protected function saveImage(Image $image, string $fileType, string $fileFormat)
     {
-        $saverName = $fileFormat . 'Saver';
-
-        $this->$saverName->save(
-            $this->watermark->generate(
-                $this->$fileType->generate($image)
-            ),
-            $this->getPublicPath() . $fileType . 's/' . $this->name
-        );
+        $this->saverFactory
+            ->get($fileFormat)
+            ->save(
+                $this->watermark->generate(
+                    $this->$fileType->generate($image)
+                ),
+                $this->getPublicPath() . $fileType . 's/' . $this->name
+            );
     }
 
     protected function getLocalPath(): string
