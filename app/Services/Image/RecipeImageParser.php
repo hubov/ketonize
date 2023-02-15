@@ -5,7 +5,6 @@ namespace App\Services\Image;
 use App\Services\File\SaverFactory;
 use App\Services\Interfaces\Image\ImageParserInterface;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Intervention\Image\Image;
@@ -33,13 +32,11 @@ class RecipeImageParser implements ImageParserInterface
     public function __construct(
         ImageManager $imageManager,
         ImageFactory $imageFactory,
-        SaverFactory $saverFactory,
-        Watermark $watermark
+        SaverFactory $saverFactory
     ) {
         $this->imageManager = $imageManager;
         $this->imageFactory = $imageFactory;
         $this->saverFactory = $saverFactory;
-        $this->watermark = $watermark;
 
         return $this;
     }
@@ -72,18 +69,13 @@ class RecipeImageParser implements ImageParserInterface
             $this->image = $this->imageManager
                 ->make($file);
 
-            $this->watermark->create(
-                $this->imageManager
-                    ->make(Storage::disk(self::WATERMARK_DISK)->path('') . self::WATERMARK_FILENAME)
-            );
+            $this->watermark = $this->imageManager
+                ->make(Storage::disk(self::WATERMARK_DISK)->path('') . self::WATERMARK_FILENAME);
 
             $this->generateAndSaveImages();
 
             $this->saveOriginalImage();
         } catch (Throwable $e) {
-            Log::notice($e->getMessage());
-            print $e->getMessage();
-
             return false;
         }
 
@@ -111,14 +103,16 @@ class RecipeImageParser implements ImageParserInterface
 
     protected function saveImage(Image $image, string $fileType, string $fileFormat)
     {
+        $watermarkDecorator = new WatermarkRecipe(
+            $this->imageFactory
+                ->get($this->fileTypes[$fileType]),
+            $this->watermark
+        );
+
         $this->saverFactory
             ->get($fileFormat)
             ->save(
-                $this->watermark->generate(
-                    $this->imageFactory
-                        ->get($this->fileTypes[$fileType])
-                        ->generate($image)
-                ),
+                $watermarkDecorator->generate($image),
                 $this->getPublicPath() . $fileType . 's/' . $this->name
             );
     }
