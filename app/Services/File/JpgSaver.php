@@ -2,7 +2,7 @@
 
 namespace App\Services\File;
 
-class JPGSaver extends ImageSaver
+class JpgSaver extends ImageSaver
 {
     protected $extension = 'jpg';
 
