@@ -41,7 +41,7 @@ class RecipeImageParser implements ImageParserInterface
         return $this;
     }
 
-    public function getName(?string $name): string
+    public function getName(?string $name = NULL): string
     {
         if (isset($name)) {
             $this->name = Str::slug($name);
@@ -66,64 +66,102 @@ class RecipeImageParser implements ImageParserInterface
     public function generate(UploadedFile $file) : bool
     {
         try {
+            $this->createNameIfNotSet();
+
             $this->image = $this->imageManager
                 ->make($file);
+            $this->saveOriginalImage();
 
-            $this->watermark = $this->imageManager
-                ->make(Storage::disk(self::WATERMARK_DISK)->path('') . self::WATERMARK_FILENAME);
+            $this->addWatermark();
 
             $this->generateAndSaveImages();
-
-            $this->saveOriginalImage();
         } catch (Throwable $e) {
+            dump($e->getMessage());
+            echo'<pre>';
+            print_r($e->getTrace());
+            echo'</pre>';
+            dd('');
             return false;
         }
 
         return true;
     }
 
-    protected function generateAndSaveImages()
+    protected function createNameIfNotSet() : void
     {
-        foreach ($this->fileTypes as $fileType => $imageClass) {
-            foreach ($this->fileFormats as $fileFormat) {
-                $this->saveImage($this->image, $fileType, $fileFormat);
-            }
+        if (!isset($this->name)) {
+            $this->getName();
         }
     }
 
-    protected function saveOriginalImage()
+    protected function saveOriginalImage() : void
     {
         $this->saverFactory
             ->get('jpg')
             ->save(
                 $this->image,
-                $this->getLocalPath() . $this->name
+                $this->getLocalImageFilePath()
             );
     }
 
-    protected function saveImage(Image $image, string $fileType, string $fileFormat)
+    public function getLocalImageFilePath() : string
     {
-        $watermarkDecorator = new WatermarkRecipe(
-            $this->imageFactory
-                ->get($this->fileTypes[$fileType]),
-            $this->watermark
-        );
-
-        $this->saverFactory
-            ->get($fileFormat)
-            ->save(
-                $watermarkDecorator->generate($image),
-                $this->getPublicPath() . $fileType . 's/' . $this->name
-            );
+        return $this->getLocalPath() . $this->name;
     }
 
-    protected function getLocalPath(): string
+    public function getLocalPath(): string
     {
         return Storage::disk(self::STORAGE_DISK_LOCAL)->path('');
     }
 
-    protected function getPublicPath(): string
+    protected function addWatermark() : void
+    {
+        $this->watermark = $this->imageManager
+            ->make($this->getWatermarkFilePath());
+
+        $watermarkDecorator = new WatermarkRecipe(
+            $this->imageFactory
+                ->get('RecipeCover'),
+            $this->watermark
+        );
+
+        $this->image = $watermarkDecorator->generate($this->image);
+    }
+
+    protected function generateAndSaveImages() : void
+    {
+        foreach ($this->fileTypes as $fileType => $imageClass) {
+            $image = $this->imageFactory
+                ->get($imageClass)
+                ->generate($this->image);
+            foreach ($this->fileFormats as $fileFormat) {
+                $this->saveImage($image, $fileType, $fileFormat);
+            }
+        }
+    }
+
+    protected function saveImage(Image $image, string $fileType, string $fileFormat) : void
+    {
+        $this->saverFactory
+            ->get($fileFormat)
+            ->save(
+                $image,
+                $this->getPublicImageFilePath($fileType)
+            );
+    }
+
+    public function getPublicImageFilePath(string $fileType) : string
+    {
+        return $this->getPublicPath() . $fileType . 's/' . $this->name;
+    }
+
+    public function getPublicPath(): string
     {
         return Storage::disk(self::STORAGE_DISK_PUBLIC)->path('');
+    }
+
+    public function getWatermarkFilePath() : string
+    {
+        return Storage::disk(self::WATERMARK_DISK)->path('') . self::WATERMARK_FILENAME;
     }
 }
