@@ -79,7 +79,7 @@
                                             <span class="material-symbols-outlined">surgical</span>
                                         </div>
                                         <div class="row">
-                                            <span class="py-2"><strong>{{ $dietPlan->preparationTime }}</strong> min</span><br />
+                                            <span class="py-2"><strong>{{ $dietPlan->preparationTime ?? 0 }}</strong> min</span><br />
                                             <small>preparation</small>
                                         </div>
                                     </div>
@@ -88,7 +88,7 @@
                                             <span class="material-symbols-outlined">oven_gen</span>
                                         </div>
                                         <div class="row">
-                                            <span class="py-2"><strong>{{ $dietPlan->cookingTime }}</strong> min</span><br />
+                                            <span class="py-2"><strong>{{ $dietPlan->cookingTime ?? 0 }}</strong> min</span><br />
                                             <small>cooking</small>
                                         </div>
                                     </div>
@@ -97,7 +97,7 @@
                                             <span class="material-icons material-icons-outlined">schedule</span>
                                         </div>
                                         <div class="row">
-                                            <span class="py-2"><strong>{{ $dietPlan->totalTime }}</strong> min</span><br />
+                                            <span class="py-2"><strong>{{ $dietPlan->totalTime ?? 0 }}</strong> min</span><br />
                                             <small>total</small>
                                         </div>
                                     </div>
@@ -311,7 +311,7 @@ https://cdn.jsdelivr.net/npm/chart.js@4.2.0/dist/chart.umd.min.js
         type: 'doughnut',
         data: {
             datasets: [{
-                data: [{{ $dietPlan->kcal }}, {{ $userDiet->kcal }}],
+                data: [{{ $dietPlan->kcal ?? 0 }}, {{ $userDiet->kcal ?? 0 }}],
                 backgroundColor: ['#ffc93c', '#2d6170']
             }]
         },
@@ -325,7 +325,7 @@ https://cdn.jsdelivr.net/npm/chart.js@4.2.0/dist/chart.umd.min.js
         type: 'doughnut',
         data: {
             datasets: [{
-                data: [{{ $dietPlan->protein }}, {{ $userDiet->protein }}],
+                data: [{{ $dietPlan->protein ?? 0 }}, {{ $userDiet->protein ?? 0 }}],
                 backgroundColor: ['#ffc93c', '#2d6170']
             }]
         },
@@ -339,7 +339,7 @@ https://cdn.jsdelivr.net/npm/chart.js@4.2.0/dist/chart.umd.min.js
         type: 'doughnut',
         data: {
             datasets: [{
-                data: [{{ $dietPlan->fat }}, {{ $userDiet->fat }}],
+                data: [{{ $dietPlan->fat ?? 0 }}, {{ $userDiet->fat ?? 0 }}],
                 backgroundColor: ['#ffc93c', '#2d6170']
             }]
         },
@@ -353,7 +353,7 @@ https://cdn.jsdelivr.net/npm/chart.js@4.2.0/dist/chart.umd.min.js
         type: 'doughnut',
         data: {
             datasets: [{
-                data: [{{ $dietPlan->carbohydrate }}, {{ $userDiet->carbohydrate }}],
+                data: [{{ $dietPlan->carbohydrate ?? 0 }}, {{ $userDiet->carbohydrate ?? 0 }}],
                 backgroundColor: ['#ffc93c', '#2d6170']
             }]
         },
