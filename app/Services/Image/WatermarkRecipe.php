@@ -7,18 +7,19 @@ use Intervention\Image\Image;
 
 class WatermarkRecipe extends WatermarkAdder
 {
+    protected $imageFactory;
     protected $watermark;
 
     public function __construct(ImageFactoryInterface $imageFactory, Image $watermark)
     {
-        parent::__construct($imageFactory);
+        $this->imageFactory = $imageFactory;
 
         $this->watermark = $watermark;
     }
 
     public function generate(Image $file): Image
     {
-        $file = parent::generate($file);
+        $file = $this->imageFactory->generate($file);
 
         $watermark = $this->watermark
             ->resize(
