@@ -5,14 +5,14 @@ namespace Tests\Unit\Services\Image;
 use App\Services\File\Saver;
 use App\Services\File\SaverFactory;
 use App\Services\Image\ImageFactory;
-use App\Services\Image\RecipeImageParser;
+use App\Services\Image\RecipeImageProcessor;
 use App\Services\Interfaces\Image\ImageFactoryInterface;
 use Illuminate\Http\UploadedFile;
 use Intervention\Image\Image;
 use Intervention\Image\ImageManager;
 use Tests\TestCase;
 
-class RecipeImageParserTest extends TestCase
+class RecipeImageProcessorTest extends TestCase
 {
     public $imageManager;
     public $imageFactory;
@@ -27,7 +27,7 @@ class RecipeImageParserTest extends TestCase
         $this->imageFactory = $this->createMock(ImageFactory::class);
         $this->saverFactory = $this->createMock(SaverFactory::class);
 
-        $this->imageParser = new RecipeImageParser(
+        $this->imageParser = new RecipeImageProcessor(
             $this->imageManager,
             $this->imageFactory,
             $this->saverFactory

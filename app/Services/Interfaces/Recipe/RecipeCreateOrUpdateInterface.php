@@ -6,7 +6,7 @@ use App\Models\Recipe;
 use App\Repositories\Interfaces\IngredientRepositoryInterface;
 use App\Repositories\Interfaces\RecipeRepositoryInterface;
 use App\Repositories\Interfaces\TagRepositoryInterface;
-use App\Services\Interfaces\Image\ImageParserInterface;
+use App\Services\Interfaces\Image\ImageProcessorInterface;
 
 interface RecipeCreateOrUpdateInterface
 {
@@ -15,7 +15,7 @@ interface RecipeCreateOrUpdateInterface
         IngredientRepositoryInterface $ingredientRepository,
         TagRepositoryInterface $tagRepository,
         RelateIngredientsToRecipeInterface $relateIngredientsToRecipe,
-        ImageParserInterface $imageParser
+        ImageProcessorInterface $imageParser
     );
     public function perform(array $attributes, string $slug) : Recipe;
 }

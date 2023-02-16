@@ -7,7 +7,7 @@ use App\Services\Image\ImageFactory;
 use Illuminate\Http\UploadedFile;
 use Intervention\Image\ImageManager;
 
-interface ImageParserInterface
+interface ImageProcessorInterface
 {
     public function __construct(
         ImageManager $imageManager,

@@ -6,7 +6,7 @@ use App\Models\Recipe;
 use App\Repositories\Interfaces\IngredientRepositoryInterface;
 use App\Repositories\Interfaces\RecipeRepositoryInterface;
 use App\Repositories\Interfaces\TagRepositoryInterface;
-use App\Services\Interfaces\Image\ImageParserInterface;
+use App\Services\Interfaces\Image\ImageProcessorInterface;
 use App\Services\Interfaces\Recipe\RecipeCreateOrUpdateInterface;
 use App\Services\Interfaces\Recipe\RelateIngredientsToRecipeInterface;
 
@@ -25,7 +25,7 @@ class RecipeCreateOrUpdateService implements RecipeCreateOrUpdateInterface
         IngredientRepositoryInterface $ingredientRepository,
         TagRepositoryInterface $tagRepository,
         RelateIngredientsToRecipeInterface $relateIngredientsToRecipe,
-        ImageParserInterface $imageParser
+        ImageProcessorInterface $imageParser
     ) {
         $this->recipeRepository = $recipeRepository;
         $this->ingredientRepository = $ingredientRepository;

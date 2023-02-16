@@ -3,7 +3,7 @@
 namespace App\Services\Image;
 
 use App\Services\File\SaverFactory;
-use App\Services\Interfaces\Image\ImageParserInterface;
+use App\Services\Interfaces\Image\ImageProcessorInterface;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -11,7 +11,7 @@ use Intervention\Image\Image;
 use Intervention\Image\ImageManager;
 use Throwable;
 
-class RecipeImageParser implements ImageParserInterface
+class RecipeImageProcessor implements ImageProcessorInterface
 {
     public const STORAGE_DISK_LOCAL = 'local_recipe_images';
     public const STORAGE_DISK_PUBLIC = 'public_recipe_images';
