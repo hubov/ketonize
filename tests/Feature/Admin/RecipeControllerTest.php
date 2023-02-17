@@ -21,20 +21,34 @@ class RecipeControllerTest extends TestCase
 {
     use RefreshDatabase;
 
+    protected $recipeImageProcessor;
+    protected $publicCovers;
+    protected $publicThumbnails;
+    protected $localOriginals;
+    protected $covers;
+    protected $thumbnails;
+    protected $originals;
+    protected $fileFormats;
+
     protected function setUp(): void
     {
         parent::setUp();
 
-        $recipeImageProcessor = new RecipeImageProcessor(
+        $this->recipeImageProcessor = new RecipeImageProcessor(
             new ImageManager(),
             new ImageFactory(),
             new SaverFactory()
         );
-        Storage::fake($recipeImageProcessor::STORAGE_DISK_PUBLIC . '/covers');
-        Storage::fake($recipeImageProcessor::STORAGE_DISK_PUBLIC . '/thumbnails');
-        Storage::fake($recipeImageProcessor::STORAGE_DISK_LOCAL);
+        $this->publicCovers = $this->recipeImageProcessor::STORAGE_DISK_COVERS;
+        $this->publicThumbnails = $this->recipeImageProcessor::STORAGE_DISK_THUMBNAILS;
+        $this->localOriginals = $this->recipeImageProcessor::STORAGE_DISK_LOCAL;
 
         $this->user = User::factory()->has(Profile::factory())->has(Role::factory()->state(['name' => 'admin']))->create();
+
+        $this->fileFormats = [
+            'jpg',
+            'webp'
+        ];
     }
 
     /** @test */
@@ -53,7 +67,9 @@ class RecipeControllerTest extends TestCase
      */
     public function adding_new_recipe_by_admin($providedData)
     {
-        [$requestData, $expectedResult] = $providedData();
+        $this->getDisks();
+
+        [$expectedResult, $requestData] = $providedData();
 
         $request = $this->actingAs($this->user)->post('/recipes', $requestData);
 
@@ -62,7 +78,21 @@ class RecipeControllerTest extends TestCase
         $this->followRedirects($request)
             ->assertSee($expectedResult['name'])
             ->assertSee($expectedResult['description']);
-//            ->assertSee($expectedResult['ingredient']);
+        $this->assertEquals($expectedResult['originals'], count($this->originals->files()));
+        $this->assertEquals($expectedResult['covers'], count($this->covers->files()));
+        $this->assertEquals($expectedResult['thumbnails'], count($this->thumbnails->files()));
+        if (isset($expectedResult['img_name'])) {
+            $this->assertEquals($expectedResult['img_name'], substr($this->originals->files()[0], 0, 9));
+            $this->assertEquals('.jpg', substr($this->originals->files()[0], -4));
+
+            $this->assertEquals($expectedResult['img_name'], substr($this->covers->files()[0], 0, 9));
+            $this->assertEquals($expectedResult['img_name'], substr($this->thumbnails->files()[0], 0, 9));
+            foreach ($this->recipeImageProcessor->getFileFormats() as $order => $format) {
+                $offset = strlen($format) + 1;
+                $this->assertEquals('.' . $format, substr($this->covers->files()[$order], -$offset));
+                $this->assertEquals('.' . $format, substr($this->thumbnails->files()[$order], -$offset));
+            }
+        }
     }
 
     /**
@@ -71,7 +101,9 @@ class RecipeControllerTest extends TestCase
      */
     public function updating_recipe_by_admin($providedData)
     {
-        [$requestData, $expectedResult] = $providedData();
+        $this->getDisks();
+
+        [$expectedResult, $requestData] = $providedData();
 
         $recipe = Recipe::factory()->hasAttached(Ingredient::factory(), ['amount' => '100'])->has(Tag::factory())->create();
 
@@ -82,6 +114,28 @@ class RecipeControllerTest extends TestCase
         $this->followRedirects($request)
             ->assertSee($requestData['recipe']['name'])
             ->assertSee($requestData['recipe']['description']);
+        $this->assertEquals($expectedResult['originals'], count($this->originals->files()));
+        $this->assertEquals($expectedResult['covers'], count($this->covers->files()));
+        $this->assertEquals($expectedResult['thumbnails'], count($this->thumbnails->files()));
+        if (isset($expectedResult['img_name'])) {
+            $this->assertEquals($expectedResult['img_name'], substr($this->originals->files()[0], 0, 9));
+            $this->assertEquals('.jpg', substr($this->originals->files()[0], -4));
+
+            $this->assertEquals($expectedResult['img_name'], substr($this->covers->files()[0], 0, 9));
+            $this->assertEquals($expectedResult['img_name'], substr($this->thumbnails->files()[0], 0, 9));
+            foreach ($this->recipeImageProcessor->getFileFormats() as $order => $format) {
+                $offset = strlen($format) + 1;
+                $this->assertEquals('.' . $format, substr($this->covers->files()[$order], -$offset));
+                $this->assertEquals('.' . $format, substr($this->thumbnails->files()[$order], -$offset));
+            }
+        }
+    }
+
+    protected function getDisks()
+    {
+        $this->covers = Storage::fake($this->publicCovers);
+        $this->thumbnails = Storage::fake($this->publicThumbnails);
+        $this->originals = Storage::fake($this->localOriginals);
     }
 
     protected function getRequestData()
@@ -124,13 +178,16 @@ class RecipeControllerTest extends TestCase
                         $requestData = $this->getRequestData();
 
                         return [
-                            $requestData,
                             [
                                 'uri' => '/recipe/' . $requestData['recipe']['slug'],
                                 'name' => $requestData['recipe']['name'],
                                 'description' => $requestData['recipe']['description'],
-                                'ingredient' => $requestData['ingredientsNames'][0]['name']
-                            ]
+                                'ingredient' => $requestData['ingredientsNames'][0]['name'],
+                                'originals' => 0,
+                                'covers' => 0,
+                                'thumbnails' => 0
+                            ],
+                            $requestData
                         ];
                     }
                 ],
@@ -140,13 +197,17 @@ class RecipeControllerTest extends TestCase
                         $image = UploadedFile::fake()->image('recipe-img.jpg', 2560, 1)->size(1950);
 
                         return [
-                            array_merge_recursive($requestData, ['recipe' => ['image' => $image]]),
                             [
                                 'uri' => 'recipe/recipe-1',
                                 'name' => 'Recipe #1',
                                 'description' => 'Some recipe description.',
-                                'ingredient' => $requestData['ingredientsNames'][0]['name']
-                            ]
+                                'ingredient' => $requestData['ingredientsNames'][0]['name'],
+                                'originals' => 1,
+                                'covers' => 2,
+                                'thumbnails' => 2,
+                                'img_name' => $requestData['recipe']['slug'] . '-'
+                            ],
+                            array_merge_recursive($requestData, ['recipe' => ['image' => $image]])
                         ];
                     }
                 ]

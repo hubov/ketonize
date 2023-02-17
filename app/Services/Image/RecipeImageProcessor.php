@@ -15,7 +15,8 @@ use Throwable;
 class RecipeImageProcessor implements ImageProcessorInterface
 {
     public const STORAGE_DISK_LOCAL = 'local_recipe_images';
-    public const STORAGE_DISK_PUBLIC = 'public_recipe_images';
+    public const STORAGE_DISK_COVERS = 'public_recipe_covers';
+    public const STORAGE_DISK_THUMBNAILS = 'public_recipe_thumbnails';
     public const WATERMARK_DISK = 'logo';
     public const WATERMARK_FILENAME = 'black-logo-no-background.png';
     protected $imageManager;
@@ -153,16 +154,23 @@ class RecipeImageProcessor implements ImageProcessorInterface
 
     public function getPublicImageFilePath(string $fileType) : string
     {
-        return $this->getPublicPath() . $fileType . 's/' . $this->name;
+        return $this->getPublicPath($fileType) . $this->name;
     }
 
-    public function getPublicPath(): string
+    public function getPublicPath(string $fileType): string
     {
-        return Storage::disk(self::STORAGE_DISK_PUBLIC)->path('');
+        return Storage::disk(
+            constant('self::STORAGE_DISK_' . mb_strtoupper($fileType) . 'S')
+        )->path('');
     }
 
     public function getWatermarkFilePath() : string
     {
         return Storage::disk(self::WATERMARK_DISK)->path('') . self::WATERMARK_FILENAME;
+    }
+
+    public function getFileFormats()
+    {
+        return $this->fileFormats;
     }
 }

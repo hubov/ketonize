@@ -62,10 +62,18 @@ return [
             'throw' => false,
         ],
 
-        'public_recipe_images' => [
+        'public_recipe_covers' => [
             'driver' => 'local',
-            'root' => storage_path('app/public/images/recipe'),
-            'url' => env('APP_URL').'/storage/images/recipe',
+            'root' => storage_path('app/public/images/recipe/covers'),
+            'url' => env('APP_URL').'/storage/images/recipe/covers',
+            'visibility' => 'public',
+            'throw' => false,
+        ],
+
+        'public_recipe_thumbnails' => [
+            'driver' => 'local',
+            'root' => storage_path('app/public/images/recipe/thumbnails'),
+            'url' => env('APP_URL').'/storage/images/recipe/thumbnails',
             'visibility' => 'public',
             'throw' => false,
         ],
