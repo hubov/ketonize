@@ -3,9 +3,9 @@
 namespace Tests\Unit\Services\Image;
 
 use App\Services\File\Factories\SaverFactory;
-use App\Services\File\Saver;
 use App\Services\Image\Factories\ImageFactory;
 use App\Services\Image\RecipeImageProcessor;
+use App\Services\Interfaces\File\FileSaver;
 use App\Services\Interfaces\Image\ImageFactoryInterface;
 use Illuminate\Http\UploadedFile;
 use Intervention\Image\Image;
@@ -90,7 +90,7 @@ class RecipeImageProcessorTest extends TestCase
             ->with($image)
             ->willReturn($image);
 
-        $saver = $this->createMock(Saver::class);
+        $saver = $this->createMock(FileSaver::class);
         $this->saverFactory
             ->expects($this->exactly(5))
             ->method('get')
