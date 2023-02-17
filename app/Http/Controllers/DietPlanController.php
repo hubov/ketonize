@@ -6,6 +6,7 @@ use App\Exceptions\UIThrowableException;
 use App\Jobs\GenerateDietPlan;
 use App\Models\Unit;
 use App\Repositories\Interfaces\UserRepositoryInterface;
+use App\Repositories\MealEnergyDivisionRepository;
 use App\Services\Interfaces\DietPlanInterface;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -16,12 +17,14 @@ class DietPlanController extends Controller
     protected $dietPlanService;
     protected $userRepository;
     protected $planJob;
+    protected $mealEnergyDivisionRepository;
 
-    public function __construct(DietPlanInterface $dietPlanService, UserRepositoryInterface $userRepository, GenerateDietPlan $planJob)
+    public function __construct(DietPlanInterface $dietPlanService, UserRepositoryInterface $userRepository, GenerateDietPlan $planJob, MealEnergyDivisionRepository $mealEnergyDivisionRepository)
     {
         $this->dietPlanService = $dietPlanService;
         $this->userRepository = $userRepository;
         $this->planJob = $planJob;
+        $this->mealEnergyDivisionRepository = $mealEnergyDivisionRepository;
     }
 
     public function index(Request $request, $date = NULL)
@@ -42,6 +45,7 @@ class DietPlanController extends Controller
             'dietPlan' => $dietPlan,
             'userDiet' => Auth::user()->userDiet,
             'mealsTags' => (isset($dietMealDivision)) ? $dietMealDivision->mealsTags() : [],
+            'mealsNames' => $this->mealEnergyDivisionRepository->getByDietMealDivision($dietMealDivision->id),
             'errors' => (isset($errors)) ? $errors : []
         ]);
     }

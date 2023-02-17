@@ -2,15 +2,19 @@
 
 namespace App\Models;
 
+use App\Http\Traits\WebpSupport;
 use GeneaLabs\LaravelPivotEvents\Traits\PivotEventTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Recipe extends Model
 {
-    use HasFactory, PivotEventTrait;
+    use HasFactory, PivotEventTrait, WebpSupport;
 
     const IMAGE_DEFAULT = 'default';
+    const IMAGES_PATH = 'storage/images/recipe/';
+    const THUMBNAIL_PATH = 'thumbnails/';
+    const COVER_PATH = 'covers/';
 
     protected $fillable = ['name', 'image', 'protein', 'fat', 'carbohydrate', 'kcal', 'description', 'preparation_time', 'cooking_time'];
     protected $attributes = [
@@ -120,5 +124,31 @@ class Recipe extends Model
         } else {
             return false;
         }
+    }
+
+    protected function getThumbnailAttribute(): string
+    {
+        return $this->getPath('thumbnail') . $this->image . $this->getImageExtension();
+    }
+
+    protected function getCoverAttribute(): string
+    {
+        return $this->getPath('cover') . $this->image . $this->getImageExtension();
+    }
+
+    protected function getImageExtension(): string
+    {
+        if ($this->image == 'default') {
+            return '.png';
+        } else if ($this->supportWebp()) {
+            return '.webp';
+        }
+
+        return '.jpg';
+    }
+
+    protected function getPath(string $imageType): string
+    {
+        return self::IMAGES_PATH . constant('self::' . mb_strtoupper($imageType) . '_PATH');
     }
 }

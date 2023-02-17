@@ -24,14 +24,15 @@ class StoreRecipeRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required|unique:recipes,name',
-            'ids' => 'required|array|min:1',
-            'ids.*' => 'required|numeric|min:1',
-            'quantity' => 'required|array|min:1',
-            'quantity.*' => 'required|numeric|min:1',
-            'description' => 'required|string|min:1',
-            'preparation_time' => 'required|numeric|min:0',
-            'cooking_time' => 'required|numeric|min:0',
+            'recipe.name' => 'required|unique:recipes,name',
+            'recipe.image' => 'mimetypes:image/jpeg|max:10240',
+            'ingredients' => 'required|array|min:1',
+            'ingredients.*' => 'required|array|min:2|max:2',
+            'ingredients.*.id' => 'required|numeric|min:1',
+            'ingredients.*.quantity' => 'required|numeric|min:1',
+            'recipe.description' => 'required|string|min:1',
+            'recipe.preparation_time' => 'required|numeric|min:0',
+            'recipe.cooking_time' => 'required|numeric|min:0',
             'tags' => 'required|array|min:1',
             'tags.*' => 'required|numeric|min:1'
         ];
