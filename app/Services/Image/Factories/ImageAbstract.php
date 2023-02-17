@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\Image;
+namespace App\Services\Image\Factories;
 
 use App\Services\Interfaces\Image\ImageFactoryInterface;
 use Closure;

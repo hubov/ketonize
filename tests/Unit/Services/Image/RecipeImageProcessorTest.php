@@ -4,7 +4,7 @@ namespace Tests\Unit\Services\Image;
 
 use App\Services\File\Saver;
 use App\Services\File\SaverFactory;
-use App\Services\Image\ImageFactory;
+use App\Services\Image\Factories\ImageFactory;
 use App\Services\Image\RecipeImageProcessor;
 use App\Services\Interfaces\Image\ImageFactoryInterface;
 use Illuminate\Http\UploadedFile;

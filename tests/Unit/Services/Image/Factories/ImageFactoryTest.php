@@ -1,10 +1,10 @@
 <?php
 
-namespace Tests\Unit\Services\Image;
+namespace Tests\Unit\Services\Image\Factories;
 
-use App\Services\Image\ImageFactory;
-use App\Services\Image\RecipeCover;
-use App\Services\Image\RecipeThumbnail;
+use App\Services\Image\Factories\ImageFactory;
+use App\Services\Image\Factories\RecipeCover;
+use App\Services\Image\Factories\RecipeThumbnail;
 use PHPUnit\Framework\TestCase;
 
 class ImageFactoryTest extends TestCase

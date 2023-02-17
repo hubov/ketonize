@@ -3,6 +3,7 @@
 namespace App\Services\Image;
 
 use App\Services\File\SaverFactory;
+use App\Services\Image\Factories\ImageFactory;
 use App\Services\Interfaces\Image\ImageProcessorInterface;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;

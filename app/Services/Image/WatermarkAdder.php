@@ -2,6 +2,7 @@
 
 namespace App\Services\Image;
 
+use App\Services\Image\Factories\ImageAbstract;
 use App\Services\Interfaces\Image\ImageFactoryInterface;
 use Intervention\Image\Image;
 

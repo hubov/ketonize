@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Services\Image;
+namespace App\Services\Image\Factories;
 
 use Intervention\Image\Image;
 
-class RecipeThumbnail extends ImageAbstract
+class RecipeCover extends ImageAbstract
 {
     public const IMAGE_WIDTH = 2560;
     public const IMAGE_HEIGHT = null;
