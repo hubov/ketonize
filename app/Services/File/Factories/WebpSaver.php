@@ -1,17 +1,16 @@
 <?php
 
-namespace App\Services\File;
+namespace App\Services\File\Factories;
 
 class WebpSaver extends ImageSaver
 {
     protected $extension = 'webp';
 
-    public function save(mixed $file, string $path, $extension = null) : bool
+    public function save(mixed $file, string $path) : bool
     {
         parent::save(
             $file,
-            $path,
-            $this->extension
+            $path
         );
 
         return true;

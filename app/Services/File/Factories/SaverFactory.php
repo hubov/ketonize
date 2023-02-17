@@ -1,14 +1,15 @@
 <?php
 
-namespace App\Services\File;
+namespace App\Services\File\Factories;
 
 use App\Http\Traits\VariableClassName;
+use App\Services\File\Saver;
 
 class SaverFactory
 {
     use VariableClassName;
 
-    const SAVER_NAMESPACE = 'App\Services\File';
+    const SAVER_NAMESPACE = 'App\Services\File\Factories';
     protected $saver;
 
     public function __construct(Saver $saver)

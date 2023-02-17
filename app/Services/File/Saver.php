@@ -2,7 +2,7 @@
 
 namespace App\Services\File;
 
-use App\Services\Interfaces\FileSaver;
+use App\Services\Interfaces\File\FileSaver;
 
 class Saver
 {
