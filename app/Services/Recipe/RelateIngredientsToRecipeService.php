@@ -2,30 +2,27 @@
 
 namespace App\Services\Recipe;
 
+use App\Models\Recipe;
 use App\Repositories\Interfaces\IngredientRepositoryInterface;
-use App\Repositories\Interfaces\RecipeRepositoryInterface;
 use App\Services\Interfaces\Recipe\RelateIngredientsToRecipeInterface;
 
 class RelateIngredientsToRecipeService implements RelateIngredientsToRecipeInterface
 {
-    protected $recipeRepository;
     protected $ingredientRepository;
     protected $recipe;
     protected $ingredients = [];
 
     public function __construct(
-        RecipeRepositoryInterface $recipeRepository,
         IngredientRepositoryInterface $ingredientRepository
     ) {
-        $this->recipeRepository = $recipeRepository;
         $this->ingredientRepository = $ingredientRepository;
 
         return $this;
     }
 
-    public function setRecipe(int $recipeId): self
+    public function setRecipe(Recipe $recipe): self
     {
-        $this->recipe = $this->recipeRepository->get($recipeId);
+        $this->recipe = $recipe;
 
         return $this;
     }

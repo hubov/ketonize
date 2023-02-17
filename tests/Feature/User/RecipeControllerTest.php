@@ -159,7 +159,7 @@ class RecipeControllerTest extends TestCase
         $response->assertStatus(200);
         $response->assertJsonFragment([
             'name' => $recipe->name,
-            'image' => $recipe->image,
+            'image' => $recipe->cover,
             'description' => $recipe->description
         ]);
         $response->assertJsonFragment([

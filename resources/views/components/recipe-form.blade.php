@@ -1,128 +1,90 @@
-<form method="POST" class="col-4">
-    @csrf
-    @method($method)
-    <div class="mb-3">
-        <label for="name" class="form-label">Name</label>
-        <input type="text" name="name" id="recipe-name" class="form-control" value="{{ $name ?? '' }}">
-        @if ($errors->has('name'))
-            <div class="invalid-feedback">
-                {{ $errors->first('name') }}
-            </div>
-        @endif
-    </div>
-    <div class="mb-3">
-        <label for="image" class="form-label">Image</label>
-        <input type="text" name="image" id="recipe-image" class="form-control" value="{{ $image ?? '' }}">
-        @if ($errors->has('image'))
-            <div class="invalid-feedback">
-                {{ $errors->first('image') }}
-            </div>
-        @endif
-    </div>
-    <div class="mb-3">
-        <label for="protein" class="form-label">Proteins</label>
-        <input type="text" name="protein" id="recipe-protein" class="form-control" readonly="readonly" value="{{ $protein ?? '0' }}">
-        @if ($errors->has('protein'))
-            <div class="invalid-feedback">
-                {{ $errors->first('protein') }}
-            </div>
-        @endif
-    </div>
-    <div class="mb-3">
-        <label for="fat" class="form-label">Fats</label>
-        <input type="text" name="fat" id="recipe-fat" class="form-control" readonly="readonly" value="{{ $fat ?? '0' }}">
-        @if ($errors->has('fat'))
-            <div class="invalid-feedback">
-                {{ $errors->first('fat') }}
-            </div>
-        @endif
-    </div>
-    <div class="mb-3">
-        <label for="carbohydrate" class="form-label">Carbohydrates</label>
-        <input type="text" name="carbohydrate" id="recipe-carbohydrate" class="form-control" readonly="readonly" value="{{ $carbohydrate ?? '0' }}">
-        @if ($errors->has('carbohydrate'))
-            <div class="invalid-feedback">
-                {{ $errors->first('carbohydrate') }}
-            </div>
-        @endif
-    </div>
-    <div class="mb-3">
-        <label for="kcal">Kcal</label>
-        <input type="text" name="kcal" id="recipe-kcal" class="form-control" readonly="readonly" value="{{ $kcal ?? '0' }}">
-        @if ($errors->has('kcal'))
-            <div class="invalid-feedback">
-                {{ $errors->first('kcal') }}
-            </div>
-        @endif
-    </div>
-    <div class="mb-3">Ingredients: </div>
-    @if ($errors->has('ingredients'))
-        <div class="invalid-feedback">
-            {{ $errors->first('ingredients') }}
-        </div>
-    @endif
-    <div id="rows"></div>
-    <div><input type="button" class="btn btn-secondary" value="Add ingredient" name="addIngredient" id="addIngredient"></div>
-    <div class="mb-3">
-        <label for="description" class="form-label">Description</label>
-        <textarea name="description" class="form-control" id="description">{{ $description ?? '' }}</textarea>
-        @if ($errors->has('description'))
-            <div class="error">
-                {{ $errors->first('description') }}
-            </div>
-        @endif
-    </div>
-    <div class="mb-3">
-        <label for="tags">Tags</label>
-        <select name="tags[]" multiple class="form-select" aria-label="multiple select">
-            @foreach ($tagsList as $tag)
-                <option value="{{ $tag->id }}"
-                    @if (isset($tags[$tag->id]))
-                        selected
-                    @endif
-                >{{ $tag->name }}</option>
-            @endforeach
-        </select>
-        @if ($errors->has('tags'))
-            <div class="invalid-feedback">
-                {{ $errors->first('tags') }}
-            </div>
-        @endif
-    </div>
-    <div class="my-3">
-        <label for="preparation_time">Preparation time</label>
-        <input type="text" name="preparation_time" id="recipe-preparation_time" class="form-control" value="{{ $preparationTime ?? '' }}">
-        @if ($errors->has('preparation_time'))
-            <div class="invalid-feedback">
-                {{ $errors->first('preparation_time') }}
-            </div>
-        @endif
-    </div>
-    <div class="mb-3">
-        <label for="cooking_time">Cooking time</label>
-        <input type="text" name="cooking_time" id="recipe-cooking_time" class="form-control" value="{{ $cookingTime ?? '' }}">
-        @if ($errors->has('cooking_time'))
-            <div class="invalid-feedback">
-                {{ $errors->first('cooking_time') }}
-            </div>
-        @endif
-    </div>
-    <div class="mt-3"><input type="submit" name="save" class="btn btn-primary" value="Save" id="save"></div>
-</form>
 
-<div id="ingredientModal" class="modal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">New ingredient</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+<div class="card col-12 col-sm-12 col-md-8 col-lg-6">
+    <div class="card-body">
+        @if ($errors->any())
+            @foreach ($errors->all() as $error)
+                <div class="alert alert-danger d-flex align-items-center" role="alert">
+                    <span class="material-icons inline-icon bi flex-shrink-0 me-2">warning</span>
+                    <div>
+                        {{ $error }}
+                    </div>
+                </div>
+            @endforeach
+        @endif
+
+        <form method="POST" enctype="multipart/form-data">
+            @csrf
+            @method($method)
+            <div class="mb-3">
+                <label for="name" class="form-label">Name</label>
+                <input type="text" name="recipe[name]" id="recipe-name" class="form-control" value="{{ $name ?? '' }}">
             </div>
-            <div class="modal-body">
-                <p><x-ingredient-form :categories="$categories" :units="$units" /></p>
+            <div class="mb-3">
+                <label for="image" class="form-label">Image</label>
+                <input type="file" name="recipe[image]" id="recipe-image" class="form-control" value="{{ $image ?? '' }}">
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary">Save changes</button>
+            <div class="mb-3">
+                <label for="protein" class="form-label">Proteins</label>
+                <input type="text" name="protein" id="recipe-protein" class="form-control" readonly="readonly" value="{{ $protein ?? '0' }}">
+            </div>
+            <div class="mb-3">
+                <label for="fat" class="form-label">Fats</label>
+                <input type="text" name="fat" id="recipe-fat" class="form-control" readonly="readonly" value="{{ $fat ?? '0' }}">
+            </div>
+            <div class="mb-3">
+                <label for="carbohydrate" class="form-label">Carbohydrates</label>
+                <input type="text" name="carbohydrate" id="recipe-carbohydrate" class="form-control" readonly="readonly" value="{{ $carbohydrate ?? '0' }}">
+            </div>
+            <div class="mb-3">
+                <label for="kcal">Kcal</label>
+                <input type="text" name="kcal" id="recipe-kcal" class="form-control" readonly="readonly" value="{{ $kcal ?? '0' }}">
+            </div>
+            <div class="mb-3">Ingredients: </div>
+            <div id="rows"></div>
+            <div><input type="button" class="btn btn-secondary" value="Add ingredient" name="addIngredient" id="addIngredient"></div>
+            <hr>
+            <div class="mb-3">
+                <label for="description" class="form-label">Description</label>
+                <textarea name="recipe[description]" class="form-control" id="description" rows="5">{{ $description ?? '' }}</textarea>
+            </div>
+            <div class="mb-3">
+                <label for="tags">Tags</label>
+                <select name="tags[]" multiple class="form-select" aria-label="multiple select">
+                    @foreach ($tagsList as $tag)
+                        <option value="{{ $tag->id }}"
+                            @if (isset($tags[$tag->id]))
+                                selected
+                            @endif
+                        >{{ $tag->name }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="my-3">
+                <label for="preparation_time">Preparation time</label>
+                <input type="text" name="recipe[preparation_time]" id="recipe-preparation_time" class="form-control" value="{{ $preparationTime ?? '' }}">
+            </div>
+            <div class="mb-3">
+                <label for="cooking_time">Cooking time</label>
+                <input type="text" name="recipe[cooking_time]" id="recipe-cooking_time" class="form-control" value="{{ $cookingTime ?? '' }}">
+            </div>
+            <div class="mt-3"><input type="submit" name="save" class="btn btn-primary" value="Save" id="save"></div>
+        </form>
+
+        <div id="ingredientModal" class="modal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">New ingredient</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p><x-ingredient-form :categories="$categories" :units="$units" /></p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary">Save changes</button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -292,10 +254,10 @@
             html += '<div class="row mb-3 inputFormRow">';
             html += '<div class="input-group">';
             html += '<input type="text" id="ingredient' + ingredientsCount + '" class="form-control typeahead w-75" placeholder="Name" autocomplete="off" value="' + name + '">';
-            html += '<input type="text" name="quantity[]" id="ingredient_q_' + ingredientsCount + '" class="form-control quantity w-25" placeholder="Quantity" value="' + quantity + '">';
+            html += '<input type="text" name="ingredients[' + ingredientsCount + '][quantity]" id="ingredient_q_' + ingredientsCount + '" class="form-control quantity w-25" placeholder="Quantity" value="' + quantity + '">';
             html += '<span class="input-group-text" id="ingredient' + ingredientsCount + '_unit">' + unit + '</span>';
             html += '<button type="button" id="ingredient_r_' + ingredientsCount + '" class="btn btn-danger removeRow"><span class="material-icons material-icons-outline inline-icon" style="font-size: 1.2em">close</span></button>';
-            html += '</div><input type="hidden" name="ids[]" id="ingredient' + ingredientsCount + '_id" value="' + id + '"></div>';
+            html += '</div><input type="hidden" name="ingredients[' + ingredientsCount + '][id]" id="ingredient' + ingredientsCount + '_id" value="' + id + '"></div>';
 
             $('.typeahead').typeahead('destroy','NoCached')
             $('#rows').append(html);

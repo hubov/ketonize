@@ -91,6 +91,20 @@ class RecipePreview extends Component
     public $cookingTime;
 
     /**
+     * The recipe total time.
+     *
+     * @var integer
+     */
+    public $totalTime;
+
+    /**
+     * The recipe tags.
+     *
+     * @var integer
+     */
+    public $tags;
+
+    /**
      * Should diplay macros?
      *
      * @var boolean
@@ -112,6 +126,8 @@ class RecipePreview extends Component
      * @param integer weightTotal
      * @param integer preparationTime
      * @param integer cookingTime
+     * @param integer totalTime
+     * @param array tags
      * @param boolean displayMacros
      * @return void
      */
@@ -121,7 +137,7 @@ class RecipePreview extends Component
      *
      * @return void
      */
-    public function __construct($name = NULL, $image = NULL, $admin = NULL, $ingredients = NULL, $description = NULL, $protein = NULL, $fat = NULL, $carbohydrate = NULL, $kcal = NULL, $weightTotal = NULL, $preparationTime = NULL, $cookingTime = NULL, $displayMacros = NULL)
+    public function __construct($name = NULL, $image = NULL, $admin = NULL, $ingredients = NULL, $description = NULL, $protein = NULL, $fat = NULL, $carbohydrate = NULL, $kcal = NULL, $weightTotal = NULL, $preparationTime = NULL, $cookingTime = NULL, $totalTime = NULL, $tags = NULL, $displayMacros = NULL)
     {
         $this->name = $name;
         $this->image = $image;
@@ -135,7 +151,9 @@ class RecipePreview extends Component
         $this->weightTotal = $weightTotal;
         $this->preparationTime = $preparationTime;
         $this->cookingTime = $cookingTime;
+        $this->totalTime = $totalTime;
         $this->displayMacros = $displayMacros;
+        $this->tags = $tags;
     }
 
     /**
