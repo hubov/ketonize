@@ -8,8 +8,13 @@ use App\Models\Recipe;
 use App\Models\Role;
 use App\Models\Tag;
 use App\Models\User;
+use App\Services\File\Factories\SaverFactory;
+use App\Services\Image\Factories\ImageFactory;
+use App\Services\Image\RecipeImageProcessor;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
+use Intervention\Image\ImageManager;
 use Tests\TestCase;
 
 class RecipeControllerTest extends TestCase
@@ -19,6 +24,15 @@ class RecipeControllerTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+
+        $recipeImageProcessor = new RecipeImageProcessor(
+            new ImageManager(),
+            new ImageFactory(),
+            new SaverFactory()
+        );
+        Storage::fake($recipeImageProcessor::STORAGE_DISK_PUBLIC . '/covers');
+        Storage::fake($recipeImageProcessor::STORAGE_DISK_PUBLIC . '/thumbnails');
+        Storage::fake($recipeImageProcessor::STORAGE_DISK_LOCAL);
 
         $this->user = User::factory()->has(Profile::factory())->has(Role::factory()->state(['name' => 'admin']))->create();
     }
