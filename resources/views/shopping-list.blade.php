@@ -149,7 +149,6 @@
     });
 
     $('.scalable_steering').on('click', function() {
-        console.log('click');
         $(this).parent().find('.scale').toggle(300);
     });
 </script>
