@@ -20,8 +20,9 @@ class GetShoppingListService implements GetShoppingListInterface
 
     public function retrieveForUser (int $userId) : array
     {
-        $this->shoppingList = $this->shoppingListRepository->getByUser($userId)
-                                                        ->sortBy('name');
+        $this->shoppingList = $this->shoppingListRepository
+            ->getByUser($userId)
+            ->sortBy('name');
 
         $this->categorizeList();
         $this->sortListByCategory();

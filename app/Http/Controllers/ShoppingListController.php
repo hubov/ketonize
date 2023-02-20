@@ -36,24 +36,43 @@ class ShoppingListController extends Controller
 
     public function update(Request $request)
     {
-        $this->updateShoppingListService->setUser(Auth()->user()->id)
-                                        ->setDates($request->date_from, $request->date_to)
-                                        ->update();
+        $this->updateShoppingListService
+            ->setUser(
+                Auth()->user()->id
+            )
+            ->setDates(
+                $request->date_from,
+                $request->date_to
+            )->update();
 
         return redirect('/shopping-list');
     }
 
     public function edit(Request $request)
     {
-        $this->editShoppingListService->setUser(Auth()->user()->id);
+        $this->editShoppingListService
+            ->setUser(
+                Auth()->user()->id
+            );
 
-        return response()->json($this->editShoppingListService->update($request->id, $request->amount));
+        return response()->json(
+            $this->editShoppingListService
+                ->update(
+                    $request->id,
+                    $request->amount
+                )
+        );
     }
 
     public function destroy(Request $request)
     {
         $this->deleteShoppingListService->setUser(Auth()->user()->id);
 
-        return response()->json($this->deleteShoppingListService->delete($request->id));
+        return response()->json(
+            $this->deleteShoppingListService
+                ->delete(
+                    $request->id
+                )
+        );
     }
 }
