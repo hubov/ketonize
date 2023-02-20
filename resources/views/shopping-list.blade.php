@@ -118,6 +118,7 @@
 
 <x-scalables-script />
 
+<x-jquery-bootstrap5-toasts-script />
 <script type="text/javascript">
     $(document).ready(function(){
     	$('.remover').on('click', function () {

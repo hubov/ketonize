@@ -315,6 +315,10 @@ hr.yellow {
     color: #adb5bd;
 }
 
+#toast-container .toast {
+    margin-bottom: 10px;
+}
+
 .img-container {
     position: relative;
 }
