@@ -20,7 +20,12 @@ class ShoppingListRepository implements ShoppingListRepositoryInterface
 
     public function getByUser(int $userId): Collection
     {
-        return ShoppingList::where('user_id', $userId)->get();
+        return ShoppingList::withTrashed()
+            ->with('ingredient')
+            ->with('ingredient.category')
+            ->with('ingredient.unit')
+            ->where('user_id', $userId)
+            ->get();
     }
 
     public function create(array $attributes): ShoppingList
