@@ -10,6 +10,7 @@ class GetShoppingListService implements GetShoppingListInterface
     protected $shoppingListRepository;
     protected $shoppingList;
     protected $categorizedList = [];
+    protected $trashedList = [];
 
     public function __construct(ShoppingListRepositoryInterface $shoppingListRepository)
     {
@@ -30,11 +31,22 @@ class GetShoppingListService implements GetShoppingListInterface
         return $this->categorizedList;
     }
 
+    public function getTrashed()
+    {
+        return $this->trashedList;
+    }
+
     protected function categorizeList()
     {
         foreach ($this->shoppingList as $listElement) {
-            $this->categorizedList[$listElement->ingredient->category->name][] = $listElement;
+            if ($listElement->trashed()) {
+                $this->trashedList[$listElement->deleted_at->timestamp][] = $listElement;
+            } else {
+                $this->categorizedList[$listElement->ingredient->category->name][] = $listElement;
+            }
         }
+
+        krsort($this->trashedList);
     }
 
     protected function sortListByCategory()

@@ -29,6 +29,7 @@ class ShoppingListController extends Controller
     {
         return View::make('shopping-list', [
             'list' => $this->getShoppingListService->retrieveForUser(Auth()->user()->id),
+            'trashed' => $this->getShoppingListService->getTrashed(),
             'date_from' => date("Y-m-d"),
             'date_to' => date("Y-m-d"),
         ]);

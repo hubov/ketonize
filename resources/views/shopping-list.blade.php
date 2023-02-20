@@ -41,22 +41,13 @@
                     </div>
                 </div>
             </div>
-            <div class="row mt-1 mb-2">
-                <h1>Shopping list</h1>
-            </div>
         </div>
     </div>
     <div class="row justify-content-md-center">
         <div class="col-xxl-6 col-xl-8 col-lg-10 p-4 border bg-white">
             @if (count($list) > 0)
-                <table class="table table-borderless">
-                    <thead>
-                        <tr>
-                            <th scope="col" class="border-0">Ingredient</th>
-                            <th scope="col"class="border-0">Amount</th>
-                            <th></th>
-                        </tr>
-                    </thead>
+                <h1>Shopping list</h1>
+                <table class="table table-borderless" id="shoppingList">
                     <tbody>
                 @php
                     $categoriesCount = 0;
@@ -74,7 +65,11 @@
                         </td>
                     </tr>
                     @foreach ($elements as $element)
-                        <tr>
+                        @if ($element->trashed())
+                            <tr class="list-element-used">
+                        @else
+                            <tr>
+                        @endif
                             <td scope="row">{{ $element->ingredient->name }}</td>
                             <td class="bold text-center">
                                 <p class="material-symbols-outlined inline-icon scale w-100 m-3 teal" direction="up" scale="{{ $scalablesCount }}" style="display: none">
@@ -93,7 +88,11 @@
                                     indeterminate_check_box
                                 </p>
                             </td>
-                            <td><span class="material-icons material-icons-outlined text-danger inline-icon remover" cat-id="{{ $categoriesCount }}">clear</span></td>
+                            <td>
+                                <span class="material-icons material-icons-outlined text-danger inline-icon remover" cat-id="{{ $categoriesCount }}">clear</span>
+                                <span class="material-symbols-outlined inline-icon teal redo me-4" cat-id="{{ $categoriesCount }}">redo</span>
+                                <span class="material-symbols-outlined inline-icon text-danger destroy" cat-id="{{ $categoriesCount }}">delete_forever</span>
+                            </td>
                         </tr>
                         @php
                             $scalablesCount++;
@@ -112,6 +111,40 @@
                     </div>
                 </div>
             @endif
+
+            <table class="table table-borderless" id="trashedShoppingList">
+                @if (count($trashed) > 0)
+                    @foreach ($trashed as $trashedList)
+                        @foreach ($trashedList as $element)
+                            <tr>
+                                <td scope="row">{{ $element->ingredient->name }}</td>
+                                <td class="bold text-center">
+                                    <p class="material-symbols-outlined inline-icon scale w-100 m-3 teal" direction="up" scale="{{ $scalablesCount }}" style="display: none">
+                                        add_box
+                                    </p>
+                                    <div class="scalable_steering">
+                                        <span id="scalable{{ $scalablesCount }}" class="scalable" ingredient-id="{{ $element->id }}">
+                                            {{ $element->amount }}
+                                        </span>
+                                        {{ $element->ingredient->unit->symbol }}
+                                        <span class="material-symbols-outlined inline-icon">
+                                        edit
+                                        </span>
+                                    </div>
+                                    <p class="material-symbols-outlined inline-icon scale text-center w-100 m-3 teal" direction="down" scale="{{ $scalablesCount }}" style="display: none">
+                                        indeterminate_check_box
+                                    </p>
+                                </td>
+                                <td>
+                                    <span class="material-icons material-icons-outlined text-danger inline-icon remover" cat-id="{{ $categoriesCount }}">clear</span>
+                                    <span class="material-symbols-outlined inline-icon teal redo me-4" cat-id="{{ $categoriesCount }}">redo</span>
+                                    <span class="material-symbols-outlined inline-icon text-danger destroy" cat-id="{{ $categoriesCount }}">delete_forever</span>
+                                </td>
+                            </tr>
+                        @endforeach
+                    @endforeach
+                @endif
+            </table>
         </div>
     </div>
 </x-app-layout>
@@ -142,9 +175,10 @@
                     $(document).bsToast("This product has been removed by someone else already!")
                 }
            		var catId = el.attr('cat-id');
-                row.remove();
-                if ($('.remover[cat-id=' + catId + ']').length == 0) {
-                	$('tr[cat-id=' + catId + ']').remove();
+                $('#trashedShoppingList').prepend(row);
+                console.log($('#shoppingList .remover[cat-id=' + catId + ']').length);
+                if ($('#shoppingList .remover[cat-id=' + catId + ']').length == 0) {
+                	$('#shoppingList tr[cat-id=' + catId + ']').remove();
                 }
             }) .fail(function(data) {
                 console.log('fail');
@@ -152,7 +186,7 @@
     	});
     });
 
-    $('.scalable_steering').on('click', function() {
+    $('#shoppingList .scalable_steering').on('click', function() {
         $(this).parent().find('.scale').toggle(300);
     });
 </script>

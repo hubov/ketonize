@@ -305,9 +305,12 @@ hr.yellow {
     border-radius: 5px;
 }
 
+#shoppingList .scalable_steering {
+    cursor: pointer;
+}
+
 .scalable_steering {
     white-space: nowrap;
-    cursor: pointer;
 }
 
 .scalable_steering .material-symbols-outlined {
@@ -315,8 +318,28 @@ hr.yellow {
     color: #adb5bd;
 }
 
+#trashedShoppingList .scalable_steering .material-symbols-outlined {
+    display: none;
+}
+
 #toast-container .toast {
     margin-bottom: 10px;
+}
+
+#shoppingList .redo {
+    display: none;
+}
+
+#shoppingList .destroy {
+    display: none;
+}
+
+#trashedShoppingList {
+    color: #ced4da;
+}
+
+#trashedShoppingList .remover {
+    display: none;
 }
 
 .img-container {
