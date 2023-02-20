@@ -138,6 +138,9 @@
                 encode: true,
             }).done(function (data) {
                 console.log('success');
+                if (data === false) {
+                    $(document).bsToast("This product has been removed by someone else already!")
+                }
            		var catId = el.attr('cat-id');
                 row.remove();
                 if ($('.remover[cat-id=' + catId + ']').length == 0) {
