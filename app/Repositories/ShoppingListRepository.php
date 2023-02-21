@@ -65,14 +65,22 @@ class ShoppingListRepository implements ShoppingListRepositoryInterface
         return $shoppingList;
     }
 
-    public function delete(int $id): bool
+    public function trash(int $shoppingListId): bool
     {
-        return ShoppingList::destroy($id);
+        return ShoppingList::destroy($shoppingListId);
+    }
+
+    public function delete(int $shoppingListId): bool
+    {
+        return ShoppingList::withTrashed()
+            ->find($shoppingListId)
+            ->forceDelete();
     }
 
     public function deleteForUser(int $userId): bool
     {
-        return ShoppingList::where('user_id', $userId)
-                            ->delete();
+        return ShoppingList::withTrashed()
+            ->where('user_id', $userId)
+            ->forceDelete();
     }
 }

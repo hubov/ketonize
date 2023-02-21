@@ -117,7 +117,7 @@
 
             $.ajax({
                 type: "DELETE",
-                url: "/shopping-list/delete",
+                url: "/shopping-list/trash",
                 data: formData,
                 dataType: "json",
                 encode: true,

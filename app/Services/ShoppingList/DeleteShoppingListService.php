@@ -26,11 +26,22 @@ class DeleteShoppingListService implements DeleteShoppingListInterface
         return $this;
     }
 
+    public function trash(int $shoppingListId): bool
+    {
+        if ($this->shoppingListExistsForUser($shoppingListId))
+        {
+            $this->shoppingListRepository->trash($shoppingListId);
+        } else {
+            return false;
+        }
+
+        return true;
+    }
+
+
     public function delete(int $shoppingListId): bool
     {
-        $this->shoppingList = $this->shoppingListRepository->get($shoppingListId);
-
-        if ($this->shoppingListExistsForUser())
+        if ($this->shoppingListExistsForUser($shoppingListId))
         {
             $this->shoppingListRepository->delete($shoppingListId);
         } else {
@@ -40,8 +51,10 @@ class DeleteShoppingListService implements DeleteShoppingListInterface
         return true;
     }
 
-    protected function shoppingListExistsForUser()
+    protected function shoppingListExistsForUser(int $shoppingListId)
     {
+        $this->shoppingList = $this->shoppingListRepository->get($shoppingListId);
+
         if (
             ($this->shoppingList) &&
             ($this->shoppingList->user_id == $this->userId)
