@@ -128,9 +128,10 @@
                 }
            		var catId = el.attr('cat-id');
                 $('#trashedShoppingList').prepend(row);
+                row.find('.scale').hide();
                 console.log($('#shoppingList .remover[cat-id=' + catId + ']').length);
                 if ($('#shoppingList .remover[cat-id=' + catId + ']').length == 0) {
-                	$('#shoppingList tr[cat-id=' + catId + ']').remove();
+                	$('#shoppingList tr[cat-id=' + catId + ']').toggle();
                 }
             }) .fail(function(data) {
                 console.log('fail');
@@ -140,9 +141,9 @@
         $('.redo').on('click', function() {
             var el = $(this);
             var row = $(this).closest('tr');
-            var redonedId = row.find('.scalable').attr('ingredient-id');
+            var recoveredId = row.find('.scalable').attr('ingredient-id');
             var formData = {
-                id: redoneId,
+                id: recoveredId,
                 _token: '{{ csrf_token() }}'
             }
             // $.ajax({
@@ -152,20 +153,20 @@
             //     dataType: "json",
             //     encode: true,
             // }).done(function (data) {
-                console.log('redo');
+                console.log('recover');
                 var catId = el.attr('cat-id');
-                $('#trashedShoppingList').prepend(row);
                 console.log($('#shoppingList .remover[cat-id=' + catId + ']').length);
                 if ($('#shoppingList .remover[cat-id=' + catId + ']').length == 0) {
-                    $('#shoppingList tr[cat-id=' + catId + ']').remove();
+                    $('#shoppingList tr[cat-id=' + catId + ']').toggle();
                 }
+                $('#shoppingList tr[cat-id=' + catId + ']').after(row);
             // }) .fail(function(data) {
             //     console.log('fail');
             // });
         });
     });
 
-    $('#shoppingList .scalable_steering').on('click', function() {
+    $('#shoppingList').on('click', '.scalable_steering', function() {
         $(this).parent().find('.scale').toggle(300);
     });
 </script>
