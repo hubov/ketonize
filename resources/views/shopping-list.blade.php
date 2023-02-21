@@ -122,14 +122,12 @@
                 dataType: "json",
                 encode: true,
             }).done(function (data) {
-                console.log('success');
                 if (data === false) {
                     $(document).bsToast("This product has been removed by someone else already!")
                 }
            		var catId = el.attr('cat-id');
                 $('#trashedShoppingList').prepend(row);
                 row.find('.scale').hide();
-                console.log($('#shoppingList .remover[cat-id=' + catId + ']').length);
                 if ($('#shoppingList .remover[cat-id=' + catId + ']').length == 0) {
                 	$('#shoppingList tr[cat-id=' + catId + ']').toggle();
                 }
@@ -153,9 +151,7 @@
             //     dataType: "json",
             //     encode: true,
             // }).done(function (data) {
-                console.log('recover');
                 var catId = el.attr('cat-id');
-                console.log($('#shoppingList .remover[cat-id=' + catId + ']').length);
                 if ($('#shoppingList .remover[cat-id=' + catId + ']').length == 0) {
                     $('#shoppingList tr[cat-id=' + catId + ']').toggle();
                 }
