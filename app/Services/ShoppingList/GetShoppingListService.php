@@ -23,10 +23,10 @@ class GetShoppingListService implements GetShoppingListInterface
     {
         $this->shoppingList = $this->shoppingListRepository
             ->getByUser($userId)
-            ->sortBy('name');
+            ->sortBy('ingredient.name');
 
         $this->categorizeList();
-        $this->sortListByCategory();
+        $this->sortTrashedByTimestamp();
 
         return $this->categorizedList;
     }
@@ -42,15 +42,13 @@ class GetShoppingListService implements GetShoppingListInterface
             if ($listElement->trashed()) {
                 $this->trashedList[$listElement->deleted_at->timestamp][] = $listElement;
             } else {
-                $this->categorizedList[$listElement->ingredient->category->name][] = $listElement;
+                $this->categorizedList[$listElement->ingredient->ingredient_category_id][] = $listElement;
             }
         }
-
-        krsort($this->trashedList);
     }
 
-    protected function sortListByCategory()
+    protected function sortTrashedByTimestamp()
     {
-        ksort($this->categorizedList);
+        krsort($this->trashedList);
     }
 }

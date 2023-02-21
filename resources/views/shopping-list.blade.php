@@ -47,75 +47,25 @@
         <div class="col-xxl-6 col-xl-8 col-lg-10 p-4 border bg-white">
             @if (count($list) > 0)
                 <h1>Shopping list</h1>
-                <table class="table table-borderless" id="shoppingList">
-                    <tbody>
+                <table class="table table-borderless">
+                    <tbody id="shoppingList">
                 @php
-                    $categoriesCount = 0;
                     $scalablesCount = 0;
                 @endphp
-                @foreach ($list as $group => $elements)
-                    @php
-                        $categoriesCount++;
-                    @endphp
-                    <tr class="table-category" cat-id="{{ $categoriesCount }}">
+                @foreach ($categories as $categoryName => $category)
+                    @if (isset($list[$category->id]))
+                        <tr class="table-category" cat-id="{{ $category->id }}">
+                    @else
+                        <tr class="table-category" cat-id="{{ $category->id }}" style="display: none">
+                    @endif
                         <td colspan="3">
                             <div>
-                                <b>{{ $group }}</b>
+                                <b>{{ $categoryName }}</b>
                             </div>
                         </td>
                     </tr>
-                    @foreach ($elements as $element)
-                        @if ($element->trashed())
-                            <tr class="list-element-used">
-                        @else
-                            <tr>
-                        @endif
-                            <td scope="row">{{ $element->ingredient->name }}</td>
-                            <td class="bold text-center">
-                                <p class="material-symbols-outlined inline-icon scale w-100 m-3 teal" direction="up" scale="{{ $scalablesCount }}" style="display: none">
-                                    add_box
-                                </p>
-                                <div class="scalable_steering">
-                                    <span id="scalable{{ $scalablesCount }}" class="scalable" ingredient-id="{{ $element->id }}">
-                                        {{ $element->amount }}
-                                    </span>
-                                    {{ $element->ingredient->unit->symbol }}
-                                    <span class="material-symbols-outlined inline-icon">
-                                    edit
-                                    </span>
-                                </div>
-                                <p class="material-symbols-outlined inline-icon scale text-center w-100 m-3 teal" direction="down" scale="{{ $scalablesCount }}" style="display: none">
-                                    indeterminate_check_box
-                                </p>
-                            </td>
-                            <td>
-                                <span class="material-icons material-icons-outlined text-danger inline-icon remover" cat-id="{{ $categoriesCount }}">clear</span>
-                                <span class="material-symbols-outlined inline-icon teal redo me-4" cat-id="{{ $categoriesCount }}">redo</span>
-                                <span class="material-symbols-outlined inline-icon text-danger destroy" cat-id="{{ $categoriesCount }}">delete_forever</span>
-                            </td>
-                        </tr>
-                        @php
-                            $scalablesCount++;
-                        @endphp
-                    @endforeach
-                @endforeach
-                    </tbody>
-                </table>
-            @else
-                <div class="row mt-4">
-                    <div class="alert alert-success d-flex align-items-center" role="alert">
-                        <span class="material-icons material-icons-outlined bi flex-shrink-0 me-2">task_alt</span>
-                        <div>
-                            Your shopping list is empty! Well done!
-                        </div>
-                    </div>
-                </div>
-            @endif
-
-            <table class="table table-borderless" id="trashedShoppingList">
-                @if (count($trashed) > 0)
-                    @foreach ($trashed as $trashedList)
-                        @foreach ($trashedList as $element)
+                    @if (isset($list[$category->id]))
+                        @foreach ($list[$category->id] as $element)
                             <tr>
                                 <td scope="row">{{ $element->ingredient->name }}</td>
                                 <td class="bold text-center">
@@ -135,16 +85,63 @@
                                         indeterminate_check_box
                                     </p>
                                 </td>
-                                <td>
-                                    <span class="material-icons material-icons-outlined text-danger inline-icon remover" cat-id="{{ $categoriesCount }}">clear</span>
-                                    <span class="material-symbols-outlined inline-icon teal redo me-4" cat-id="{{ $categoriesCount }}">redo</span>
-                                    <span class="material-symbols-outlined inline-icon text-danger destroy" cat-id="{{ $categoriesCount }}">delete_forever</span>
+                                <td class="text-center">
+                                    <span class="material-icons material-icons-outlined text-danger inline-icon remover" cat-id="{{ $category->id }}">clear</span>
+                                    <span class="material-symbols-outlined inline-icon teal redo me-4" cat-id="{{ $category->id }}">redo</span>
+                                    <span class="material-symbols-outlined inline-icon text-danger destroy" cat-id="{{ $category->id }}">delete_forever</span>
                                 </td>
                             </tr>
+                            @php
+                                $scalablesCount++;
+                            @endphp
                         @endforeach
-                    @endforeach
+                    @endif
+                @endforeach
+                </tbody>
+                @if (count($trashed) > 0)
+                    <tbody id="trashedShoppingList">
+                        @foreach ($trashed as $trashedList)
+                            @foreach ($trashedList as $categoryId => $element)
+                                <tr>
+                                    <td scope="row">{{ $element->ingredient->name }}</td>
+                                    <td class="bold text-center">
+                                        <p class="material-symbols-outlined inline-icon scale w-100 m-3 teal" direction="up" scale="{{ $scalablesCount }}" style="display: none">
+                                            add_box
+                                        </p>
+                                        <div class="scalable_steering">
+                                        <span id="scalable{{ $scalablesCount }}" class="scalable" ingredient-id="{{ $element->id }}">
+                                            {{ $element->amount }}
+                                        </span>
+                                            {{ $element->ingredient->unit->symbol }}
+                                            <span class="material-symbols-outlined inline-icon">
+                                        edit
+                                        </span>
+                                        </div>
+                                        <p class="material-symbols-outlined inline-icon scale text-center w-100 m-3 teal" direction="down" scale="{{ $scalablesCount }}" style="display: none">
+                                            indeterminate_check_box
+                                        </p>
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="material-icons material-icons-outlined text-danger inline-icon remover" cat-id="{{ $categoryId }}">clear</span>
+                                        <span class="material-symbols-outlined inline-icon teal redo me-4" cat-id="{{ $categoryId }}">redo</span>
+                                        <span class="material-symbols-outlined inline-icon text-danger destroy" cat-id="{{ $categoryId }}">delete_forever</span>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        @endforeach
+                    </tbody>
                 @endif
-            </table>
+                </table>
+            @else
+                <div class="row mt-4">
+                    <div class="alert alert-success d-flex align-items-center" role="alert">
+                        <span class="material-icons material-icons-outlined bi flex-shrink-0 me-2">task_alt</span>
+                        <div>
+                            Your shopping list is empty! Well done!
+                        </div>
+                    </div>
+                </div>
+            @endif
         </div>
     </div>
 </x-app-layout>
@@ -184,6 +181,33 @@
                 console.log('fail');
             });
     	});
+
+        $('.redo').on('click', function() {
+            var el = $(this);
+            var row = $(this).closest('tr');
+            var redonedId = row.find('.scalable').attr('ingredient-id');
+            var formData = {
+                id: redoneId,
+                _token: '{{ csrf_token() }}'
+            }
+            // $.ajax({
+            //     type: "DELETE",
+            //     url: "/shopping-list/delete",
+            //     data: formData,
+            //     dataType: "json",
+            //     encode: true,
+            // }).done(function (data) {
+                console.log('redo');
+                var catId = el.attr('cat-id');
+                $('#trashedShoppingList').prepend(row);
+                console.log($('#shoppingList .remover[cat-id=' + catId + ']').length);
+                if ($('#shoppingList .remover[cat-id=' + catId + ']').length == 0) {
+                    $('#shoppingList tr[cat-id=' + catId + ']').remove();
+                }
+            // }) .fail(function(data) {
+            //     console.log('fail');
+            // });
+        });
     });
 
     $('#shoppingList .scalable_steering').on('click', function() {

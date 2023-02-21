@@ -2,7 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\ShoppingList;
+use App\Repositories\IngredientCategoryRepository;
+use App\Services\IngredientCategoryService;
 use App\Services\Interfaces\ShoppingList\DeleteShoppingListInterface;
 use App\Services\Interfaces\ShoppingList\EditShoppingListInterface;
 use App\Services\Interfaces\ShoppingList\GetShoppingListInterface;
@@ -30,6 +31,7 @@ class ShoppingListController extends Controller
         return View::make('shopping-list', [
             'list' => $this->getShoppingListService->retrieveForUser(Auth()->user()->id),
             'trashed' => $this->getShoppingListService->getTrashed(),
+            'categories' => (new IngredientCategoryService(new IngredientCategoryRepository()))->getAllByName(),
             'date_from' => date("Y-m-d"),
             'date_to' => date("Y-m-d"),
         ]);
