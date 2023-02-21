@@ -160,6 +160,28 @@
                 console.log('fail');
             });
         });
+
+        $('.destroy').on('click', function () {
+            var el = $(this);
+            var row = $(this).closest('tr');
+            var removedId = row.find('.scalable').attr('ingredient-id');
+            var formData = {
+                id: removedId,
+                _token: '{{ csrf_token() }}'
+            }
+
+            $.ajax({
+                type: "DELETE",
+                url: "/shopping-list/delete",
+                data: formData,
+                dataType: "json",
+                encode: true,
+            }).done(function (data) {
+                row.remove();
+            }) .fail(function(data) {
+                console.log('fail');
+            });
+        });
     });
 
     $('#shoppingList').on('click', '.scalable_steering', function() {
