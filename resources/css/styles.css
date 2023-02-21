@@ -32,6 +32,10 @@ a {
 	border-color: #155263;
 }
 
+.clickable {
+    cursor: pointer;
+}
+
 .form-control:read-only {
 	background-color: #e9ecef;
 	color: #6c757d;
