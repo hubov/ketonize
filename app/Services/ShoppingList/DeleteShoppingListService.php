@@ -38,6 +38,17 @@ class DeleteShoppingListService implements DeleteShoppingListInterface
         return true;
     }
 
+    public function restore(int $shoppingListId): bool
+    {
+        if ($this->shoppingListExistsForUser($shoppingListId))
+        {
+            $this->shoppingListRepository->restore($shoppingListId);
+        } else {
+            return false;
+        }
+
+        return true;
+    }
 
     public function delete(int $shoppingListId): bool
     {

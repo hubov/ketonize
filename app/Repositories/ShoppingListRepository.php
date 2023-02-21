@@ -10,7 +10,7 @@ class ShoppingListRepository implements ShoppingListRepositoryInterface
 {
     public function get(int $id) : ?ShoppingList
     {
-        return ShoppingList::find($id);
+        return ShoppingList::withTrashed()->find($id);
     }
 
     public function getAll() : Collection
@@ -68,6 +68,15 @@ class ShoppingListRepository implements ShoppingListRepositoryInterface
     public function trash(int $shoppingListId): bool
     {
         return ShoppingList::destroy($shoppingListId);
+    }
+
+    public function restore(int $shoppingListId): bool
+    {
+        ShoppingList::withTrashed()
+            ->find($shoppingListId)
+            ->restore();
+
+        return true;
     }
 
     public function delete(int $shoppingListId): bool

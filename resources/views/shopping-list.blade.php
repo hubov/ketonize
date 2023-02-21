@@ -144,21 +144,21 @@
                 id: recoveredId,
                 _token: '{{ csrf_token() }}'
             }
-            // $.ajax({
-            //     type: "DELETE",
-            //     url: "/shopping-list/delete",
-            //     data: formData,
-            //     dataType: "json",
-            //     encode: true,
-            // }).done(function (data) {
+            $.ajax({
+                type: "POST",
+                url: "/shopping-list/restore",
+                data: formData,
+                dataType: "json",
+                encode: true,
+            }).done(function (data) {
                 var catId = el.attr('cat-id');
                 if ($('#shoppingList .remover[cat-id=' + catId + ']').length == 0) {
                     $('#shoppingList tr[cat-id=' + catId + ']').toggle();
                 }
                 $('#shoppingList tr[cat-id=' + catId + ']').after(row);
-            // }) .fail(function(data) {
-            //     console.log('fail');
-            // });
+            }) .fail(function(data) {
+                console.log('fail');
+            });
         });
     });
 

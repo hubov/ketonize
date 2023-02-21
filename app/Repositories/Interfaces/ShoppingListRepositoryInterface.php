@@ -15,6 +15,7 @@ interface ShoppingListRepositoryInterface
     public function update(int $id, array $attributes) : ShoppingList;
     public function updateByUser(int $userId, array $attributes) : ShoppingList;
     public function trash(int $shoppingListId) : bool;
+    public function restore(int $shoppingListId) : bool;
     public function delete(int $shoppingListId) : bool;
     public function deleteForUser(int $userId) : bool;
 }

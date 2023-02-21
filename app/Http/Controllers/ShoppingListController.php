@@ -79,6 +79,18 @@ class ShoppingListController extends Controller
         );
     }
 
+    public function restore(Request $request)
+    {
+        $this->deleteShoppingListService->setUser(Auth()->user()->id);
+
+        return response()->json(
+            $this->deleteShoppingListService
+                ->restore(
+                    $request->id
+                )
+        );
+    }
+
     public function destroy(Request $request)
     {
         $this->deleteShoppingListService->setUser(Auth()->user()->id);
