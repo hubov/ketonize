@@ -253,4 +253,33 @@ class ShoppingListControllerTest extends TestCase
         $this->assertFalse($shoppingList->trashed());
         $this->assertEquals(100, $shoppingList->amount);
     }
+
+    /** @test */
+    public function add_own_ingredient_which_is_already_in_shopping_list()
+    {
+        $ingredient = Ingredient::factory()->create(['name' => 'Onion']);
+        $shoppingList = ShoppingList::factory()->create([
+            'user_id' => $this->user,
+            'ingredient_id' => $ingredient->id,
+            'amount' => 50
+        ]);
+
+        $response = $this->actingAs($this->user)
+            ->post(
+                'shopping-list/add',
+                [
+                    'item_name' => 'Onion',
+                    'amount' => 100,
+                    'unit' => 1
+                ]
+            );
+
+        $shoppingList->refresh();
+
+        $response->assertStatus(200);
+        $response->assertSee(true);
+        $this->assertDatabaseCount('shopping_lists', 1);
+        $this->assertFalse($shoppingList->trashed());
+        $this->assertEquals(150, $shoppingList->amount);
+    }
 }

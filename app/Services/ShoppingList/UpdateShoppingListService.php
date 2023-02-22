@@ -76,6 +76,8 @@ class UpdateShoppingListService implements UpdateShoppingListInterface
             if ($existingShoppingList->trashed()) {
                 $this->shoppingListRepository->restore($existingShoppingList->id);
                 $this->shoppingListRepository->update($existingShoppingList->id, ['amount' => $attributes['amount']]);
+            } else {
+                $this->shoppingListRepository->increase($existingShoppingList->id, $attributes['amount']);
             }
         } catch (ModelNotFoundException) {
             $this->createShoppingListItem($ingredient->id, $attributes['amount']);

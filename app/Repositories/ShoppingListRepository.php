@@ -73,6 +73,14 @@ class ShoppingListRepository implements ShoppingListRepositoryInterface
         return $shoppingList;
     }
 
+    public function increase(int $shopppingListId, int $amount): ShoppingList
+    {
+        $shoppingList = ShoppingList::find($shopppingListId);
+        $shoppingList->increment('amount', $amount);
+
+        return $shoppingList;
+    }
+
     public function trash(int $shoppingListId): bool
     {
         return ShoppingList::destroy($shoppingListId);
