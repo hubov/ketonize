@@ -23,6 +23,7 @@ class GetShoppingListServiceTest extends TestCase
         $this->categoryName = 'Some category';
         $this->shoppingListElement = new ShoppingList();
         $this->shoppingListElement->ingredient = new Ingredient();
+        $this->shoppingListElement->ingredient->ingredient_category_id = 1;
         $this->shoppingListElement->ingredient->category = new IngredientCategory();
         $this->shoppingListElement->ingredient->category->name = $this->categoryName;
         $this->shoppingList = collect([$this->shoppingListElement]);
@@ -43,7 +44,7 @@ class GetShoppingListServiceTest extends TestCase
 
         $this->assertEquals(
             [
-                $this->categoryName => [
+                $this->shoppingListElement->ingredient->ingredient_category_id => [
                     $this->shoppingListElement
                 ]
             ],
