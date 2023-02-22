@@ -16,6 +16,8 @@ class IngredientCategoryService implements IngredientCategoryInterface
 
     public function getAllByName() : array
     {
+        $results = [];
+
         $rawResults = $this->ingredientCategoryRepository
             ->getAll()
             ->sortBy('name');
