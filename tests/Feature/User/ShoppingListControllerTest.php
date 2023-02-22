@@ -203,4 +203,24 @@ class ShoppingListControllerTest extends TestCase
         $this->assertFalse($shoppingList->trashed());
         $this->assertDatabaseCount('shopping_lists', 1);
     }
+
+    /** @test */
+    public function add_own_ingredient_to_shopping_list()
+    {
+        Ingredient::factory()->create(['name' => 'Onion']);
+
+        $response = $this->actingAs($this->user)
+            ->post(
+                'shopping-list/add',
+                [
+                    'item_name' => 'Onion',
+                    'amount' => 100,
+                    'unit' => 1
+                ]
+            );
+
+        $response->assertStatus(200);
+        $response->assertSee(true);
+        $this->assertDatabaseCount('shopping_lists', 1);
+    }
 }

@@ -28,6 +28,14 @@ class ShoppingListRepository implements ShoppingListRepositoryInterface
             ->get();
     }
 
+    public function getByIngredientUser(int $ingredientId, int $userId) : ShoppingList
+    {
+        return ShoppingList::withTrashed()
+            ->where('user_id', $userId)
+            ->where('ingredient_id', $ingredientId)
+            ->firstOrFail();
+    }
+
     public function create(array $attributes): ShoppingList
     {
         return ShoppingList::create($attributes);
