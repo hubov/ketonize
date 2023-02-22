@@ -41,8 +41,8 @@
                     </div>
                 </div>
                 <div class="collapse p-0" id="addItem">
-                    <div class="card card-body mb-4">
-                        <form method="POST">
+                    <form method="POST" action="/shopping-list/add">
+                        <div class="card card-body mb-4">
                             <div class="row">
                                 @csrf
                                 <div class="input-group">
@@ -60,8 +60,8 @@
                             <div class="col my-2 d-flex align-items-center">
                                 <input type="submit" class="btn btn-primary" id="add" value="Add item">
                             </div>
-                        </form>
-                    </div>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
