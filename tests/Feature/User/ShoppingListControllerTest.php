@@ -164,4 +164,43 @@ class ShoppingListControllerTest extends TestCase
         $response->assertRedirect('/login');
         $this->assertDatabaseCount('shopping_lists', 1);
     }
+
+    /** @test */
+    public function trashing_list_element_by_user()
+    {
+        $ingredient = Ingredient::factory()->create();
+        $shoppingList = ShoppingList::factory()->create([
+            'user_id' => $this->user->id,
+            'ingredient_id' => $ingredient->id,
+            'amount' => 100
+        ]);
+
+        $response = $this->actingAs($this->user)->delete('shopping-list/trash', ['id' => $shoppingList->id]);
+        $shoppingList->refresh();
+
+        $response->assertSee('true');
+        $this->assertModelExists($shoppingList);
+        $this->assertTrue($shoppingList->trashed());
+        $this->assertDatabaseCount('shopping_lists', 1);
+    }
+
+    /** @test */
+    public function restoring_list_element_by_user()
+    {
+        $ingredient = Ingredient::factory()->create();
+        $shoppingList = ShoppingList::factory()->create([
+            'user_id' => $this->user->id,
+            'ingredient_id' => $ingredient->id,
+            'amount' => 100
+        ]);
+        $shoppingList->delete();
+
+        $response = $this->actingAs($this->user)->post('shopping-list/restore', ['id' => $shoppingList->id]);
+        $shoppingList->refresh();
+
+        $response->assertSee('true');
+        $this->assertModelExists($shoppingList);
+        $this->assertFalse($shoppingList->trashed());
+        $this->assertDatabaseCount('shopping_lists', 1);
+    }
 }
