@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Repositories\IngredientCategoryRepository;
+use App\Repositories\Interfaces\UnitRepositoryInterface;
 use App\Services\IngredientCategoryService;
 use App\Services\Interfaces\ShoppingList\DeleteShoppingListInterface;
 use App\Services\Interfaces\ShoppingList\EditShoppingListInterface;
@@ -17,13 +17,23 @@ class ShoppingListController extends Controller
     protected $updateShoppingListService;
     protected $editShoppingListService;
     protected $deleteShoppingListService;
+    protected $ingredientCategoryService;
+    protected $unitRepository;
 
-    public function __construct(GetShoppingListInterface $getShoppingListService, UpdateShoppingListInterface $updateShoppingListService, EditShoppingListInterface $editShoppingListService, DeleteShoppingListInterface $deleteShoppingListService)
-    {
+    public function __construct(
+        GetShoppingListInterface $getShoppingListService,
+        UpdateShoppingListInterface $updateShoppingListService,
+        EditShoppingListInterface $editShoppingListService,
+        DeleteShoppingListInterface $deleteShoppingListService,
+        IngredientCategoryService $ingredientCategoryService,
+        UnitRepositoryInterface $unitRepository
+    ) {
         $this->getShoppingListService = $getShoppingListService;
         $this->updateShoppingListService = $updateShoppingListService;
         $this->editShoppingListService = $editShoppingListService;
         $this->deleteShoppingListService = $deleteShoppingListService;
+        $this->ingredientCategoryService = $ingredientCategoryService;
+        $this->unitRepository = $unitRepository;
     }
 
     public function index()
@@ -31,7 +41,8 @@ class ShoppingListController extends Controller
         return View::make('shopping-list', [
             'list' => $this->getShoppingListService->retrieveForUser(Auth()->user()->id),
             'trashed' => $this->getShoppingListService->getTrashed(),
-            'categories' => (new IngredientCategoryService(new IngredientCategoryRepository()))->getAllByName(),
+            'categories' => $this->ingredientCategoryService->getAllByName(),
+            'units' => $this->unitRepository->getAll(),
             'date_from' => date("Y-m-d"),
             'date_to' => date("Y-m-d"),
         ]);

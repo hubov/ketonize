@@ -6,7 +6,7 @@
                     <button class="btn btn-primary me-2" type="button" data-bs-toggle="collapse" data-bs-target="#generateList" aria-expanded="false" aria-controls="generateList">
                         <span class="material-symbols-outlined inline-icon">list</span><span class="d-none d-md-inline"> New list</span>
                     </button>
-                    <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+                    <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#addItem" aria-expanded="false" aria-controls="addItem">
                         <span class="material-symbols-outlined inline-icon">playlist_add</span><span class="d-none d-md-inline"> Add item</span>
                     </button>
                 </div>
@@ -36,6 +36,29 @@
                                 <div class="col my-2 d-flex align-items-end">
                                     <input type="submit" class="btn btn-primary w-100" id="generate" value="Generate New List">
                                 </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="collapse p-0" id="addItem">
+                    <div class="card card-body mb-4">
+                        <form method="POST">
+                            <div class="row">
+                                @csrf
+                                <div class="input-group">
+                                    <input type="text" class="form-control flex-grow-3 typeahead tt-hint" id="item_name" name="item_name" placeholder="item name">
+                                    <input type="text" class="form-control flex-grow-2" id="amount" name="amount" placeholder="amount">
+                                    <select class="form-select text-center flex-grow-1" id="unit">
+                                        @if (count($units) > 0)
+                                            @foreach ($units as $unit)
+                                                <option value="{{ $unit->id }}">{{ $unit->symbol }}</option>
+                                            @endforeach
+                                        @endif
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col my-2 d-flex align-items-center">
+                                <input type="submit" class="btn btn-primary" id="add" value="Add item">
                             </div>
                         </form>
                     </div>
@@ -187,5 +210,18 @@
 
     $('#shoppingList').on('click', '.scalable_steering', function() {
         $(this).parent().find('.scale').toggle(300);
+    });
+</script>
+
+<x-typeahead-script />
+
+<script>
+    var route = "{{ url('ingredient-autocomplete') }}";
+
+    typeaheadConfig();
+
+    $('.typeahead').bind('typeahead:select', function(ev, suggestion) {
+        $('#unit').val(suggestion.unit_id);
+        $('#amount').focus();
     });
 </script>
