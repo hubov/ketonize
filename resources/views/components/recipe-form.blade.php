@@ -253,8 +253,8 @@
             var html = '';
             html += '<div class="row mb-3 inputFormRow">';
             html += '<div class="input-group">';
-            html += '<input type="text" id="ingredient' + ingredientsCount + '" class="form-control typeahead w-75" placeholder="Name" autocomplete="off" value="' + name + '">';
-            html += '<input type="text" name="ingredients[' + ingredientsCount + '][quantity]" id="ingredient_q_' + ingredientsCount + '" class="form-control quantity w-25" placeholder="Quantity" value="' + quantity + '">';
+            html += '<input type="text" id="ingredient' + ingredientsCount + '" class="form-control typeahead flex-grow-2" placeholder="Name" autocomplete="off" value="' + name + '">';
+            html += '<input type="text" name="ingredients[' + ingredientsCount + '][quantity]" id="ingredient_q_' + ingredientsCount + '" class="form-control quantity flex-grow-1" placeholder="Quantity" value="' + quantity + '">';
             html += '<span class="input-group-text" id="ingredient' + ingredientsCount + '_unit">' + unit + '</span>';
             html += '<button type="button" id="ingredient_r_' + ingredientsCount + '" class="btn btn-danger removeRow"><span class="material-icons material-icons-outline inline-icon" style="font-size: 1.2em">close</span></button>';
             html += '</div><input type="hidden" name="ingredients[' + ingredientsCount + '][id]" id="ingredient' + ingredientsCount + '_id" value="' + id + '"></div>';
