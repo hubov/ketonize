@@ -90,9 +90,11 @@
     </div>
 </div>
 
+<x-typeahead-script />
 
-<script src="{{ asset('typeahead.bundle.min.js') }}" ></script>
 <script type="text/javascript">
+    var route = "{{ url('ingredient-autocomplete') }}";
+
     ingredientModal = new bootstrap.Modal(document.getElementById('ingredientModal'));
 
     $(document).on("keydown", ":input:not(textarea):not(:submit)", function(event) {
@@ -100,7 +102,6 @@
     });
 
     $(document).ready(function(){
-        var typeahead = $.fn.typeahead;
         var ingredients = [];
         var ingredientsCount = 0;
         var ingredientsArray = new Array();
@@ -108,7 +109,6 @@
         var fats = new Array();
         var carbohydrates = new Array();
         var kcal = new Array();
-        var route = "{{ url('ingredient-autocomplete') }}";
         var ingredientFormValidation = ['name', 'protein', 'fat', 'carbohydrate', 'kcal', 'unit_id'];
 
         @if (isset($ingredients))
@@ -160,30 +160,7 @@
 
         function typeaheadInitialize(){
             $(document).ready(function() {
-                var ingredients = new Bloodhound({
-                    datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'),
-                    queryTokenizer: Bloodhound.tokenizers.whitespace,
-                    remote: {
-                        url: route + '?name=%QUERY',
-                        wildcard: '%QUERY'
-                    }
-                });
-
-                $('.typeahead').typeahead({
-                        hint: true,
-                        highlight: true,
-                        autoselect: true,
-                        minLength: 1
-                    },
-                    {
-                        name: 'ingredients',
-                        displayKey: 'name',
-                        limit: 10,
-                        source: ingredients,
-                        templates: function(data) {
-                            return '<p">' + data + '</p>';
-                        }
-                    });
+                typeaheadConfig();
                 $('.typeahead').bind('typeahead:select', function(ev, suggestion) {
                     var id = $(this).prop('id');
                     var idNum = id.substring(10);
@@ -193,6 +170,7 @@
                     setIngredientsArray(idNum, suggestion.protein, suggestion.fat, suggestion.carbohydrate, suggestion.kcal);
                     calculateMacro();
                 });
+
                 $('.typeahead').change(function() {
                     var id = $(this).prop('id');
                     if (($('#' + id + '_id').val() == 0) || ($('#' + id + '_id').val() == '')) {
