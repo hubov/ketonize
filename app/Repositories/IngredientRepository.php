@@ -57,4 +57,10 @@ class IngredientRepository implements IngredientRepositoryInterface
             ->limit($limit)
             ->get();
     }
+
+    public function getByName(string $name): Ingredient
+    {
+        return Ingredient::where('name', '=', $name)
+            ->firstOrFail();
+    }
 }
