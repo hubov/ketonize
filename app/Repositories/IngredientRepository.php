@@ -37,6 +37,24 @@ class IngredientRepository implements IngredientRepositoryInterface
 
     public function getByNameLimited(string $name, int $limit) : Collection
     {
-        return Ingredient::select('ingredients.id', 'ingredients.name', 'protein', 'fat', 'carbohydrate', 'kcal', 'ingredient_category_id', 'units.symbol as unit')->join('units', 'units.id', 'ingredients.unit_id')->where('ingredients.name', 'like', $name)->limit($limit)->get();
+        return Ingredient::select(
+            'ingredients.id',
+            'ingredients.name',
+            'protein',
+            'fat',
+            'carbohydrate',
+            'kcal',
+            'ingredient_category_id',
+            'units.symbol as unit',
+            'units.id as unit_id'
+        )
+            ->join(
+            'units',
+            'units.id',
+            'ingredients.unit_id'
+        )
+            ->where('ingredients.name', 'like', $name)
+            ->limit($limit)
+            ->get();
     }
 }
