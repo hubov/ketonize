@@ -207,9 +207,10 @@ class ShoppingListControllerTest extends TestCase
     /** @test */
     public function add_own_ingredient_to_shopping_list()
     {
-        Ingredient::factory()->create(['name' => 'Onion']);
+        $ingredient = Ingredient::factory()->create(['name' => 'Onion']);
 
-        $response = $this->actingAs($this->user)
+        $response = $this->followingRedirects()
+            ->actingAs($this->user)
             ->post(
                 'shopping-list/add',
                 [
@@ -220,7 +221,7 @@ class ShoppingListControllerTest extends TestCase
             );
 
         $response->assertStatus(200);
-        $response->assertSee(true);
+        $response->assertSee($ingredient->name);
         $this->assertDatabaseCount('shopping_lists', 1);
     }
 
@@ -235,7 +236,8 @@ class ShoppingListControllerTest extends TestCase
         ]);
         $shoppingList->delete();
 
-        $response = $this->actingAs($this->user)
+        $response = $this->followingRedirects()
+            ->actingAs($this->user)
             ->post(
                 'shopping-list/add',
                 [
@@ -248,7 +250,7 @@ class ShoppingListControllerTest extends TestCase
         $shoppingList->refresh();
 
         $response->assertStatus(200);
-        $response->assertSee(true);
+        $response->assertSee($ingredient->name);
         $this->assertDatabaseCount('shopping_lists', 1);
         $this->assertFalse($shoppingList->trashed());
         $this->assertEquals(100, $shoppingList->amount);
@@ -264,7 +266,8 @@ class ShoppingListControllerTest extends TestCase
             'amount' => 50
         ]);
 
-        $response = $this->actingAs($this->user)
+        $response = $this->followingRedirects()
+            ->actingAs($this->user)
             ->post(
                 'shopping-list/add',
                 [
@@ -277,7 +280,7 @@ class ShoppingListControllerTest extends TestCase
         $shoppingList->refresh();
 
         $response->assertStatus(200);
-        $response->assertSee(true);
+        $response->assertSee($ingredient->name);
         $this->assertDatabaseCount('shopping_lists', 1);
         $this->assertFalse($shoppingList->trashed());
         $this->assertEquals(150, $shoppingList->amount);
