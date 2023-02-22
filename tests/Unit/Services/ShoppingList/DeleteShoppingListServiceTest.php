@@ -65,4 +65,68 @@ class DeleteShoppingListServiceTest extends TestCase
                 ->delete($this->shoppingListId)
         );
     }
+
+    /** @test */
+    public function returns_true_if_item_was_trashed()
+    {
+        $this->shoppingListRepository
+            ->expects($this->once())
+            ->method('trash')
+            ->with($this->shoppingListId)
+            ->willReturn(true);
+
+        $this->assertTrue(
+            $this->deleteShoppingListService
+                ->setUser($this->userId)
+                ->trash($this->shoppingListId)
+        );
+    }
+
+    /** @test */
+    public function returns_false_if_item_was_already_trashed()
+    {
+        $user2Id = 2;
+
+        $this->shoppingListRepository
+            ->expects($this->never())
+            ->method('trash');
+
+        $this->assertFalse(
+            $this->deleteShoppingListService
+                ->setUser($user2Id)
+                ->trash($this->shoppingListId)
+        );
+    }
+
+    /** @test */
+    public function returns_true_if_item_successfully_restored()
+    {
+        $this->shoppingListRepository
+            ->expects($this->once())
+            ->method('restore')
+            ->with($this->shoppingListId)
+            ->willReturn(true);
+
+        $this->assertTrue(
+            $this->deleteShoppingListService
+                ->setUser($this->userId)
+                ->restore($this->shoppingListId)
+        );
+    }
+
+    /** @test */
+    public function returns_false_if_item_successfully_restored()
+    {
+        $user2Id = 2;
+
+        $this->shoppingListRepository
+            ->expects($this->never())
+            ->method('restore');
+
+        $this->assertFalse(
+            $this->deleteShoppingListService
+                ->setUser($user2Id)
+                ->restore($this->shoppingListId)
+        );
+    }
 }
