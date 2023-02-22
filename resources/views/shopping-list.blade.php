@@ -73,9 +73,10 @@
                         @endforeach
                     @endif
                 @endforeach
+                    <tr><td colspan="3"><hr class="w-100"></td></tr>
                 </tbody>
+                <tbody id="trashedShoppingList">
                 @if (count($trashed) > 0)
-                    <tbody id="trashedShoppingList">
                         @foreach ($trashed as $trashedList)
                             @foreach ($trashedList as $categoryId => $element)
                                 <x-shopping-list-row :$element :$scalablesCount :categoryId="$element->ingredient->ingredient_category_id" />
@@ -84,8 +85,8 @@
                                 @endphp
                             @endforeach
                         @endforeach
-                    </tbody>
                 @endif
+                    </tbody>
                 </table>
             @else
                 <div class="row mt-4">
