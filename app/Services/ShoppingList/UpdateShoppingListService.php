@@ -4,6 +4,8 @@ namespace App\Services\ShoppingList;
 
 use App\Models\Ingredient;
 use App\Models\Interfaces\IngredientModelInterface;
+use App\Repositories\CustomIngredientRepository;
+use App\Repositories\Interfaces\CustomIngredientRepositoryInterface;
 use App\Repositories\Interfaces\IngredientRepositoryInterface;
 use App\Repositories\Interfaces\ShoppingListRepositoryInterface;
 use App\Services\Interfaces\MealInterface;
@@ -15,6 +17,7 @@ class UpdateShoppingListService implements UpdateShoppingListInterface
     protected $shoppingListRepository;
     protected $mealService;
     protected $ingredientRepository;
+    protected $customIngredientRepository;
     protected $userId;
     protected $dateFrom;
     protected $dateTo;
@@ -24,11 +27,13 @@ class UpdateShoppingListService implements UpdateShoppingListInterface
     public function __construct(
         ShoppingListRepositoryInterface $shoppingListRepository,
         MealInterface $mealService,
-        IngredientRepositoryInterface $ingredientRepository
+        IngredientRepositoryInterface $ingredientRepository,
+        CustomIngredientRepositoryInterface $customIngredientRepository
     ) {
         $this->shoppingListRepository = $shoppingListRepository;
         $this->mealService = $mealService;
         $this->ingredientRepository = $ingredientRepository;
+        $this->customIngredientRepository = $customIngredientRepository;
 
         return $this;
     }
@@ -61,10 +66,13 @@ class UpdateShoppingListService implements UpdateShoppingListInterface
         try {
             $ingredient = $this->ingredientRepository->getByName($attributes['item_name']);
 
-            $this->addExistingIngredient($ingredient, $attributes);
+//            $this->addExistingIngredient($ingredient, $attributes);
         } catch (ModelNotFoundException) {
-            dd('non existing ingredient');
+            $ingredient = $this->customIngredientRepository->getByName($attributes['item_name']);
+//            $this->addCustomIngredient($attributes);
         }
+
+        $this->addExistingIngredient($ingredient, $attributes);
 
         return true;
     }
@@ -94,6 +102,21 @@ class UpdateShoppingListService implements UpdateShoppingListInterface
                     'itemable_id' => $ingredientId,
                     'itemable_type' => 'App\Models\Ingredient',
                     'amount' => $amount
+                ]
+            );
+    }
+
+    protected function addCustomIngredient(array $attributes)
+    {
+        $customIngredient = $this->customIngredientRepository->getOrCreateForUserByName($this->userId, $attributes);
+
+        $this->shoppingListRepository
+            ->createForUser(
+                $this->userId,
+                [
+                    'itemable_id' => $customIngredient->id,
+                    'itemable_type' => 'App\Models\CustomIngredient',
+                    'amount' => $attributes['amount']
                 ]
             );
     }

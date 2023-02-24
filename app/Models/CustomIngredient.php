@@ -11,9 +11,16 @@ class CustomIngredient extends Model implements IngredientModelInterface
 {
     use HasFactory;
 
+    protected $fillable = ['name', 'user_id', 'unit_id'];
+
     public function unit() : BelongsTo
     {
         return $this->belongsTo(Unit::class);
+    }
+
+    public function getIngredientCategoryIdAttribute()
+    {
+        return 21;
     }
 
     public function shoppingList()
