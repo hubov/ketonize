@@ -10,11 +10,11 @@ class ShoppingList extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $fillable = ['user_id', 'ingredient_id', 'amount'];
+    protected $fillable = ['user_id', 'itemable_id', 'itemable_type', 'amount'];
 
-    public function ingredient()
+    public function itemable()
     {
-        return $this->belongsTo(Ingredient::class);
+        return $this->morphTo();
     }
 
     public function user()

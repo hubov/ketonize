@@ -3,6 +3,7 @@
 namespace App\Services\ShoppingList;
 
 use App\Models\Ingredient;
+use App\Models\Interfaces\IngredientModelInterface;
 use App\Repositories\Interfaces\IngredientRepositoryInterface;
 use App\Repositories\Interfaces\ShoppingListRepositoryInterface;
 use App\Services\Interfaces\MealInterface;
@@ -68,7 +69,7 @@ class UpdateShoppingListService implements UpdateShoppingListInterface
         return true;
     }
 
-    protected function addExistingIngredient(Ingredient $ingredient, array $attributes): void
+    protected function addExistingIngredient(IngredientModelInterface $ingredient, array $attributes): void
     {
         try {
             $existingShoppingList = $this->shoppingListRepository->getByIngredientUser($ingredient->id, $this->userId);
@@ -90,7 +91,8 @@ class UpdateShoppingListService implements UpdateShoppingListInterface
             ->createForUser(
                 $this->userId,
                 [
-                    'ingredient_id' => $ingredientId,
+                    'itemable_id' => $ingredientId,
+                    'itemable_type' => 'App\Models\Ingredient',
                     'amount' => $amount
                 ]
             );

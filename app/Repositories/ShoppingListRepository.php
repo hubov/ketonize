@@ -21,9 +21,8 @@ class ShoppingListRepository implements ShoppingListRepositoryInterface
     public function getByUser(int $userId): Collection
     {
         return ShoppingList::withTrashed()
-            ->with('ingredient')
-            ->with('ingredient.category')
-            ->with('ingredient.unit')
+            ->with('itemable')
+            ->with('itemable.unit')
             ->where('user_id', $userId)
             ->get();
     }
@@ -32,7 +31,8 @@ class ShoppingListRepository implements ShoppingListRepositoryInterface
     {
         return ShoppingList::withTrashed()
             ->where('user_id', $userId)
-            ->where('ingredient_id', $ingredientId)
+            ->where('itemable_id', $ingredientId)
+            ->where('itemable_type', 'App\Models\Ingredient')
             ->firstOrFail();
     }
 

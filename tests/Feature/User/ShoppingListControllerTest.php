@@ -35,13 +35,12 @@ class ShoppingListControllerTest extends TestCase
     public function shopping_list_with_products_can_be_rendered_with_user()
     {
         $shoppingList = ShoppingList::factory()
-            ->has(Ingredient::factory())
             ->create(['user_id' => $this->user->id]);
 
         $response = $this->actingAs($this->user)->get('/shopping-list');
 
         $response->assertStatus(200);
-        $response->assertSeeInOrder([$shoppingList->ingredient->name, $shoppingList->amount]);
+        $response->assertSeeInOrder([$shoppingList->itemable->name, $shoppingList->amount]);
     }
 
     /** @test */
@@ -110,7 +109,8 @@ class ShoppingListControllerTest extends TestCase
         $ingredient = Ingredient::factory()->create();
         $shoppingList = ShoppingList::factory()->create([
             'user_id' => $this->user->id,
-            'ingredient_id' => $ingredient->id,
+            'itemable_id' => $ingredient->id,
+            'itemable_type' => 'App\Models\Ingredient',
             'amount' => 100
         ]);
 
@@ -144,7 +144,7 @@ class ShoppingListControllerTest extends TestCase
         $ingredient = Ingredient::factory()->create();
         $shoppingList = ShoppingList::factory()->create([
             'user_id' => $this->user->id,
-            'ingredient_id' => $ingredient->id,
+            'itemable_id' => $ingredient->id,
             'amount' => 100
         ]);
 
@@ -171,7 +171,7 @@ class ShoppingListControllerTest extends TestCase
         $ingredient = Ingredient::factory()->create();
         $shoppingList = ShoppingList::factory()->create([
             'user_id' => $this->user->id,
-            'ingredient_id' => $ingredient->id,
+            'itemable_id' => $ingredient->id,
             'amount' => 100
         ]);
 
@@ -190,7 +190,7 @@ class ShoppingListControllerTest extends TestCase
         $ingredient = Ingredient::factory()->create();
         $shoppingList = ShoppingList::factory()->create([
             'user_id' => $this->user->id,
-            'ingredient_id' => $ingredient->id,
+            'itemable_id' => $ingredient->id,
             'amount' => 100
         ]);
         $shoppingList->delete();
@@ -231,7 +231,7 @@ class ShoppingListControllerTest extends TestCase
         $ingredient = Ingredient::factory()->create(['name' => 'Onion']);
         $shoppingList = ShoppingList::factory()->create([
             'user_id' => $this->user,
-            'ingredient_id' => $ingredient->id,
+            'itemable_id' => $ingredient->id,
             'amount' => 50
         ]);
         $shoppingList->delete();
@@ -262,7 +262,7 @@ class ShoppingListControllerTest extends TestCase
         $ingredient = Ingredient::factory()->create(['name' => 'Onion']);
         $shoppingList = ShoppingList::factory()->create([
             'user_id' => $this->user,
-            'ingredient_id' => $ingredient->id,
+            'itemable_id' => $ingredient->id,
             'amount' => 50
         ]);
 

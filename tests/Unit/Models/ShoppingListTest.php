@@ -11,9 +11,9 @@ class ShoppingListTest extends TestCase
     use RefreshDatabase;
 
     /** @test */
-    public function ingredient_shoppingList_relation_existence()
+    public function itemable_shoppingList_relation_existence()
     {
-        $this->assertTrue(method_exists(ShoppingList::class, 'ingredient'));
+        $this->assertTrue(method_exists(ShoppingList::class, 'itemable'));
     }
 
     /** @test */

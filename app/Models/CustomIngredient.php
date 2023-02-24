@@ -15,4 +15,9 @@ class CustomIngredient extends Model implements IngredientModelInterface
     {
         return $this->belongsTo(Unit::class);
     }
+
+    public function shoppingList()
+    {
+        return $this->morphOne(ShoppingList::class, 'itemable');
+    }
 }

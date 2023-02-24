@@ -182,7 +182,8 @@ class MealServiceTest extends TestCase
         $this->assertEquals(
             [
                 1 => [
-                    'ingredient_id' => 1,
+                    'itemable_id' => 1,
+                    'itemable_type' => 'App\Models\Ingredient',
                     'amount' => 100
                  ]
             ],

@@ -84,7 +84,8 @@ class MealService implements MealInterface
                     $list[$ingredient->id]['amount'] += $ingredient->amount;
                 } else {
                     $list[$ingredient->id] = [
-                        'ingredient_id' => $ingredient->id,
+                        'itemable_id' => $ingredient->id,
+                        'itemable_type' => 'App\Models\Ingredient',
                         'amount' => $ingredient->amount
                     ];
                 }

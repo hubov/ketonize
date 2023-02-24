@@ -36,4 +36,9 @@ class Ingredient extends Model implements IngredientModelInterface
     {
         return $this->belongsToMany(Nutrient::class)->withPivot('amount');
     }
+
+    public function shoppingList()
+    {
+        return $this->morphOne(ShoppingList::class, 'itemable');
+    }
 }

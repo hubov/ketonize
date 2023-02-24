@@ -102,7 +102,7 @@
                 @if (count($trashed) > 0)
                         @foreach ($trashed as $trashedList)
                             @foreach ($trashedList as $categoryId => $element)
-                                <x-shopping-list-row :$element :$scalablesCount :categoryId="$element->ingredient->ingredient_category_id" />
+                                <x-shopping-list-row :$element :$scalablesCount :categoryId="$element->itemable->ingredient_category_id" />
                                 @php
                                     $scalablesCount++;
                                 @endphp

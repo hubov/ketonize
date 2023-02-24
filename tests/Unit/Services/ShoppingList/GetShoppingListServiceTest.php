@@ -22,10 +22,10 @@ class GetShoppingListServiceTest extends TestCase
         $this->userId = 1;
         $this->categoryName = 'Some category';
         $this->shoppingListElement = new ShoppingList();
-        $this->shoppingListElement->ingredient = new Ingredient();
-        $this->shoppingListElement->ingredient->ingredient_category_id = 1;
-        $this->shoppingListElement->ingredient->category = new IngredientCategory();
-        $this->shoppingListElement->ingredient->category->name = $this->categoryName;
+        $this->shoppingListElement->itemable = new Ingredient();
+        $this->shoppingListElement->itemable->ingredient_category_id = 1;
+        $this->shoppingListElement->itemable->category = new IngredientCategory();
+        $this->shoppingListElement->itemable->category->name = $this->categoryName;
         $this->shoppingList = collect([$this->shoppingListElement]);
 
         $this->shoppingListRepository = $this->createMock(ShoppingListRepositoryInterface::class);
@@ -44,7 +44,7 @@ class GetShoppingListServiceTest extends TestCase
 
         $this->assertEquals(
             [
-                $this->shoppingListElement->ingredient->ingredient_category_id => [
+                $this->shoppingListElement->itemable->ingredient_category_id => [
                     $this->shoppingListElement
                 ]
             ],
