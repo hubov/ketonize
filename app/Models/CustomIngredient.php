@@ -20,7 +20,7 @@ class CustomIngredient extends Model implements IngredientModelInterface
 
     public function getIngredientCategoryIdAttribute()
     {
-        return 21;
+        return 1000;
     }
 
     public function shoppingList()
