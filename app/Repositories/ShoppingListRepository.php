@@ -2,6 +2,7 @@
 
 namespace App\Repositories;
 
+use App\Models\Interfaces\IngredientModelInterface;
 use App\Models\ShoppingList;
 use App\Repositories\Interfaces\ShoppingListRepositoryInterface;
 use Illuminate\Support\Collection;
@@ -27,12 +28,12 @@ class ShoppingListRepository implements ShoppingListRepositoryInterface
             ->get();
     }
 
-    public function getByIngredientUser(int $ingredientId, int $userId) : ShoppingList
+    public function getByIngredientUser(IngredientModelInterface $ingredient, int $userId) : ShoppingList
     {
         return ShoppingList::withTrashed()
             ->where('user_id', $userId)
-            ->where('itemable_id', $ingredientId)
-            ->where('itemable_type', 'App\Models\Ingredient')
+            ->where('itemable_id', $ingredient->id)
+            ->where('itemable_type', get_class($ingredient))
             ->firstOrFail();
     }
 
