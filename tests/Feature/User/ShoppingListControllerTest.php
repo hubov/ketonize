@@ -4,6 +4,7 @@ namespace Tests\Feature\User;
 
 use App\Models\DietPlan;
 use App\Models\Ingredient;
+use App\Models\IngredientCategory;
 use App\Models\Profile;
 use App\Models\Recipe;
 use App\Models\ShoppingList;
@@ -19,7 +20,8 @@ class ShoppingListControllerTest extends TestCase
     {
         parent::setUp();
 
-        $this->user = User::factory()->has(Profile::factory())->create();
+        $this->user = User::factory()->has(Profile::factory())->create(['id' => 1]);
+        IngredientCategory::factory()->create(['id' => 1000]);
     }
 
     /** @test */
@@ -204,34 +206,41 @@ class ShoppingListControllerTest extends TestCase
         $this->assertDatabaseCount('shopping_lists', 1);
     }
 
-    /** @test */
-    public function add_own_ingredient_to_shopping_list()
+    /**
+     * @test
+     * @dataProvider ownIngredientsToAddProvider
+     */
+    public function add_own_ingredient_to_shopping_list($expectedResult, $input)
     {
-        $ingredient = Ingredient::factory()->create(['name' => 'Onion']);
+        $ingredient = $input['model_type']::factory()->create($input['attributes']);
 
         $response = $this->followingRedirects()
             ->actingAs($this->user)
             ->post(
                 'shopping-list/add',
                 [
-                    'item_name' => 'Onion',
+                    'item_name' => $input['attributes']['name'],
                     'amount' => 100,
-                    'unit' => 1
+                    'unit' => $ingredient->unit->id
                 ]
             );
 
         $response->assertStatus(200);
-        $response->assertSee($ingredient->name);
+        $response->assertSee($input['attributes']['name']);
         $this->assertDatabaseCount('shopping_lists', 1);
     }
 
-    /** @test */
-    public function add_own_ingredient_which_is_trashed_to_shopping_list()
+    /**
+     * @test
+     * @dataProvider ownIngredientsToAddProvider
+     */
+    public function add_own_ingredient_which_is_trashed_to_shopping_list($expectedResult, $input)
     {
-        $ingredient = Ingredient::factory()->create(['name' => 'Onion']);
+        $ingredient = $input['model_type']::factory()->create($input['attributes']);
         $shoppingList = ShoppingList::factory()->create([
             'user_id' => $this->user,
             'itemable_id' => $ingredient->id,
+            'itemable_type' => get_class($ingredient),
             'amount' => 50
         ]);
         $shoppingList->delete();
@@ -241,28 +250,32 @@ class ShoppingListControllerTest extends TestCase
             ->post(
                 'shopping-list/add',
                 [
-                    'item_name' => 'Onion',
+                    'item_name' => $input['attributes']['name'],
                     'amount' => 100,
-                    'unit' => 1
+                    'unit' => $ingredient->unit->id
                 ]
             );
 
         $shoppingList->refresh();
 
         $response->assertStatus(200);
-        $response->assertSee($ingredient->name);
+        $response->assertSee($input['attributes']['name']);
         $this->assertDatabaseCount('shopping_lists', 1);
         $this->assertFalse($shoppingList->trashed());
         $this->assertEquals(100, $shoppingList->amount);
     }
 
-    /** @test */
-    public function add_own_ingredient_which_is_already_in_shopping_list()
+    /**
+     * @test
+     * @dataProvider ownIngredientsToAddProvider
+     */
+    public function add_own_ingredient_which_is_already_in_shopping_list($expectedResult, $input)
     {
-        $ingredient = Ingredient::factory()->create(['name' => 'Onion']);
+        $ingredient = $input['model_type']::factory()->create($input['attributes']);
         $shoppingList = ShoppingList::factory()->create([
-            'user_id' => $this->user,
+            'user_id' => $this->user->id,
             'itemable_id' => $ingredient->id,
+            'itemable_type' => get_class($ingredient),
             'amount' => 50
         ]);
 
@@ -271,18 +284,43 @@ class ShoppingListControllerTest extends TestCase
             ->post(
                 'shopping-list/add',
                 [
-                    'item_name' => 'Onion',
+                    'item_name' => $input['attributes']['name'],
                     'amount' => 100,
-                    'unit' => 1
+                    'unit' => $ingredient->unit->id
                 ]
             );
 
         $shoppingList->refresh();
 
         $response->assertStatus(200);
-        $response->assertSee($ingredient->name);
+        $response->assertSee($input['attributes']['name']);
         $this->assertDatabaseCount('shopping_lists', 1);
         $this->assertFalse($shoppingList->trashed());
         $this->assertEquals(150, $shoppingList->amount);
+    }
+
+    protected function ownIngredientsToAddProvider()
+    {
+        return [
+            [
+                true,
+                [
+                    'attributes' => [
+                        'name' => 'Onion',
+                    ],
+                    'model_type' => 'App\Models\Ingredient'
+                ]
+            ],
+            [
+                true,
+                [
+                    'attributes' => [
+                        'name' => 'Onionxxx',
+                        'user_id' => 1
+                    ],
+                    'model_type' => 'App\Models\CustomIngredient'
+                ]
+            ]
+        ];
     }
 }
