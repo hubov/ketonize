@@ -65,22 +65,19 @@ class UpdateShoppingListService implements UpdateShoppingListInterface
     {
         try {
             $ingredient = $this->ingredientRepository->getByName($attributes['item_name']);
-
-//            $this->addExistingIngredient($ingredient, $attributes);
         } catch (ModelNotFoundException) {
-            $ingredient = $this->customIngredientRepository->getByName($attributes['item_name']);
-//            $this->addCustomIngredient($attributes);
+            $ingredient = $this->customIngredientRepository->getOrCreateForUserByName($this->userId, $attributes);
         }
 
-        $this->addExistingIngredient($ingredient, $attributes);
+        $this->addIngredient($ingredient, $attributes);
 
         return true;
     }
 
-    protected function addExistingIngredient(IngredientModelInterface $ingredient, array $attributes): void
+    protected function addIngredient(IngredientModelInterface $ingredient, array $attributes): void
     {
         try {
-            $existingShoppingList = $this->shoppingListRepository->getByIngredientUser($ingredient->id, $this->userId);
+            $existingShoppingList = $this->shoppingListRepository->getByIngredientUser($ingredient, $this->userId);
 
             if ($existingShoppingList->trashed()) {
                 $this->shoppingListRepository->restore($existingShoppingList->id);
@@ -89,34 +86,19 @@ class UpdateShoppingListService implements UpdateShoppingListInterface
                 $this->shoppingListRepository->increase($existingShoppingList->id, $attributes['amount']);
             }
         } catch (ModelNotFoundException) {
-            $this->createShoppingListItem($ingredient->id, $attributes['amount']);
+            $this->createShoppingListItem($ingredient, $attributes['amount']);
         }
     }
 
-    protected function createShoppingListItem(int $ingredientId, int $amount)
+    protected function createShoppingListItem(IngredientModelInterface $ingredient, int $amount)
     {
         $this->shoppingListRepository
             ->createForUser(
                 $this->userId,
                 [
-                    'itemable_id' => $ingredientId,
-                    'itemable_type' => 'App\Models\Ingredient',
+                    'itemable_id' => $ingredient->id,
+                    'itemable_type' => get_class($ingredient),
                     'amount' => $amount
-                ]
-            );
-    }
-
-    protected function addCustomIngredient(array $attributes)
-    {
-        $customIngredient = $this->customIngredientRepository->getOrCreateForUserByName($this->userId, $attributes);
-
-        $this->shoppingListRepository
-            ->createForUser(
-                $this->userId,
-                [
-                    'itemable_id' => $customIngredient->id,
-                    'itemable_type' => 'App\Models\CustomIngredient',
-                    'amount' => $attributes['amount']
                 ]
             );
     }
