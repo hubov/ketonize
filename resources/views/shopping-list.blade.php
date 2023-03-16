@@ -130,12 +130,16 @@
 <x-jquery-bootstrap5-toasts-script />
 <script type="text/javascript">
     $(document).ready(function(){
-    	$('.remover').on('click', function () {
-    		var el = $(this);
-    		var row = $(this).closest('tr');
-    		var removedId = row.find('.scalable').attr('ingredient-id');
-    		var formData = {
-                id: removedId,
+        function toggleCategoryRow(categoryId) {
+            if ($('#shoppingList .remover[cat-id=' + categoryId + ']').length == 0) {
+                $('#shoppingList tr[cat-id=' + categoryId + ']').toggle();
+            }
+        }
+
+        function removeRow(ingredientId, categoryId) {
+            var row = $('tr[ingredient-id=' + ingredientId + ']');
+            var formData = {
+                id: ingredientId,
                 _token: '{{ csrf_token() }}'
             }
 
@@ -149,23 +153,18 @@
                 if (data === false) {
                     $(document).bsToast("This product has been removed by someone else already!")
                 }
-           		var catId = el.attr('cat-id');
                 $('#trashedShoppingList').prepend(row);
                 row.find('.scale').hide();
-                if ($('#shoppingList .remover[cat-id=' + catId + ']').length == 0) {
-                	$('#shoppingList tr[cat-id=' + catId + ']').toggle();
-                }
+                toggleCategoryRow(categoryId);
             }) .fail(function(data) {
                 console.log('fail');
             });
-    	});
+        }
 
-        $('.redo').on('click', function() {
-            var el = $(this);
-            var row = $(this).closest('tr');
-            var recoveredId = row.find('.scalable').attr('ingredient-id');
+        function recoverRow(ingredientId, categoryId) {
+            var row = $('tr[ingredient-id=' + ingredientId + ']');
             var formData = {
-                id: recoveredId,
+                id: ingredientId,
                 _token: '{{ csrf_token() }}'
             }
             $.ajax({
@@ -175,22 +174,17 @@
                 dataType: "json",
                 encode: true,
             }).done(function (data) {
-                var catId = el.attr('cat-id');
-                if ($('#shoppingList .remover[cat-id=' + catId + ']').length == 0) {
-                    $('#shoppingList tr[cat-id=' + catId + ']').toggle();
-                }
-                $('#shoppingList tr[cat-id=' + catId + ']').after(row);
+                toggleCategoryRow(categoryId);
+                $('#shoppingList tr[cat-id=' + categoryId + ']').after(row);
             }) .fail(function(data) {
                 console.log('fail');
             });
-        });
+        }
 
-        $('.destroy').on('click', function () {
-            var el = $(this);
-            var row = $(this).closest('tr');
-            var removedId = row.find('.scalable').attr('ingredient-id');
+        function destroyRow(ingredientId, categoryId) {
+            var row = $('tr[ingredient-id=' + ingredientId + ']');
             var formData = {
-                id: removedId,
+                id: ingredientId,
                 _token: '{{ csrf_token() }}'
             }
 
@@ -205,6 +199,27 @@
             }) .fail(function(data) {
                 console.log('fail');
             });
+        }
+
+    	$('.remover').on('click', function () {
+    		var el = $(this);
+            var catId = el.attr('cat-id');
+            var removedId = el.attr('ingredient-id');
+            removeRow(removedId, catId);
+    	});
+
+        $('.redo').on('click', function() {
+            var el = $(this);
+            var catId = el.attr('cat-id');
+            var removedId = el.attr('ingredient-id');
+            recoverRow(removedId, catId);
+        });
+
+        $('.destroy').on('click', function () {
+            var el = $(this);
+            var catId = el.attr('cat-id');
+            var removedId = el.attr('ingredient-id');
+            destroyRow(removedId, catId);
         });
     });
 
