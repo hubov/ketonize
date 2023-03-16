@@ -186,7 +186,7 @@
             });
         }
 
-        function destroyRow(ingredientId, categoryId) {
+        function destroyRow(ingredientId) {
             var row = $('tr[ingredient-id=' + ingredientId + ']');
             var formData = {
                 id: ingredientId,
@@ -235,22 +235,40 @@
             return newRow;
         }
 
+        function updateRow(item) {
+            console.log(item);
+            var row = $("tr[ingredient-id=" + item.id + "]");
+            if (ifTrashedRow(row)) {
+                var catId = row.find('.clickable:first').attr('cat-id');
+                $('#shoppingList tr[cat-id=' + catId + ']').after(row);
+            } else {
+                item.amount += getRowAmount(item.id);
+            }
+            row.find("span.scalable").text(item.amount);
+        }
+
+        function ifTrashedRow(row) {
+            return row.parents('#trashedShoppingList').length ? true : false;
+        }
+
+        function getRowAmount(ingredientId) {
+            return parseInt($("tr[ingredient-id=" + ingredientId + "]").find("span.scalable").text());
+        }
+
         function existingIngredient(name) {
             var id = null;
-
             $("td").filter(function() {
                 return $(this).text() === name;
             }).each(function() {
-                id = $(this).attr("ingredient-id");
+                id = $(this).parent().attr("ingredient-id");
                 return false;
             });
-
             return id;
         }
 
         $('#addItemForm').on('submit', function(event) {
             var itemName = $(this).find('input#item_name').val();
-            var itemAmount = $(this).find('input#amount').val();
+            var itemAmount = parseInt($(this).find('input#amount').val());
             var itemUnit = $(this).find('select#unit').val();
 
             $(this).find('input#item_name').val('');
@@ -267,9 +285,6 @@
                 amount: itemAmount
             }
 
-            console.log(existingIngredient(itemName));
-            var newRow = createRow(item);
-
             var formData = {
                 item_name: itemName,
                 amount: itemAmount,
@@ -277,21 +292,50 @@
                 _token: '{{ csrf_token() }}'
             }
 
-            $.ajax({
-                type: "POST",
-                url: "/shopping-list/add",
-                data: formData,
-                dataType: "json",
-                encode: true,
-            }).done(function (data) {
-                newRow.attr('ingredient-id', data);
-                newRow.find('span.scalable').attr('ingredient-id', data);
-                newRow.find('.clickable').attr('ingredient-id', data);
+            var ingredientId = existingIngredient(itemName);
 
-                console.log('success');
-            }).fail(function(data) {
-                console.log('fail');
-            });
+                console.log(ingredientId);
+            if (ingredientId) {
+                // update row
+
+                item.id = ingredientId;
+                updateRow(item);
+
+                $.ajax({
+                    type: "POST",
+                    url: "/shopping-list/add",
+                    data: formData,
+                    dataType: "json",
+                    encode: true,
+                }).done(function (data) {
+                    console.log('success');
+                }).fail(function (data) {
+                    console.log('fail');
+                });
+            } else {
+                // create row
+                var newRow = createRow(item);
+
+                $.ajax({
+                    type: "POST",
+                    url: "/shopping-list/add",
+                    data: formData,
+                    dataType: "json",
+                    encode: true,
+                }).done(function (data) {
+                    toggleCategoryRow(data.itemable.ingredient_category_id);
+                    $('#shoppingList tr[cat-id=' + data.itemable.ingredient_category_id + ']').after(newRow);
+                    newRow.find('.clickable').attr('cat-id', data.itemable.ingredient_category_id);
+
+                    newRow.attr('ingredient-id', data.id);
+                    newRow.find('span.scalable').attr('ingredient-id', data.id);
+                    newRow.find('.clickable').attr('ingredient-id', data.id);
+
+                    console.log('success');
+                }).fail(function (data) {
+                    console.log('fail');
+                });
+            }
 
             event.preventDefault();
         });

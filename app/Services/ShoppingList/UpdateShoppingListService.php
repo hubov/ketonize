@@ -62,7 +62,7 @@ class UpdateShoppingListService implements UpdateShoppingListInterface
         $this->shoppingListRepository->createForUserBulk($this->userId, $this->listItems);
     }
 
-    public function add(array $attributes): int
+    public function add(array $attributes): ShoppingList
     {
         try {
             $ingredient = $this->ingredientRepository->getByName($attributes['item_name']);
@@ -73,7 +73,7 @@ class UpdateShoppingListService implements UpdateShoppingListInterface
         return $this->addIngredient($ingredient, $attributes);
     }
 
-    protected function addIngredient(IngredientModelInterface $ingredient, array $attributes): int
+    protected function addIngredient(IngredientModelInterface $ingredient, array $attributes): ShoppingList
     {
         try {
             $shoppingList = $this->shoppingListRepository->getByIngredientUser($ingredient, $this->userId);
@@ -88,7 +88,7 @@ class UpdateShoppingListService implements UpdateShoppingListInterface
             $shoppingList = $this->createShoppingListItem($ingredient, $attributes['amount']);
         }
 
-        return $shoppingList->id;
+        return $shoppingList;
     }
 
     protected function createShoppingListItem(IngredientModelInterface $ingredient, int $amount): ShoppingList

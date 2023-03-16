@@ -2,6 +2,7 @@
 
 namespace App\Repositories;
 
+use App\Models\CustomIngredient;
 use App\Models\Interfaces\IngredientModelInterface;
 use App\Models\ShoppingList;
 use App\Repositories\Interfaces\ShoppingListRepositoryInterface;
@@ -46,7 +47,10 @@ class ShoppingListRepository implements ShoppingListRepositoryInterface
     {
         $attributes['user_id'] = $userId;
 
-        return ShoppingList::create($attributes);
+        $shoppingList = ShoppingList::create($attributes);
+        $result = ShoppingList::with(['itemable'])->find($shoppingList->id);
+
+        return $result;
     }
 
     public function createForUserBulk(int $userId, array $attributes)

@@ -2,6 +2,7 @@
 
 namespace App\Services\Interfaces\ShoppingList;
 
+use App\Models\ShoppingList;
 use App\Repositories\Interfaces\CustomIngredientRepositoryInterface;
 use App\Repositories\Interfaces\IngredientRepositoryInterface;
 use App\Repositories\Interfaces\ShoppingListRepositoryInterface;
@@ -18,5 +19,5 @@ interface UpdateShoppingListInterface
     public function setUser(int $userId): self;
     public function setDates(string $dateFrom, string $dateTo): self;
     public function update(): void;
-    public function add(array $attributes): int;
+    public function add(array $attributes): ShoppingList;
 }

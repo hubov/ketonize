@@ -228,7 +228,16 @@ class ShoppingListControllerTest extends TestCase
         $response->assertStatus(200);
         $response->assertHeader('content-type', 'application/json');
         $this->assertDatabaseCount('shopping_lists', 1);
-        $this->assertMatchesRegularExpression('/^\\d+$/', $response->content());
+        $this->assertJson($response->content());
+        $response->assertJsonStructure(
+            [
+                'id',
+                'amount',
+                'itemable_id',
+                'itemable_type',
+                'user_id'
+            ]
+        );
     }
 
     /**
@@ -261,7 +270,16 @@ class ShoppingListControllerTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertHeader('content-type', 'application/json');
-        $response->assertSee($shoppingList->id);
+        $this->assertJson($response->content());
+        $response->assertJsonStructure(
+            [
+                'id',
+                'amount',
+                'itemable_id',
+                'itemable_type',
+                'user_id'
+            ]
+        );
         $this->assertDatabaseCount('shopping_lists', 1);
         $this->assertFalse($shoppingList->trashed());
         $this->assertEquals(100, $shoppingList->amount);
@@ -296,7 +314,16 @@ class ShoppingListControllerTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertHeader('content-type', 'application/json');
-        $response->assertSee($shoppingList->id);
+        $this->assertJson($response->content());
+        $response->assertJsonStructure(
+            [
+                'id',
+                'amount',
+                'itemable_id',
+                'itemable_type',
+                'user_id'
+            ]
+        );
         $this->assertDatabaseCount('shopping_lists', 1);
         $this->assertFalse($shoppingList->trashed());
         $this->assertEquals(150, $shoppingList->amount);

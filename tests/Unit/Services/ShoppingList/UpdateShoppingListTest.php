@@ -55,15 +55,15 @@ class UpdateShoppingListTest extends TestCase
             ->withAnyParameters()
             ->willReturn($this->shoppingList);
 
-        $this->assertEquals(
-            1,
-            $this->updateShoppingListService
-                ->setUser(1)
-                ->add([
-                    'item_name' => 'Tomato',
-                    'amount' => 100
-                ])
-        );
+        $result = $this->updateShoppingListService
+            ->setUser(1)
+            ->add([
+                'item_name' => 'Tomato',
+                'amount' => 100
+            ]);
+
+        $this->assertIsObject($result);
+        $this->assertEquals($this->shoppingList->id, $result->id);
     }
 
     /** @test */
@@ -92,15 +92,15 @@ class UpdateShoppingListTest extends TestCase
             ->withAnyParameters()
             ->willReturn($this->shoppingList);
 
-        $this->assertEquals(
-            1,
-            $this->updateShoppingListService
-                ->setUser(1)
-                ->add([
-                    'item_name' => 'Tomato',
-                    'amount' => 100
-                ])
-        );
+        $result = $this->updateShoppingListService
+            ->setUser(1)
+            ->add([
+                'item_name' => 'Tomato',
+                'amount' => 100
+            ]);
+
+        $this->assertIsObject($result);
+        $this->assertEquals($this->shoppingList->id, $result->id);
     }
 
     /** @test */
@@ -122,15 +122,15 @@ class UpdateShoppingListTest extends TestCase
             ->method('increase')
             ->withAnyParameters();
 
-        $this->assertEquals(
-            1,
-            $this->updateShoppingListService
-                ->setUser(1)
-                ->add([
-                    'item_name' => 'Tomato',
-                    'amount' => 100
-                ])
-        );
+        $result = $this->updateShoppingListService
+            ->setUser(1)
+            ->add([
+                'item_name' => 'Tomato',
+                'amount' => 100
+            ]);
+
+        $this->assertIsObject($result);
+        $this->assertEquals($this->shoppingList->id, $result->id);
     }
 
     /** @test */
@@ -167,14 +167,14 @@ class UpdateShoppingListTest extends TestCase
             ->method('update')
             ->withAnyParameters();
 
-        $this->assertEquals(
-            1,
-            $this->updateShoppingListService
+        $result =$this->updateShoppingListService
                 ->setUser(1)
                 ->add([
                     'item_name' => 'Tomato',
                     'amount' => 100
-                ])
-        );
+            ]);
+
+        $this->assertIsObject($result);
+        $this->assertEquals($this->shoppingList->id, $result->id);
     }
 }
