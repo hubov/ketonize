@@ -128,6 +128,11 @@
 <x-scalables-script />
 
 <x-jquery-bootstrap5-toasts-script />
+
+<table class="template" style="display: none">
+    <x-shopping-list-row />
+</table>
+
 <script type="text/javascript">
     $(document).ready(function(){
         function toggleCategoryRow(categoryId) {

@@ -11,7 +11,7 @@ class ShoppingListRow extends Component
     public $scalablesCount;
     public $categoryId;
 
-    public function __construct(ShoppingList $element, int $scalablesCount, int $categoryId)
+    public function __construct(ShoppingList $element = NULL, int $scalablesCount = NULL, int $categoryId = NULL)
     {
         $this->element = $element;
         $this->scalablesCount = $scalablesCount;
