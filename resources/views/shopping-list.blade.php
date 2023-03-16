@@ -41,7 +41,7 @@
                     </div>
                 </div>
                 <div class="collapse p-0" id="addItem">
-                    <form method="POST" action="/shopping-list/add">
+                    <form method="POST" id="addItemForm" action="/shopping-list/add">
                         <div class="card card-body mb-4">
                             <div class="row">
                                 @csrf
@@ -206,21 +206,107 @@
             });
         }
 
-    	$('.remover').on('click', function () {
+        function createRow(item) {
+            // shoppingList:
+            //     shoppingListId
+            //
+            // itemable:
+            //     name
+            //     amount
+            //     symbol
+            //     categoryId
+
+            var scalablesCount = $('.scalable').length;
+
+            console.log(item);
+
+            var newRow = $("table.template tr").clone();
+            newRow.find("p[scale]").attr('scale', scalablesCount);
+            newRow.find("span.scalable").attr('id', 'scalable' + scalablesCount);
+            newRow.find("td:first").text(item.itemable.name);
+            newRow.find("span.scalable").text(item.amount);
+            newRow.find("span.scalable").after(' ' + $("#unit option[value=" + item.itemable.unit_id + "]").text());
+            newRow.find(".remover").attr('cat-id', item.itemable.ingredient_category_id);
+            newRow.find(".redo").attr('cat-id', item.itemable.ingredient_category_id);
+            newRow.find(".destroy").attr('cat-id', item.itemable.ingredient_category_id);
+            toggleCategoryRow(item.itemable.ingredient_category_id);
+            $('#shoppingList tr[cat-id=' + item.itemable.ingredient_category_id + ']').after(newRow);
+        }
+
+        function existingIngredient(name) {
+            var id = null;
+
+            $("td").filter(function() {
+                return $(this).text() === name;
+            }).each(function() {
+                id = $(this).attr("ingredient-id");
+                return false;
+            });
+
+            return id;
+        }
+
+        $('#addItemForm').on('submit', function(event) {
+            var itemName = $(this).find('input#item_name').val();
+            var itemAmount = $(this).find('input#amount').val();
+            var itemUnit = $(this).find('select#unit').val();
+
+            $(this).find('input#item_name').val('');
+            $(this).find('input#amount').val('');
+            $(this).find('select#unit').val(1);
+
+            var item = {
+                id: null,
+                itemable: {
+                    name: itemName,
+                    ingredient_category_id: 1000,
+                    unit_id: itemUnit
+                },
+                amount: itemAmount
+            }
+
+            console.log(existingIngredient(itemName));
+            createRow(item);
+
+            var formData = {
+                item_name: itemName,
+                amount: itemAmount,
+                unit: itemUnit,
+                _token: '{{ csrf_token() }}'
+            }
+
+            $.ajax({
+                type: "POST",
+                url: "/shopping-list/add",
+                data: formData,
+                dataType: "json",
+                encode: true,
+            }).done(function (data) {
+                // get shoppingListId
+                // update ingredient-id for the new row
+                console.log('success');
+            }) .fail(function(data) {
+                console.log('fail');
+            });
+
+            event.preventDefault();
+        });
+
+    	$('table').on('click', '.remover', function () {
     		var el = $(this);
             var catId = el.attr('cat-id');
             var removedId = el.attr('ingredient-id');
             removeRow(removedId, catId);
     	});
 
-        $('.redo').on('click', function() {
+        $('table').on('click', '.redo', function() {
             var el = $(this);
             var catId = el.attr('cat-id');
             var removedId = el.attr('ingredient-id');
             recoverRow(removedId, catId);
         });
 
-        $('.destroy').on('click', function () {
+        $('table').on('click', '.destroy', function () {
             var el = $(this);
             var catId = el.attr('cat-id');
             var removedId = el.attr('ingredient-id');
