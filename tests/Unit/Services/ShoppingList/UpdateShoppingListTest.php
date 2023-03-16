@@ -15,6 +15,7 @@ use PHPUnit\Framework\TestCase;
 
 class UpdateShoppingListTest extends TestCase
 {
+    public $shopppingList;
     public $ingredientRepository;
     public $shoppingListRepository;
     public $mealService;
@@ -23,6 +24,9 @@ class UpdateShoppingListTest extends TestCase
 
     protected function setUp(): void
     {
+        $this->shoppingList = new ShoppingList();
+        $this->shoppingList->id = 1;
+
         $this->ingredientRepository = $this->createMock(IngredientRepositoryInterface::class);
         $this->shoppingListRepository = $this->createMock(ShoppingListRepositoryInterface::class);
         $this->mealService = $this->createMock(MealInterface::class);
@@ -48,9 +52,11 @@ class UpdateShoppingListTest extends TestCase
         $this->shoppingListRepository
             ->expects($this->once())
             ->method('createForUser')
-            ->withAnyParameters();
+            ->withAnyParameters()
+            ->willReturn($this->shoppingList);
 
-        $this->assertTrue(
+        $this->assertEquals(
+            1,
             $this->updateShoppingListService
                 ->setUser(1)
                 ->add([
@@ -83,9 +89,11 @@ class UpdateShoppingListTest extends TestCase
         $this->shoppingListRepository
             ->expects($this->once())
             ->method('createForUser')
-            ->withAnyParameters();
+            ->withAnyParameters()
+            ->willReturn($this->shoppingList);
 
-        $this->assertTrue(
+        $this->assertEquals(
+            1,
             $this->updateShoppingListService
                 ->setUser(1)
                 ->add([
@@ -104,20 +112,18 @@ class UpdateShoppingListTest extends TestCase
             ->withAnyParameters()
             ->willReturn(new Ingredient());
 
-        $shoppingList = new ShoppingList();
-        $shoppingList->id = 1;
-
         $this->shoppingListRepository
             ->expects($this->once())
             ->method('getByIngredientUser')
             ->withAnyParameters()
-            ->willReturn($shoppingList);
+            ->willReturn($this->shoppingList);
         $this->shoppingListRepository
             ->expects($this->once())
             ->method('increase')
             ->withAnyParameters();
 
-        $this->assertTrue(
+        $this->assertEquals(
+            1,
             $this->updateShoppingListService
                 ->setUser(1)
                 ->add([
@@ -138,7 +144,7 @@ class UpdateShoppingListTest extends TestCase
 
         $shoppingList = $this->createMock(ShoppingList::class);
         $shoppingList
-            ->expects($this->exactly(2))
+            ->expects($this->exactly(3))
             ->method('__get')
             ->with('id')
             ->willReturn(1);
@@ -161,7 +167,8 @@ class UpdateShoppingListTest extends TestCase
             ->method('update')
             ->withAnyParameters();
 
-        $this->assertTrue(
+        $this->assertEquals(
+            1,
             $this->updateShoppingListService
                 ->setUser(1)
                 ->add([

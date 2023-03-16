@@ -116,12 +116,12 @@ class ShoppingListController extends Controller
 
     public function add(Request $request)
     {
-        $this->updateShoppingListService
-            ->setUser(Auth()->user()->id)
-            ->add(
-                $request->all()
+        return response()->json(
+            $this->updateShoppingListService
+                ->setUser(Auth()->user()->id)
+                ->add(
+                    $request->all()
+                )
         );
-
-        return response()->redirectTo('/shopping-list');
     }
 }

@@ -4,6 +4,7 @@ namespace App\Services\ShoppingList;
 
 use App\Models\Ingredient;
 use App\Models\Interfaces\IngredientModelInterface;
+use App\Models\ShoppingList;
 use App\Repositories\CustomIngredientRepository;
 use App\Repositories\Interfaces\CustomIngredientRepositoryInterface;
 use App\Repositories\Interfaces\IngredientRepositoryInterface;
@@ -61,7 +62,7 @@ class UpdateShoppingListService implements UpdateShoppingListInterface
         $this->shoppingListRepository->createForUserBulk($this->userId, $this->listItems);
     }
 
-    public function add(array $attributes): bool
+    public function add(array $attributes): int
     {
         try {
             $ingredient = $this->ingredientRepository->getByName($attributes['item_name']);
@@ -69,30 +70,30 @@ class UpdateShoppingListService implements UpdateShoppingListInterface
             $ingredient = $this->customIngredientRepository->getOrCreateForUserByName($this->userId, $attributes);
         }
 
-        $this->addIngredient($ingredient, $attributes);
-
-        return true;
+        return $this->addIngredient($ingredient, $attributes);
     }
 
-    protected function addIngredient(IngredientModelInterface $ingredient, array $attributes): void
+    protected function addIngredient(IngredientModelInterface $ingredient, array $attributes): int
     {
         try {
-            $existingShoppingList = $this->shoppingListRepository->getByIngredientUser($ingredient, $this->userId);
+            $shoppingList = $this->shoppingListRepository->getByIngredientUser($ingredient, $this->userId);
 
-            if ($existingShoppingList->trashed()) {
-                $this->shoppingListRepository->restore($existingShoppingList->id);
-                $this->shoppingListRepository->update($existingShoppingList->id, ['amount' => $attributes['amount']]);
+            if ($shoppingList->trashed()) {
+                $this->shoppingListRepository->restore($shoppingList->id);
+                $this->shoppingListRepository->update($shoppingList->id, ['amount' => $attributes['amount']]);
             } else {
-                $this->shoppingListRepository->increase($existingShoppingList->id, $attributes['amount']);
+                $this->shoppingListRepository->increase($shoppingList->id, $attributes['amount']);
             }
         } catch (ModelNotFoundException) {
-            $this->createShoppingListItem($ingredient, $attributes['amount']);
+            $shoppingList = $this->createShoppingListItem($ingredient, $attributes['amount']);
         }
+
+        return $shoppingList->id;
     }
 
-    protected function createShoppingListItem(IngredientModelInterface $ingredient, int $amount)
+    protected function createShoppingListItem(IngredientModelInterface $ingredient, int $amount): ShoppingList
     {
-        $this->shoppingListRepository
+        $shoppingList = $this->shoppingListRepository
             ->createForUser(
                 $this->userId,
                 [
@@ -101,5 +102,7 @@ class UpdateShoppingListService implements UpdateShoppingListInterface
                     'amount' => $amount
                 ]
             );
+
+        return $shoppingList;
     }
 }

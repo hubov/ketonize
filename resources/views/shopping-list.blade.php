@@ -231,6 +231,8 @@
             newRow.find(".destroy").attr('cat-id', item.itemable.ingredient_category_id);
             toggleCategoryRow(item.itemable.ingredient_category_id);
             $('#shoppingList tr[cat-id=' + item.itemable.ingredient_category_id + ']').after(newRow);
+
+            return newRow;
         }
 
         function existingIngredient(name) {
@@ -266,7 +268,7 @@
             }
 
             console.log(existingIngredient(itemName));
-            createRow(item);
+            var newRow = createRow(item);
 
             var formData = {
                 item_name: itemName,
@@ -282,10 +284,12 @@
                 dataType: "json",
                 encode: true,
             }).done(function (data) {
-                // get shoppingListId
-                // update ingredient-id for the new row
+                newRow.attr('ingredient-id', data);
+                newRow.find('span.scalable').attr('ingredient-id', data);
+                newRow.find('.clickable').attr('ingredient-id', data);
+
                 console.log('success');
-            }) .fail(function(data) {
+            }).fail(function(data) {
                 console.log('fail');
             });
 

@@ -18,5 +18,5 @@ interface UpdateShoppingListInterface
     public function setUser(int $userId): self;
     public function setDates(string $dateFrom, string $dateTo): self;
     public function update(): void;
-    public function add(array $attributes): bool;
+    public function add(array $attributes): int;
 }

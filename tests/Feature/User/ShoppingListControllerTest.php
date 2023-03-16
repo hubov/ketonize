@@ -214,7 +214,7 @@ class ShoppingListControllerTest extends TestCase
     {
         $ingredient = $input['model_type']::factory()->create($input['attributes']);
 
-        $response = $this->followingRedirects()
+        $response = $this
             ->actingAs($this->user)
             ->post(
                 'shopping-list/add',
@@ -226,8 +226,9 @@ class ShoppingListControllerTest extends TestCase
             );
 
         $response->assertStatus(200);
-        $response->assertSee($input['attributes']['name']);
+        $response->assertHeader('content-type', 'application/json');
         $this->assertDatabaseCount('shopping_lists', 1);
+        $this->assertMatchesRegularExpression('/^\\d+$/', $response->content());
     }
 
     /**
@@ -259,7 +260,8 @@ class ShoppingListControllerTest extends TestCase
         $shoppingList->refresh();
 
         $response->assertStatus(200);
-        $response->assertSee($input['attributes']['name']);
+        $response->assertHeader('content-type', 'application/json');
+        $response->assertSee($shoppingList->id);
         $this->assertDatabaseCount('shopping_lists', 1);
         $this->assertFalse($shoppingList->trashed());
         $this->assertEquals(100, $shoppingList->amount);
@@ -293,7 +295,8 @@ class ShoppingListControllerTest extends TestCase
         $shoppingList->refresh();
 
         $response->assertStatus(200);
-        $response->assertSee($input['attributes']['name']);
+        $response->assertHeader('content-type', 'application/json');
+        $response->assertSee($shoppingList->id);
         $this->assertDatabaseCount('shopping_lists', 1);
         $this->assertFalse($shoppingList->trashed());
         $this->assertEquals(150, $shoppingList->amount);
