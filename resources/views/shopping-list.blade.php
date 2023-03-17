@@ -123,6 +123,19 @@
             @endif
         </div>
     </div>
+    <div id="connectionToast" class="toast align-items-center text-bg-danger border-0 bottom-0 end-0 m-3 position-fixed" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body w-100">
+                <span class="material-symbols-outlined inline-icon me-1">signal_disconnected</span>
+                <span>Cannot connect to server...</span>
+                <div class="h-100 d-flex align-items-center float-end">
+                    <div class="spinner-border text-light spinner-border-sm" role="status" style="margin: 0 auto">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </x-app-layout>
 
 <x-scalables-script />
@@ -132,6 +145,33 @@
 <table class="template" style="display: none">
     <x-shopping-list-row />
 </table>
+
+<script type="module">
+    const connectionToastEl = document.getElementById("connectionToast");
+    const connectionToast = new bootstrap.Toast(connectionToastEl, {
+        autohide: false,
+    });
+    Echo.private(`shoppinglist.{{ Auth::user()->id }}`)
+        .listen('ItemTrashed', (e) => {
+            console.log(e.item);
+        });
+
+    function checkStatus() {
+        if (Echo.connector.pusher.connection.state != 'connected') {
+            connectionToast.show();
+        }
+    }
+
+    setTimeout(checkStatus, 5000);
+
+    Echo.connector.pusher.connection.bind('state_change', function(states) {
+        if (states.current != 'connected') {
+            connectionToast.show();
+        } else {
+            connectionToast.hide();
+        }
+    });
+</script>
 
 <script type="text/javascript">
     $(document).ready(function(){
