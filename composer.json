@@ -6,6 +6,7 @@
     "license": "MIT",
     "require": {
         "php": "^8.0.2",
+        "beyondcode/laravel-websockets": "^1.14",
         "doctrine/dbal": "^3.4",
         "genealabs/laravel-pivot-events": "*",
         "guzzlehttp/guzzle": "^7.2",
