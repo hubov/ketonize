@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Models\Recipe;
+use App\Models\User;
 use App\Observers\RecipeObserver;
 use App\Services\AddMealsToDietPlanService;
 use App\Services\DietPlanService;
@@ -38,6 +39,7 @@ use App\Services\ShoppingList\EditShoppingListService;
 use App\Services\ShoppingList\GetShoppingListService;
 use App\Services\ShoppingList\UpdateShoppingListService;
 use App\Services\UserDietService;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -76,5 +78,8 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     {
         Recipe::observe(RecipeObserver::class);
+        Gate::define('viewWebSocketsDashboard', function (User $user) {
+            return $user->is('admin');
+        });
     }
 }
