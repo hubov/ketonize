@@ -173,9 +173,10 @@
         if (websocket === null) {
             startEcho();
             websocket = EchoConnector.private(`shoppinglist.{{ Auth::user()->id }}`)
-                .listen('ItemTrashed', (e) => {
-                    console.log(e.item);
-            });
+                .listen('ShoppingList\\ItemTrashed', (e) => {
+                    console.log(e);
+                    removeRow(e.shoppingList.id, e.shoppingList.itemable.ingredient_category_id, false);
+                })
                 .listen('ShoppingList\\ItemAdded', (e) => {
                     console.log(e);
                     createRow(e.shoppingList);

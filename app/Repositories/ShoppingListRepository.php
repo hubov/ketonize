@@ -12,7 +12,7 @@ class ShoppingListRepository implements ShoppingListRepositoryInterface
 {
     public function get(int $id) : ?ShoppingList
     {
-        return ShoppingList::withTrashed()->find($id);
+        return ShoppingList::withTrashed()->with('itemable')->find($id);
     }
 
     public function getAll() : Collection

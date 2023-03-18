@@ -2,6 +2,7 @@
 
 namespace App\Services\ShoppingList;
 
+use App\Events\ShoppingList\ItemTrashed;
 use App\Repositories\Interfaces\ShoppingListRepositoryInterface;
 use App\Services\Interfaces\ShoppingList\DeleteShoppingListInterface;
 
@@ -31,6 +32,8 @@ class DeleteShoppingListService implements DeleteShoppingListInterface
         if ($this->shoppingListExistsForUser($shoppingListId))
         {
             $this->shoppingListRepository->trash($shoppingListId);
+
+            ItemTrashed::dispatch($this->shoppingList);
         } else {
             return false;
         }
