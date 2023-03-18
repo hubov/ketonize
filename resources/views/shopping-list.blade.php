@@ -13,8 +13,8 @@
                 <div class="col position-relative">
                     <span class="position-absolute end-0 top-50 translate-middle-y">
                         <div class="form-check form-switch">
-                            <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault">
-                            <label class="form-check-label" for="flexSwitchCheckDefault"><span class="material-symbols-outlined inline-icon teal">sync</span></label>
+                            <input class="form-check-input" type="checkbox" id="syncSwitch">
+                            <label class="form-check-label" for="syncSwitch"><span class="material-symbols-outlined inline-icon teal">sync</span></label>
                         </div>
                     </span>
                 </div>
@@ -148,6 +148,7 @@
 
 <script type="module">
     let EchoConnector = null;
+    const syncSwitch = document.getElementById('syncSwitch');
     const connectionToastEl = document.getElementById("connectionToast");
     const connectionToast = new bootstrap.Toast(connectionToastEl, {
         autohide: false,
@@ -168,21 +169,48 @@
         });
     }
 
-    function checkStatus() {
-        if (Echo.connector.pusher.connection.state != 'connected') {
-            connectionToast.show();
+    function connectWebSocket() {
+        if (websocket === null) {
+            startEcho();
+            websocket = EchoConnector.private(`shoppinglist.{{ Auth::user()->id }}`)
+                .listen('ItemTrashed', (e) => {
+                    console.log(e.item);
+            });
+            EchoConnector.connector.pusher.connection.bind('state_change', function(states) {
+                if (states.current != 'connected') {
+                    connectionToast.show();
+                } else {
+                    connectionToast.hide();
+                }
+            });
+            $(document).bsToast({body: "Shopping list sync on!", bgColor: 'bg-success', icon: 'cloud_sync'});
+
+            setTimeout(checkStatus, 5000);
         }
     }
 
-    setTimeout(checkStatus, 5000);
-
-    Echo.connector.pusher.connection.bind('state_change', function(states) {
-        if (states.current != 'connected') {
-            connectionToast.show();
-        } else {
+    function disconnectWebSocket() {
+        if (websocket !== null) {
+            websocket = null;
+            EchoConnector.disconnect();
+            $(document).bsToast({body: "Shopping list sync off!", bgColor: 'bg-warning', icon: 'cloud_off'});
             connectionToast.hide();
         }
+    }
+
+    syncSwitch.addEventListener('change', () => {
+        if (syncSwitch.checked) {
+            connectWebSocket();
+        } else {
+            disconnectWebSocket();
+        }
     });
+
+    function checkStatus() {
+        if (EchoConnector.connector.pusher.connection.state != 'connected') {
+            connectionToast.show();
+        }
+    }
 </script>
 
 <script type="text/javascript">
