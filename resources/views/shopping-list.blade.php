@@ -147,14 +147,26 @@
 </table>
 
 <script type="module">
+    let EchoConnector = null;
     const connectionToastEl = document.getElementById("connectionToast");
     const connectionToast = new bootstrap.Toast(connectionToastEl, {
         autohide: false,
     });
-    Echo.private(`shoppinglist.{{ Auth::user()->id }}`)
-        .listen('ItemTrashed', (e) => {
-            console.log(e.item);
+    let websocket = null;
+
+    function startEcho() {
+        EchoConnector = new Echo({
+            broadcaster: 'pusher',
+            key: window.ws.key,
+            wsHost: window.ws.host,
+            wsPort: window.ws.wsPort,
+            wssPort: window.ws.wssPort,
+            forceTLS: window.ws.forceTLS,
+            enabledTransports: ['ws', 'wss'],
+            disableStats: true,
+            cluster: 'eu'
         });
+    }
 
     function checkStatus() {
         if (Echo.connector.pusher.connection.state != 'connected') {
