@@ -176,6 +176,10 @@
                 .listen('ItemTrashed', (e) => {
                     console.log(e.item);
             });
+                .listen('ShoppingList\\ItemAdded', (e) => {
+                    console.log(e);
+                    createRow(e.shoppingList);
+                });
             EchoConnector.connector.pusher.connection.bind('state_change', function(states) {
                 if (states.current != 'connected') {
                     connectionToast.show();
@@ -214,15 +218,16 @@
 </script>
 
 <script type="text/javascript">
-    $(document).ready(function(){
-        function toggleCategoryRow(categoryId) {
-            if ($('#shoppingList .remover[cat-id=' + categoryId + ']').length == 0) {
-                $('#shoppingList tr[cat-id=' + categoryId + ']').toggle();
-            }
+    function toggleCategoryRow(categoryId) {
+        if ($('#shoppingList .remover[cat-id=' + categoryId + ']').length == 0) {
+            $('#shoppingList tr[cat-id=' + categoryId + ']').toggle();
         }
+    }
 
-        function removeRow(ingredientId, categoryId) {
-            var row = $('tr[ingredient-id=' + ingredientId + ']');
+    function removeRow(ingredientId, categoryId, broadcast = true) {
+        var row = $('tr[ingredient-id=' + ingredientId + ']');
+
+        if (broadcast === true) {
             var formData = {
                 id: ingredientId,
                 _token: '{{ csrf_token() }}'
@@ -238,20 +243,24 @@
                 if (data === false) {
                     $(document).bsToast("This product has been removed by someone else already!")
                 }
-                $('#trashedShoppingList').prepend(row);
-                row.find('.scale').hide();
-                toggleCategoryRow(categoryId);
-            }) .fail(function(data) {
+            }).fail(function (data) {
                 console.log('fail');
             });
         }
+        $('#trashedShoppingList').prepend(row);
+        row.find('.scale').hide();
+        toggleCategoryRow(categoryId);
+    }
 
-        function recoverRow(ingredientId, categoryId) {
-            var row = $('tr[ingredient-id=' + ingredientId + ']');
+    function recoverRow(ingredientId, categoryId, broadcast = true) {
+        var row = $('tr[ingredient-id=' + ingredientId + ']');
+
+        if (broadcast === true) {
             var formData = {
                 id: ingredientId,
                 _token: '{{ csrf_token() }}'
             }
+
             $.ajax({
                 type: "POST",
                 url: "/shopping-list/restore",
@@ -259,15 +268,19 @@
                 dataType: "json",
                 encode: true,
             }).done(function (data) {
-                toggleCategoryRow(categoryId);
-                $('#shoppingList tr[cat-id=' + categoryId + ']').after(row);
-            }) .fail(function(data) {
+
+            }).fail(function (data) {
                 console.log('fail');
             });
         }
+        toggleCategoryRow(categoryId);
+        $('#shoppingList tr[cat-id=' + categoryId + ']').after(row);
+    }
 
-        function destroyRow(ingredientId) {
-            var row = $('tr[ingredient-id=' + ingredientId + ']');
+    function destroyRow(ingredientId, broadcast = true) {
+        var row = $('tr[ingredient-id=' + ingredientId + ']');
+
+        if (broadcast === true) {
             var formData = {
                 id: ingredientId,
                 _token: '{{ csrf_token() }}'
@@ -280,72 +293,75 @@
                 dataType: "json",
                 encode: true,
             }).done(function (data) {
-                row.remove();
-            }) .fail(function(data) {
+
+            }).fail(function (data) {
                 console.log('fail');
             });
         }
+        row.remove();
+    }
 
-        function createRow(item) {
-            // shoppingList:
-            //     shoppingListId
-            //
-            // itemable:
-            //     name
-            //     amount
-            //     symbol
-            //     categoryId
+    function createRow(item) {
+        // shoppingList:
+        //     shoppingListId
+        //
+        // itemable:
+        //     name
+        //     amount
+        //     symbol
+        //     categoryId
 
-            var scalablesCount = $('.scalable').length;
+        var scalablesCount = $('.scalable').length;
 
-            console.log(item);
+        console.log(item);
 
-            var newRow = $("table.template tr").clone();
-            newRow.find("p[scale]").attr('scale', scalablesCount);
-            newRow.find("span.scalable").attr('id', 'scalable' + scalablesCount);
-            newRow.find("td:first").text(item.itemable.name);
-            newRow.find("span.scalable").text(item.amount);
-            newRow.find("span.scalable").after(' ' + $("#unit option[value=" + item.itemable.unit_id + "]").text());
-            newRow.find(".remover").attr('cat-id', item.itemable.ingredient_category_id);
-            newRow.find(".redo").attr('cat-id', item.itemable.ingredient_category_id);
-            newRow.find(".destroy").attr('cat-id', item.itemable.ingredient_category_id);
-            toggleCategoryRow(item.itemable.ingredient_category_id);
-            $('#shoppingList tr[cat-id=' + item.itemable.ingredient_category_id + ']').after(newRow);
+        var newRow = $("table.template tr").clone();
+        newRow.find("p[scale]").attr('scale', scalablesCount);
+        newRow.find("span.scalable").attr('id', 'scalable' + scalablesCount);
+        newRow.find("td:first").text(item.itemable.name);
+        newRow.find("span.scalable").text(item.amount);
+        newRow.find("span.scalable").after(' ' + $("#unit option[value=" + item.itemable.unit_id + "]").text());
+        newRow.find(".remover").attr('cat-id', item.itemable.ingredient_category_id);
+        newRow.find(".redo").attr('cat-id', item.itemable.ingredient_category_id);
+        newRow.find(".destroy").attr('cat-id', item.itemable.ingredient_category_id);
+        toggleCategoryRow(item.itemable.ingredient_category_id);
+        $('#shoppingList tr[cat-id=' + item.itemable.ingredient_category_id + ']').after(newRow);
 
-            return newRow;
+        return newRow;
+    }
+
+    function updateRow(item) {
+        console.log(item);
+        var row = $("tr[ingredient-id=" + item.id + "]");
+        if (ifTrashedRow(row)) {
+            var catId = row.find('.clickable:first').attr('cat-id');
+            $('#shoppingList tr[cat-id=' + catId + ']').after(row);
+        } else {
+            item.amount += getRowAmount(item.id);
         }
+        row.find("span.scalable").text(item.amount);
+    }
 
-        function updateRow(item) {
-            console.log(item);
-            var row = $("tr[ingredient-id=" + item.id + "]");
-            if (ifTrashedRow(row)) {
-                var catId = row.find('.clickable:first').attr('cat-id');
-                $('#shoppingList tr[cat-id=' + catId + ']').after(row);
-            } else {
-                item.amount += getRowAmount(item.id);
-            }
-            row.find("span.scalable").text(item.amount);
-        }
+    function ifTrashedRow(row) {
+        return row.parents('#trashedShoppingList').length ? true : false;
+    }
 
-        function ifTrashedRow(row) {
-            return row.parents('#trashedShoppingList').length ? true : false;
-        }
+    function getRowAmount(ingredientId) {
+        return parseInt($("tr[ingredient-id=" + ingredientId + "]").find("span.scalable").text());
+    }
 
-        function getRowAmount(ingredientId) {
-            return parseInt($("tr[ingredient-id=" + ingredientId + "]").find("span.scalable").text());
-        }
+    function existingIngredient(name) {
+        var id = null;
+        $("td").filter(function() {
+            return $(this).text() === name;
+        }).each(function() {
+            id = $(this).parent().attr("ingredient-id");
+            return false;
+        });
+        return id;
+    }
 
-        function existingIngredient(name) {
-            var id = null;
-            $("td").filter(function() {
-                return $(this).text() === name;
-            }).each(function() {
-                id = $(this).parent().attr("ingredient-id");
-                return false;
-            });
-            return id;
-        }
-
+    $(document).ready(function(){
         $('#addItemForm').on('submit', function(event) {
             var itemName = $(this).find('input#item_name').val();
             var itemAmount = parseInt($(this).find('input#amount').val());
