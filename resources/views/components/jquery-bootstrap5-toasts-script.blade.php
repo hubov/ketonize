@@ -7,13 +7,19 @@
                     options = {
                     body: options
                 }
+            } else {
+                options = options;
             }
+
             var settings = $.extend({
                 body: "MISSING body: <br/>$(...).bsToast({body: 'toast body text here'})<br/><strong><em>html is OK!</em></strong>",
                 animation: true, // Apply a CSS fade transition to the toast
                 autohide: true,	 // Auto hide the toast
                 delay: 20000,	 // Delay hiding the toast (ms)
-                dispose: true
+                dispose: true,
+                bgColor: 'bg-danger',
+                color: 'text-white',
+                icon: 'production_quantity_limits'
             }, options);
 
             var $toastContainer = $("#toast-container");
@@ -23,7 +29,7 @@
                     "id": "toast-position",
                     "aria-live": "polite",
                     "aria-atomic": "true",
-                    "style": "position: fixed; min-height: 200px;top: 20px;right: 20px;min-width: 100%;max-width: 500px;"
+                    "style": "position: fixed; min-height: 200px; top: 20px; right: 20px; max-width: 500px;"
                 });
 
                 $toastContainer = $("<div>", {
@@ -40,9 +46,9 @@
 
             var $toast = $("<div>", {
                 "id": toastid,
-                "class": "toast bg-danger text-white",
+                "class": "toast " + settings.bgColor + " " + settings.color,
                 "style": "min-width: 300px;",
-                "role": "danger",
+                "role": "alert",
                 "aria-live": "assertive",
                 "aria-atomic": true
             });
@@ -62,7 +68,7 @@
             var $toastBody = $("<div>", {"class": "toast-body"});
             $toastWrapper.html($toastBody)
             $toastBody.html(settings.body)
-            $toastWrapper.prepend(`<span class="material-symbols-outlined m-3 fs-4">production_quantity_limits</span>`)
+            $toastWrapper.prepend(`<span class="material-symbols-outlined m-3 fs-4">` + settings.icon + `</span>`)
             $toastWrapper.append(`<button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>`)
             $toast.append($toastWrapper)
             $toastContainer.append($toast)
