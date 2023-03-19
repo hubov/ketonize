@@ -174,15 +174,12 @@
             startEcho();
             websocket = EchoConnector.private(`shoppinglist.{{ Auth::user()->id }}`)
                 .listen('ShoppingList\\ItemTrashed', (e) => {
-                    console.log(e);
                     removeRow(e.shoppingList.id, e.shoppingList.itemable.ingredient_category_id, false);
                 })
                 .listen('ShoppingList\\ItemAdded', (e) => {
-                    console.log(e);
                     createRow(e.shoppingList);
                 })
                 .listen('ShoppingList\\ItemRestored', (e) => {
-                    console.log(e);
                     recoverRow(e.shoppingList.id, e.shoppingList.itemable.ingredient_category_id, false);
                 })
                 .listen('ShoppingList\\ItemUpdated', (e) => {
@@ -310,18 +307,7 @@
     }
 
     function createRow(item) {
-        // shoppingList:
-        //     shoppingListId
-        //
-        // itemable:
-        //     name
-        //     amount
-        //     symbol
-        //     categoryId
-
         var scalablesCount = $('.scalable').length;
-
-        console.log(item);
 
         var newRow = $("table.template tr").clone();
         newRow.find("p[scale]").attr('scale', scalablesCount);
@@ -339,7 +325,6 @@
     }
 
     function updateRow(item) {
-        console.log(item);
         var row = $("tr[ingredient-id=" + item.id + "]");
         if (ifTrashedRow(row)) {
             var catId = row.find('.clickable:first').attr('cat-id');
@@ -397,10 +382,7 @@
 
             var ingredientId = existingIngredient(itemName);
 
-                console.log(ingredientId);
             if (ingredientId) {
-                // update row
-
                 item.id = ingredientId;
                 if (!ifTrashedRow($('tr[ingredient-id=' + ingredientId + ']'))) {
                     item.amount += getRowAmount(item.id);
@@ -419,7 +401,6 @@
                     console.log('fail');
                 });
             } else {
-                // create row
                 var newRow = createRow(item);
 
                 $.ajax({
