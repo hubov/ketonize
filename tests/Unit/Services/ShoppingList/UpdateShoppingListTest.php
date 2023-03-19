@@ -11,7 +11,7 @@ use App\Repositories\Interfaces\ShoppingListRepositoryInterface;
 use App\Services\Interfaces\MealInterface;
 use App\Services\ShoppingList\UpdateShoppingListService;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use PHPUnit\Framework\TestCase;
+use Tests\TestCase;
 
 class UpdateShoppingListTest extends TestCase
 {
@@ -24,6 +24,8 @@ class UpdateShoppingListTest extends TestCase
 
     protected function setUp(): void
     {
+        parent::setUp();
+
         $this->shoppingList = new ShoppingList();
         $this->shoppingList->id = 1;
 
@@ -38,6 +40,8 @@ class UpdateShoppingListTest extends TestCase
     /** @test */
     public function adds_shopping_list_item_with_existing_ingredient()
     {
+        $this->withoutEvents();
+
         $this->ingredientRepository
             ->expects($this->once())
             ->method('getByName')
@@ -69,6 +73,8 @@ class UpdateShoppingListTest extends TestCase
     /** @test */
     public function adds_shopping_list_item_with_custom_ingredient()
     {
+        $this->withoutEvents();
+
         $this->ingredientRepository
             ->expects($this->once())
             ->method('getByName')

@@ -5,7 +5,7 @@ namespace Tests\Unit\Services\ShoppingList;
 use App\Models\ShoppingList;
 use App\Repositories\Interfaces\ShoppingListRepositoryInterface;
 use App\Services\ShoppingList\DeleteShoppingListService;
-use PHPUnit\Framework\TestCase;
+use Tests\TestCase;
 
 class DeleteShoppingListServiceTest extends TestCase
 {
@@ -17,6 +17,8 @@ class DeleteShoppingListServiceTest extends TestCase
 
     public function setUp(): void
     {
+        parent::setUp();
+
         $this->shoppingListId = 1;
         $this->shoppingList = new ShoppingList();
         $this->shoppingList->id = $this->shoppingListId;
@@ -69,6 +71,8 @@ class DeleteShoppingListServiceTest extends TestCase
     /** @test */
     public function returns_true_if_item_was_trashed()
     {
+        $this->withoutEvents();
+
         $this->shoppingListRepository
             ->expects($this->once())
             ->method('trash')
