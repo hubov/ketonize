@@ -112,6 +112,8 @@ class UpdateShoppingListTest extends TestCase
     /** @test */
     public function adding_existing_shopping_list_item_updates_it()
     {
+        $this->withoutEvents();
+
         $this->ingredientRepository
             ->expects($this->once())
             ->method('getByName')
@@ -142,6 +144,8 @@ class UpdateShoppingListTest extends TestCase
     /** @test */
     public function adding_trashed_shopping_list_item_updates_it()
     {
+        $this->withoutEvents();
+
         $this->ingredientRepository
             ->expects($this->once())
             ->method('getByName')

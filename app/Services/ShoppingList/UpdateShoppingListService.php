@@ -3,6 +3,7 @@
 namespace App\Services\ShoppingList;
 
 use App\Events\ShoppingList\ItemAdded;
+use App\Events\ShoppingList\ItemUpdated;
 use App\Models\Interfaces\IngredientModelInterface;
 use App\Models\ShoppingList;
 use App\Repositories\Interfaces\CustomIngredientRepositoryInterface;
@@ -83,6 +84,8 @@ class UpdateShoppingListService implements UpdateShoppingListInterface
             } else {
                 $this->shoppingListRepository->increase($shoppingList->id, $attributes['amount']);
             }
+
+            ItemUpdated::dispatch($shoppingList);
         } catch (ModelNotFoundException) {
             $shoppingList = $this->createShoppingListItem($ingredient, $attributes['amount']);
 

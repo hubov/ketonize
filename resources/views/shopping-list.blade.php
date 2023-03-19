@@ -184,6 +184,9 @@
                 .listen('ShoppingList\\ItemRestored', (e) => {
                     console.log(e);
                     recoverRow(e.shoppingList.id, e.shoppingList.itemable.ingredient_category_id, false);
+                })
+                .listen('ShoppingList\\ItemUpdated', (e) => {
+                    updateRow(e.shoppingList);
                 });
             EchoConnector.connector.pusher.connection.bind('state_change', function(states) {
                 if (states.current != 'connected') {
@@ -341,8 +344,6 @@
         if (ifTrashedRow(row)) {
             var catId = row.find('.clickable:first').attr('cat-id');
             $('#shoppingList tr[cat-id=' + catId + ']').after(row);
-        } else {
-            item.amount += getRowAmount(item.id);
         }
         row.find("span.scalable").text(item.amount);
     }
@@ -368,6 +369,7 @@
 
     $(document).ready(function(){
         $('#addItemForm').on('submit', function(event) {
+            event.preventDefault();
             var itemName = $(this).find('input#item_name').val();
             var itemAmount = parseInt($(this).find('input#amount').val());
             var itemUnit = $(this).find('select#unit').val();
@@ -400,6 +402,9 @@
                 // update row
 
                 item.id = ingredientId;
+                if (!ifTrashedRow($('tr[ingredient-id=' + ingredientId + ']'))) {
+                    item.amount += getRowAmount(item.id);
+                }
                 updateRow(item);
 
                 $.ajax({
@@ -437,8 +442,6 @@
                     console.log('fail');
                 });
             }
-
-            event.preventDefault();
         });
 
     	$('table').on('click', '.remover', function () {
