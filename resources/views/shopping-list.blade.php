@@ -180,6 +180,10 @@
                 .listen('ShoppingList\\ItemAdded', (e) => {
                     console.log(e);
                     createRow(e.shoppingList);
+                })
+                .listen('ShoppingList\\ItemRestored', (e) => {
+                    console.log(e);
+                    recoverRow(e.shoppingList.id, e.shoppingList.itemable.ingredient_category_id, false);
                 });
             EchoConnector.connector.pusher.connection.bind('state_change', function(states) {
                 if (states.current != 'connected') {

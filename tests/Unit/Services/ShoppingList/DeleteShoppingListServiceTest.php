@@ -105,6 +105,8 @@ class DeleteShoppingListServiceTest extends TestCase
     /** @test */
     public function returns_true_if_item_successfully_restored()
     {
+        $this->withoutEvents();
+
         $this->shoppingListRepository
             ->expects($this->once())
             ->method('restore')
