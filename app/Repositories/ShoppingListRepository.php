@@ -12,7 +12,11 @@ class ShoppingListRepository implements ShoppingListRepositoryInterface
 {
     public function get(int $id) : ?ShoppingList
     {
-        return ShoppingList::withTrashed()->with('itemable')->find($id);
+        $result = ShoppingList::withTrashed()->with('itemable')->find($id);
+
+        $result = $this->completeMissingIngredientCategory($result);
+
+        return $result;
     }
 
     public function getAll() : Collection
@@ -31,11 +35,16 @@ class ShoppingListRepository implements ShoppingListRepositoryInterface
 
     public function getByIngredientUser(IngredientModelInterface $ingredient, int $userId) : ShoppingList
     {
-        return ShoppingList::withTrashed()
+        $result = ShoppingList::withTrashed()
+            ->with('itemable')
             ->where('user_id', $userId)
             ->where('itemable_id', $ingredient->id)
             ->where('itemable_type', get_class($ingredient))
             ->firstOrFail();
+
+        $result = $this->completeMissingIngredientCategory($result);
+
+        return $result;
     }
 
     public function create(array $attributes): ShoppingList
@@ -48,9 +57,22 @@ class ShoppingListRepository implements ShoppingListRepositoryInterface
         $attributes['user_id'] = $userId;
 
         $shoppingList = ShoppingList::create($attributes);
-        $result = ShoppingList::with(['itemable'])->find($shoppingList->id);
+        $result = ShoppingList::with('itemable')->find($shoppingList->id);
+
+        $result = $this->completeMissingIngredientCategory($result);
 
         return $result;
+    }
+
+    protected function completeMissingIngredientCategory(ShoppingList $shoppingList = NULL): ?ShoppingList
+    {
+        if ($shoppingList != NULL) {
+            if ($shoppingList->itemable->ingredient_category_id === NULL) {
+                $shoppingList->itemable->ingredient_category_id = 1000;
+            }
+        }
+
+        return $shoppingList;
     }
 
     public function createForUserBulk(int $userId, array $attributes)
