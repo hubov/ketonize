@@ -27,8 +27,11 @@ class IngredientController extends Controller
      * @return \Illuminate\Contracts\View\View
      */
 
-    public function __construct(IngredientInterface $ingredientService, IngredientRepositoryInterface $ingredientRepository, IngredientCategoryRepositoryInterface $ingredientCategoryRepository)
-    {
+    public function __construct(
+        IngredientInterface $ingredientService,
+        IngredientRepositoryInterface $ingredientRepository,
+        IngredientCategoryRepositoryInterface $ingredientCategoryRepository
+    ) {
         $this->ingredientService = $ingredientService;
         $this->ingredientRepository = $ingredientRepository;
         $this->ingredientCategoryRepository = $ingredientCategoryRepository;

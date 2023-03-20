@@ -10,5 +10,7 @@ interface DeleteShoppingListInterface
         ShoppingListRepositoryInterface $shoppingListRepository
     );
     public function setUser(int $userId): self;
+    public function trash(int $shoppingListId) : bool;
+    public function restore(int $shoppingListId) : bool;
     public function delete(int $shoppingListId) : bool;
 }

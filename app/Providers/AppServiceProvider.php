@@ -3,15 +3,18 @@
 namespace App\Providers;
 
 use App\Models\Recipe;
+use App\Models\User;
 use App\Observers\RecipeObserver;
 use App\Services\AddMealsToDietPlanService;
 use App\Services\DietPlanService;
 use App\Services\Image\RecipeImageProcessor;
+use App\Services\IngredientCategoryService;
 use App\Services\IngredientSearchService;
 use App\Services\IngredientService;
 use App\Services\Interfaces\AddMealsToDietPlanInterface;
 use App\Services\Interfaces\DietPlanInterface;
 use App\Services\Interfaces\Image\ImageProcessorInterface;
+use App\Services\Interfaces\IngredientCategoryInterface;
 use App\Services\Interfaces\IngredientInterface;
 use App\Services\Interfaces\IngredientSearchInterface;
 use App\Services\Interfaces\MealInterface;
@@ -36,6 +39,7 @@ use App\Services\ShoppingList\EditShoppingListService;
 use App\Services\ShoppingList\GetShoppingListService;
 use App\Services\ShoppingList\UpdateShoppingListService;
 use App\Services\UserDietService;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -54,6 +58,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(GetShoppingListInterface::class, GetShoppingListService::class);
         $this->app->bind(ImageProcessorInterface::class, RecipeImageProcessor::class);
         $this->app->bind(IngredientInterface::class, IngredientService::class);
+        $this->app->bind(IngredientCategoryInterface::class, IngredientCategoryService::class);
         $this->app->bind(IngredientSearchInterface::class, IngredientSearchService::class);
         $this->app->bind(MealInterface::class, MealService::class);
         $this->app->bind(ProfileCreateOrUpdateInterface::class, ProfileCreateOrUpdateService::class);
@@ -73,5 +78,8 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     {
         Recipe::observe(RecipeObserver::class);
+        Gate::define('viewWebSocketsDashboard', function (User $user) {
+            return $user->is('admin');
+        });
     }
 }

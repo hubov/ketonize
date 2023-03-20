@@ -43,6 +43,9 @@ Route::middleware('auth')->group(function() {
         Route::get('/shopping-list', [ShoppingListController::class, 'index']);
         Route::post('/shopping-list', [ShoppingListController::class, 'update']);
         Route::put('/shopping-list/update', [ShoppingListController::class, 'edit']);
+        Route::delete('/shopping-list/trash', [ShoppingListController::class, 'trash']);
+        Route::post('/shopping-list/restore', [ShoppingListController::class, 'restore']);
+        Route::post('/shopping-list/add', [ShoppingListController::class, 'add']);
         Route::delete('/shopping-list/delete', [ShoppingListController::class, 'destroy']);
         Route::get('/recipe/{slug}/{modifier}', [RecipeController::class, 'show'])->where('slug', '[0-9a-z\-]+')->where('modifier', '[0-9]+');
         Route::get('/recipe/{slug}', [RecipeController::class, 'show'])->where('slug', '[0-9a-z\-]+');

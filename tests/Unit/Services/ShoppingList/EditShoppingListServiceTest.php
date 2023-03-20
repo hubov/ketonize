@@ -5,7 +5,7 @@ namespace Tests\Unit\Services\ShoppingList;
 use App\Models\ShoppingList;
 use App\Repositories\Interfaces\ShoppingListRepositoryInterface;
 use App\Services\ShoppingList\EditShoppingListService;
-use PHPUnit\Framework\TestCase;
+use Tests\TestCase;
 
 class EditShoppingListServiceTest extends TestCase
 {
@@ -18,6 +18,8 @@ class EditShoppingListServiceTest extends TestCase
 
     public function setUp(): void
     {
+        parent::setUp();
+
         $this->shoppingListId = 1;
         $this->shoppingList = new ShoppingList();
         $this->shoppingList->id = $this->shoppingListId;
@@ -39,6 +41,8 @@ class EditShoppingListServiceTest extends TestCase
     /** @test */
     public function returns_true_if_shopping_list_was_updated()
     {
+        $this->withoutEvents();
+
         $this->shoppingListRepository
             ->expects($this->once())
             ->method('update')

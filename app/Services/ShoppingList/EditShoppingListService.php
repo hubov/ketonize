@@ -2,6 +2,7 @@
 
 namespace App\Services\ShoppingList;
 
+use App\Events\ShoppingList\ItemUpdated;
 use App\Repositories\Interfaces\ShoppingListRepositoryInterface;
 use App\Services\Interfaces\ShoppingList\EditShoppingListInterface;
 
@@ -32,6 +33,8 @@ class EditShoppingListService implements EditShoppingListInterface
 
         if ($this->shoppingListExistsForUser()) {
             $this->shoppingListRepository->update($this->shoppingList->id, ['amount' => $amount]);
+
+            ItemUpdated::dispatch($this->shoppingList);
         } else {
             return false;
         }
