@@ -90,9 +90,11 @@
     </div>
 </div>
 
+<x-typeahead-script />
 
-<script src="{{ asset('typeahead.bundle.min.js') }}" ></script>
 <script type="text/javascript">
+    var route = "{{ url('ingredient-autocomplete') }}";
+
     ingredientModal = new bootstrap.Modal(document.getElementById('ingredientModal'));
 
     $(document).on("keydown", ":input:not(textarea):not(:submit)", function(event) {
@@ -100,7 +102,6 @@
     });
 
     $(document).ready(function(){
-        var typeahead = $.fn.typeahead;
         var ingredients = [];
         var ingredientsCount = 0;
         var ingredientsArray = new Array();
@@ -108,7 +109,6 @@
         var fats = new Array();
         var carbohydrates = new Array();
         var kcal = new Array();
-        var route = "{{ url('ingredient-autocomplete') }}";
         var ingredientFormValidation = ['name', 'protein', 'fat', 'carbohydrate', 'kcal', 'unit_id'];
 
         @if (isset($ingredients))
@@ -160,30 +160,7 @@
 
         function typeaheadInitialize(){
             $(document).ready(function() {
-                var ingredients = new Bloodhound({
-                    datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'),
-                    queryTokenizer: Bloodhound.tokenizers.whitespace,
-                    remote: {
-                        url: route + '?name=%QUERY',
-                        wildcard: '%QUERY'
-                    }
-                });
-
-                $('.typeahead').typeahead({
-                        hint: true,
-                        highlight: true,
-                        autoselect: true,
-                        minLength: 1
-                    },
-                    {
-                        name: 'ingredients',
-                        displayKey: 'name',
-                        limit: 10,
-                        source: ingredients,
-                        templates: function(data) {
-                            return '<p">' + data + '</p>';
-                        }
-                    });
+                typeaheadConfig();
                 $('.typeahead').bind('typeahead:select', function(ev, suggestion) {
                     var id = $(this).prop('id');
                     var idNum = id.substring(10);
@@ -193,6 +170,7 @@
                     setIngredientsArray(idNum, suggestion.protein, suggestion.fat, suggestion.carbohydrate, suggestion.kcal);
                     calculateMacro();
                 });
+
                 $('.typeahead').change(function() {
                     var id = $(this).prop('id');
                     if (($('#' + id + '_id').val() == 0) || ($('#' + id + '_id').val() == '')) {
@@ -253,8 +231,8 @@
             var html = '';
             html += '<div class="row mb-3 inputFormRow">';
             html += '<div class="input-group">';
-            html += '<input type="text" id="ingredient' + ingredientsCount + '" class="form-control typeahead w-75" placeholder="Name" autocomplete="off" value="' + name + '">';
-            html += '<input type="text" name="ingredients[' + ingredientsCount + '][quantity]" id="ingredient_q_' + ingredientsCount + '" class="form-control quantity w-25" placeholder="Quantity" value="' + quantity + '">';
+            html += '<input type="text" id="ingredient' + ingredientsCount + '" class="form-control typeahead flex-grow-2" placeholder="Name" autocomplete="off" value="' + name + '">';
+            html += '<input type="text" name="ingredients[' + ingredientsCount + '][quantity]" id="ingredient_q_' + ingredientsCount + '" class="form-control quantity flex-grow-1" placeholder="Quantity" value="' + quantity + '">';
             html += '<span class="input-group-text" id="ingredient' + ingredientsCount + '_unit">' + unit + '</span>';
             html += '<button type="button" id="ingredient_r_' + ingredientsCount + '" class="btn btn-danger removeRow"><span class="material-icons material-icons-outline inline-icon" style="font-size: 1.2em">close</span></button>';
             html += '</div><input type="hidden" name="ingredients[' + ingredientsCount + '][id]" id="ingredient' + ingredientsCount + '_id" value="' + id + '"></div>';

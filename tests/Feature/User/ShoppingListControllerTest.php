@@ -4,6 +4,7 @@ namespace Tests\Feature\User;
 
 use App\Models\DietPlan;
 use App\Models\Ingredient;
+use App\Models\IngredientCategory;
 use App\Models\Profile;
 use App\Models\Recipe;
 use App\Models\ShoppingList;
@@ -19,7 +20,8 @@ class ShoppingListControllerTest extends TestCase
     {
         parent::setUp();
 
-        $this->user = User::factory()->has(Profile::factory())->create();
+        $this->user = User::factory()->has(Profile::factory())->create(['id' => 1]);
+        IngredientCategory::factory()->create(['id' => 1000]);
     }
 
     /** @test */
@@ -35,13 +37,12 @@ class ShoppingListControllerTest extends TestCase
     public function shopping_list_with_products_can_be_rendered_with_user()
     {
         $shoppingList = ShoppingList::factory()
-            ->has(Ingredient::factory())
             ->create(['user_id' => $this->user->id]);
 
         $response = $this->actingAs($this->user)->get('/shopping-list');
 
         $response->assertStatus(200);
-        $response->assertSeeInOrder([$shoppingList->ingredient->name, $shoppingList->amount]);
+        $response->assertSeeInOrder([$shoppingList->itemable->name, $shoppingList->amount]);
     }
 
     /** @test */
@@ -110,7 +111,8 @@ class ShoppingListControllerTest extends TestCase
         $ingredient = Ingredient::factory()->create();
         $shoppingList = ShoppingList::factory()->create([
             'user_id' => $this->user->id,
-            'ingredient_id' => $ingredient->id,
+            'itemable_id' => $ingredient->id,
+            'itemable_type' => 'App\Models\Ingredient',
             'amount' => 100
         ]);
 
@@ -144,7 +146,7 @@ class ShoppingListControllerTest extends TestCase
         $ingredient = Ingredient::factory()->create();
         $shoppingList = ShoppingList::factory()->create([
             'user_id' => $this->user->id,
-            'ingredient_id' => $ingredient->id,
+            'itemable_id' => $ingredient->id,
             'amount' => 100
         ]);
 
@@ -163,5 +165,192 @@ class ShoppingListControllerTest extends TestCase
 
         $response->assertRedirect('/login');
         $this->assertDatabaseCount('shopping_lists', 1);
+    }
+
+    /** @test */
+    public function trashing_list_element_by_user()
+    {
+        $ingredient = Ingredient::factory()->create();
+        $shoppingList = ShoppingList::factory()->create([
+            'user_id' => $this->user->id,
+            'itemable_id' => $ingredient->id,
+            'amount' => 100
+        ]);
+
+        $response = $this->actingAs($this->user)->delete('shopping-list/trash', ['id' => $shoppingList->id]);
+        $shoppingList->refresh();
+
+        $response->assertSee('true');
+        $this->assertModelExists($shoppingList);
+        $this->assertTrue($shoppingList->trashed());
+        $this->assertDatabaseCount('shopping_lists', 1);
+    }
+
+    /** @test */
+    public function restoring_list_element_by_user()
+    {
+        $ingredient = Ingredient::factory()->create();
+        $shoppingList = ShoppingList::factory()->create([
+            'user_id' => $this->user->id,
+            'itemable_id' => $ingredient->id,
+            'amount' => 100
+        ]);
+        $shoppingList->delete();
+
+        $response = $this->actingAs($this->user)->post('shopping-list/restore', ['id' => $shoppingList->id]);
+        $shoppingList->refresh();
+
+        $response->assertSee('true');
+        $this->assertModelExists($shoppingList);
+        $this->assertFalse($shoppingList->trashed());
+        $this->assertDatabaseCount('shopping_lists', 1);
+    }
+
+    /**
+     * @test
+     * @dataProvider ownIngredientsToAddProvider
+     */
+    public function add_own_ingredient_to_shopping_list($expectedResult, $input)
+    {
+        $ingredient = $input['model_type']::factory()->create($input['attributes']);
+
+        $response = $this
+            ->actingAs($this->user)
+            ->post(
+                'shopping-list/add',
+                [
+                    'item_name' => $input['attributes']['name'],
+                    'amount' => 100,
+                    'unit' => $ingredient->unit->id
+                ]
+            );
+
+        $response->assertStatus(200);
+        $response->assertHeader('content-type', 'application/json');
+        $this->assertDatabaseCount('shopping_lists', 1);
+        $this->assertJson($response->content());
+        $response->assertJsonStructure(
+            [
+                'id',
+                'amount',
+                'itemable_id',
+                'itemable_type',
+                'user_id'
+            ]
+        );
+    }
+
+    /**
+     * @test
+     * @dataProvider ownIngredientsToAddProvider
+     */
+    public function add_own_ingredient_which_is_trashed_to_shopping_list($expectedResult, $input)
+    {
+        $ingredient = $input['model_type']::factory()->create($input['attributes']);
+        $shoppingList = ShoppingList::factory()->create([
+            'user_id' => $this->user,
+            'itemable_id' => $ingredient->id,
+            'itemable_type' => get_class($ingredient),
+            'amount' => 50
+        ]);
+        $shoppingList->delete();
+
+        $response = $this->followingRedirects()
+            ->actingAs($this->user)
+            ->post(
+                'shopping-list/add',
+                [
+                    'item_name' => $input['attributes']['name'],
+                    'amount' => 100,
+                    'unit' => $ingredient->unit->id
+                ]
+            );
+
+        $shoppingList->refresh();
+
+        $response->assertStatus(200);
+        $response->assertHeader('content-type', 'application/json');
+        $this->assertJson($response->content());
+        $response->assertJsonStructure(
+            [
+                'id',
+                'amount',
+                'itemable_id',
+                'itemable_type',
+                'user_id'
+            ]
+        );
+        $this->assertDatabaseCount('shopping_lists', 1);
+        $this->assertFalse($shoppingList->trashed());
+        $this->assertEquals(100, $shoppingList->amount);
+    }
+
+    /**
+     * @test
+     * @dataProvider ownIngredientsToAddProvider
+     */
+    public function add_own_ingredient_which_is_already_in_shopping_list($expectedResult, $input)
+    {
+        $ingredient = $input['model_type']::factory()->create($input['attributes']);
+        $shoppingList = ShoppingList::factory()->create([
+            'user_id' => $this->user->id,
+            'itemable_id' => $ingredient->id,
+            'itemable_type' => get_class($ingredient),
+            'amount' => 50
+        ]);
+
+        $response = $this->followingRedirects()
+            ->actingAs($this->user)
+            ->post(
+                'shopping-list/add',
+                [
+                    'item_name' => $input['attributes']['name'],
+                    'amount' => 100,
+                    'unit' => $ingredient->unit->id
+                ]
+            );
+
+        $shoppingList->refresh();
+
+        $response->assertStatus(200);
+        $response->assertHeader('content-type', 'application/json');
+        $this->assertJson($response->content());
+        $response->assertJsonStructure(
+            [
+                'id',
+                'amount',
+                'itemable_id',
+                'itemable_type',
+                'user_id'
+            ]
+        );
+        $this->assertDatabaseCount('shopping_lists', 1);
+        $this->assertFalse($shoppingList->trashed());
+        $this->assertEquals(150, $shoppingList->amount);
+    }
+
+    protected function ownIngredientsToAddProvider()
+    {
+        return [
+            [
+                true,
+                [
+                    'attributes' => [
+                        'name' => 'Onion',
+                    ],
+                    'model_type' => 'App\Models\Ingredient'
+                ]
+            ],
+            [
+                true,
+                [
+                    'attributes' => [
+                        'name' => 'Onionxxx',
+                        'user_id' => 1
+                    ],
+                    'model_type' => 'App\Models\CustomIngredient'
+                ]
+            ]
+        ];
     }
 }

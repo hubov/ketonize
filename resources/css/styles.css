@@ -5,6 +5,7 @@
 
 body {
     font-family: 'Roboto', sans-serif;
+    background-color: #f8f9fa;
 }
 
 nav.navbar {
@@ -29,6 +30,10 @@ a {
 .btn-outline-primary:hover {
 	background-color: #155263;
 	border-color: #155263;
+}
+
+.clickable {
+    cursor: pointer;
 }
 
 .form-control:read-only {
@@ -266,8 +271,79 @@ hr.yellow {
     color: #fff;
 }
 
+.form-check-input:checked {
+    background-color: #155263 !important;
+    border-color: #155263 !important;
+}
+
+.shopping-list-menu .form-check-input {
+    font-size: 1.3rem;
+}
+
+.shopping-list-menu .form-check-label > * {
+    font-size: 2rem;
+}
+
 .table tr td {
     vertical-align: middle;
+}
+
+.table-category {
+    border-top: 15px solid #fff;
+}
+
+.table-category td {
+    padding: 0;
+}
+
+.table-category td div {
+    color: #155263;
+    background-color: #ffc93c;
+    border-top: 1px solid #fff;
+    width: 100%;
+    height: 100%;
+    padding: 0.5rem 0.5rem;
+}
+
+.table-category td div {
+    border-radius: 5px;
+}
+
+#shoppingList .scalable_steering {
+    cursor: pointer;
+}
+
+.scalable_steering {
+    white-space: nowrap;
+}
+
+.scalable_steering .material-symbols-outlined {
+    font-size: 1rem;
+    color: #adb5bd;
+}
+
+#trashedShoppingList .scalable_steering .material-symbols-outlined {
+    display: none;
+}
+
+#toast-container .toast {
+    margin-bottom: 10px;
+}
+
+#shoppingList .redo {
+    display: none;
+}
+
+#shoppingList .destroy {
+    display: none;
+}
+
+#trashedShoppingList {
+    color: #ced4da;
+}
+
+#trashedShoppingList .remover {
+    display: none;
 }
 
 .img-container {

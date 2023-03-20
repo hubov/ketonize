@@ -2,11 +2,13 @@
 
 namespace App\Providers;
 
+use App\Repositories\CustomIngredientRepository;
 use App\Repositories\DietMealDivisionRepository;
 use App\Repositories\DietPlanRepository;
 use App\Repositories\DietRepository;
 use App\Repositories\IngredientCategoryRepository;
 use App\Repositories\IngredientRepository;
+use App\Repositories\Interfaces\CustomIngredientRepositoryInterface;
 use App\Repositories\Interfaces\DietMealDivisionRepositoryInterface;
 use App\Repositories\Interfaces\DietPlanRepositoryInterface;
 use App\Repositories\Interfaces\DietRepositoryInterface;
@@ -41,6 +43,10 @@ class RepositoryServiceProvider extends ServiceProvider
      */
     public function register()
     {
+        $this->app->bind(
+            CustomIngredientRepositoryInterface::class,
+            CustomIngredientRepository::class
+        );
         $this->app->bind(
             DietMealDivisionRepositoryInterface::class,
             DietMealDivisionRepository::class

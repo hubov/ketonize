@@ -20,7 +20,8 @@ class ShoppingListFactory extends Factory
     {
         return [
             'user_id' => User::factory(),
-            'ingredient_id' => Ingredient::factory(),
+            'itemable_id' => Ingredient::factory(),
+            'itemable_type' => 'App\Models\Ingredient',
             'amount' => 100
         ];
     }
