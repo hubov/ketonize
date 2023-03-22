@@ -2,9 +2,12 @@
 
 namespace Tests\Unit\Services\ShoppingList;
 
+use App\Events\ShoppingList\ItemRestored;
+use App\Events\ShoppingList\ItemTrashed;
 use App\Models\ShoppingList;
 use App\Repositories\Interfaces\ShoppingListRepositoryInterface;
 use App\Services\ShoppingList\DeleteShoppingListService;
+use Illuminate\Support\Facades\Event;
 use Tests\TestCase;
 
 class DeleteShoppingListServiceTest extends TestCase
@@ -71,19 +74,20 @@ class DeleteShoppingListServiceTest extends TestCase
     /** @test */
     public function returns_true_if_item_was_trashed()
     {
-        $this->withoutEvents();
-
         $this->shoppingListRepository
             ->expects($this->once())
             ->method('trash')
             ->with($this->shoppingListId)
             ->willReturn(true);
 
+        Event::fake();
+
         $this->assertTrue(
             $this->deleteShoppingListService
                 ->setUser($this->userId)
                 ->trash($this->shoppingListId)
         );
+        Event::assertDispatched(ItemTrashed::class);
     }
 
     /** @test */
@@ -105,19 +109,20 @@ class DeleteShoppingListServiceTest extends TestCase
     /** @test */
     public function returns_true_if_item_successfully_restored()
     {
-        $this->withoutEvents();
-
         $this->shoppingListRepository
             ->expects($this->once())
             ->method('restore')
             ->with($this->shoppingListId)
             ->willReturn(true);
 
+        Event::fake();
+
         $this->assertTrue(
             $this->deleteShoppingListService
                 ->setUser($this->userId)
                 ->restore($this->shoppingListId)
         );
+        Event::assertDispatched(ItemRestored::class);
     }
 
     /** @test */

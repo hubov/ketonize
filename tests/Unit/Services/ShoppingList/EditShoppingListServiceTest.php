@@ -2,9 +2,11 @@
 
 namespace Tests\Unit\Services\ShoppingList;
 
+use App\Events\ShoppingList\ItemUpdated;
 use App\Models\ShoppingList;
 use App\Repositories\Interfaces\ShoppingListRepositoryInterface;
 use App\Services\ShoppingList\EditShoppingListService;
+use Illuminate\Support\Facades\Event;
 use Tests\TestCase;
 
 class EditShoppingListServiceTest extends TestCase
@@ -41,19 +43,20 @@ class EditShoppingListServiceTest extends TestCase
     /** @test */
     public function returns_true_if_shopping_list_was_updated()
     {
-        $this->withoutEvents();
-
         $this->shoppingListRepository
             ->expects($this->once())
             ->method('update')
             ->with($this->shoppingListId, ['amount' => $this->amount])
             ->willReturn(new ShoppingList());
 
+        Event::fake();
+
         $this->assertTrue(
             $this->editShoppingListService
                 ->setUser($this->userId)
                 ->update($this->shoppingListId, $this->amount)
         );
+        Event::assertDispatched(ItemUpdated::class);
     }
 
     /** @test */

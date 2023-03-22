@@ -14,6 +14,7 @@ use App\Repositories\Interfaces\DietPlanRepositoryInterface;
 use App\Services\DietPlanService;
 use App\Services\Interfaces\MealInterface;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Event;
 use Tests\TestCase;
 
 class DietPlanServiceTest extends TestCase
@@ -123,7 +124,6 @@ class DietPlanServiceTest extends TestCase
     /** @test */
     public function missing_diet_plan_on_last_day_of_subscription_creates_new_one()
     {
-        $this->expectsEvents(DietPlanCreated::class);
         $dietPlanStub = new DietPlan();
 
         $dietPlanService = new DietPlanService($this->dietPlanRepository, $this->mealService);
@@ -139,12 +139,15 @@ class DietPlanServiceTest extends TestCase
             ->with($this->user->id, $dietPlanService->getLastSubscriptionDay())
             ->willReturn($dietPlanStub);
 
+        Event::fake();
+
         $dietPlanService = new DietPlanService($this->dietPlanRepository, $this->mealService);
 
         $newDietPlan = $dietPlanService
             ->setUser($this->user)
             ->createIfNotExists();
 
+        Event::assertDispatched(DietPlanCreated::class);
         $this->assertEquals($dietPlanStub, $newDietPlan);
     }
 
@@ -176,7 +179,6 @@ class DietPlanServiceTest extends TestCase
     /** @test */
     public function updateAll_method_changes_all_diet_plans_starting_from_today()
     {
-        $this->expectsEvents(DietPlanCreated::class);
         $newDietPlanCollection = collect([new DietPlan(), new DietPlan()]);
 
         $dietPlanService = new DietPlanService($this->dietPlanRepository, $this->mealService);
@@ -192,19 +194,21 @@ class DietPlanServiceTest extends TestCase
             ->with($this->user->id, $dietPlanService->getSubscriptionDatesArray())
             ->willReturn($newDietPlanCollection);
 
+        Event::fake();
+
         $dietPlanService = new DietPlanService($this->dietPlanRepository, $this->mealService);
 
         $newDietPlans = $dietPlanService
             ->setUser($this->user)
             ->updateAll();
 
+        Event::assertDispatched(DietPlanCreated::class);
         $this->assertSame($newDietPlanCollection, $newDietPlans);
     }
 
     /** @test */
     public function updateOnDate_method_creates_new_diet_plan()
     {
-        $this->expectsEvents(DietPlanCreated::class);
         $date = '2022-01-01';
         $newDietPlanStub = new DietPlan();
 
@@ -219,12 +223,15 @@ class DietPlanServiceTest extends TestCase
             ->with($this->user->id, $date)
             ->willReturn($newDietPlanStub);
 
+        Event::fake();
+
         $dietPlanService = new DietPlanService($this->dietPlanRepository, $this->mealService);
 
         $newDietPlan = $dietPlanService
             ->setUser($this->user)
             ->updateOnDate($date);
 
+        Event::assertDispatched(DietPlanCreated::class);
         $this->assertSame($newDietPlanStub, $newDietPlan);
     }
 
