@@ -12,6 +12,7 @@ use App\Repositories\Interfaces\DietMealDivisionRepositoryInterface;
 use App\Repositories\Interfaces\DietRepositoryInterface;
 use App\Repositories\Interfaces\UserDietRepositoryInterface;
 use App\Services\UserDietService;
+use Illuminate\Support\Facades\Event;
 use Tests\TestCase;
 
 class UserDietServiceTest extends TestCase
@@ -91,13 +92,13 @@ class UserDietServiceTest extends TestCase
     /** @test */
     public function new_diet_plan_is_created()
     {
-        $this->expectsEvents(UserDietChanged::class);
-
         $this->userDietRepository
             ->expects($this->once())
             ->method('createForUser')
             ->with($this->profile->user_id, $this->attributes)
             ->willReturn(new UserDiet());
+
+        Event::fake();
 
         $this->assertEquals(
             new UserDiet(),
@@ -107,18 +108,19 @@ class UserDietServiceTest extends TestCase
                 ->setProfile($this->profile)
                 ->create()
         );
+        Event::assertDispatched(UserDietChanged::class);
     }
 
     /** @test */
     public function diet_plan_can_be_updated()
     {
-        $this->expectsEvents(UserDietChanged::class);
-
         $this->userDietRepository
             ->expects($this->once())
             ->method('updateForUser')
             ->with($this->profile->user_id, $this->attributes)
             ->willReturn(new UserDiet());
+
+        Event::fake();
 
         $this->assertEquals(
             new UserDiet(),
@@ -128,5 +130,6 @@ class UserDietServiceTest extends TestCase
                 ->setProfile($this->profile)
                 ->update()
         );
+        Event::assertDispatched(UserDietChanged::class);
     }
 }

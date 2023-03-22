@@ -23,8 +23,8 @@ The syncing feature allows concurrent usage of shopping list on multiple devices
 
 ### Getting started
 #### Dependencies
-- Laravel 9.3+
-- PHP 8.0+
+- Laravel 10.0+
+- PHP 8.1+
 - Nginx
 - Composer
 
@@ -35,7 +35,7 @@ Do not forget to set a database.
 
 Set up your .env file.
 
-As for the version 0.2.0 and higher it is required to create a default IngredientCategory with id `1000`.
+As for the version `0.2.0` and higher it is required to create a default IngredientCategory with id `1000`.
 
 #### First steps
 The app requires content to be run. Its database needs to be populated with ingredients and recipes to create diet plans. These can be added manually using the following links:
