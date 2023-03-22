@@ -2,6 +2,8 @@
 
 namespace Tests\Unit\Services\ShoppingList;
 
+use App\Events\ShoppingList\ItemAdded;
+use App\Events\ShoppingList\ItemUpdated;
 use App\Models\CustomIngredient;
 use App\Models\Ingredient;
 use App\Models\ShoppingList;
@@ -11,6 +13,7 @@ use App\Repositories\Interfaces\ShoppingListRepositoryInterface;
 use App\Services\Interfaces\MealInterface;
 use App\Services\ShoppingList\UpdateShoppingListService;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Support\Facades\Event;
 use Tests\TestCase;
 
 class UpdateShoppingListTest extends TestCase
@@ -40,8 +43,6 @@ class UpdateShoppingListTest extends TestCase
     /** @test */
     public function adds_shopping_list_item_with_existing_ingredient()
     {
-        $this->withoutEvents();
-
         $this->ingredientRepository
             ->expects($this->once())
             ->method('getByName')
@@ -59,6 +60,8 @@ class UpdateShoppingListTest extends TestCase
             ->withAnyParameters()
             ->willReturn($this->shoppingList);
 
+        Event::fake();
+
         $result = $this->updateShoppingListService
             ->setUser(1)
             ->add([
@@ -66,6 +69,7 @@ class UpdateShoppingListTest extends TestCase
                 'amount' => 100
             ]);
 
+        Event::assertDispatched(ItemAdded::class);
         $this->assertIsObject($result);
         $this->assertEquals($this->shoppingList->id, $result->id);
     }
@@ -73,8 +77,6 @@ class UpdateShoppingListTest extends TestCase
     /** @test */
     public function adds_shopping_list_item_with_custom_ingredient()
     {
-        $this->withoutEvents();
-
         $this->ingredientRepository
             ->expects($this->once())
             ->method('getByName')
@@ -98,6 +100,8 @@ class UpdateShoppingListTest extends TestCase
             ->withAnyParameters()
             ->willReturn($this->shoppingList);
 
+        Event::fake();
+
         $result = $this->updateShoppingListService
             ->setUser(1)
             ->add([
@@ -105,6 +109,7 @@ class UpdateShoppingListTest extends TestCase
                 'amount' => 100
             ]);
 
+        Event::assertDispatched(ItemAdded::class);
         $this->assertIsObject($result);
         $this->assertEquals($this->shoppingList->id, $result->id);
     }
@@ -112,8 +117,6 @@ class UpdateShoppingListTest extends TestCase
     /** @test */
     public function adding_existing_shopping_list_item_updates_it()
     {
-        $this->withoutEvents();
-
         $this->ingredientRepository
             ->expects($this->once())
             ->method('getByName')
@@ -130,6 +133,8 @@ class UpdateShoppingListTest extends TestCase
             ->method('increase')
             ->withAnyParameters();
 
+        Event::fake();
+
         $result = $this->updateShoppingListService
             ->setUser(1)
             ->add([
@@ -137,6 +142,7 @@ class UpdateShoppingListTest extends TestCase
                 'amount' => 100
             ]);
 
+        Event::assertDispatched(ItemUpdated::class);
         $this->assertIsObject($result);
         $this->assertEquals($this->shoppingList->id, $result->id);
     }
@@ -144,8 +150,6 @@ class UpdateShoppingListTest extends TestCase
     /** @test */
     public function adding_trashed_shopping_list_item_updates_it()
     {
-        $this->withoutEvents();
-
         $this->ingredientRepository
             ->expects($this->once())
             ->method('getByName')
@@ -177,6 +181,8 @@ class UpdateShoppingListTest extends TestCase
             ->method('update')
             ->withAnyParameters();
 
+        Event::fake();
+
         $result =$this->updateShoppingListService
                 ->setUser(1)
                 ->add([
@@ -184,6 +190,7 @@ class UpdateShoppingListTest extends TestCase
                     'amount' => 100
             ]);
 
+        Event::assertDispatched(ItemUpdated::class);
         $this->assertIsObject($result);
         $this->assertEquals($this->shoppingList->id, $result->id);
     }
