@@ -3,7 +3,6 @@
 namespace App\Services\Recipe;
 
 use App\Models\Recipe;
-use App\Repositories\Interfaces\IngredientRepositoryInterface;
 use App\Repositories\Interfaces\RecipeRepositoryInterface;
 use App\Repositories\Interfaces\TagRepositoryInterface;
 use App\Services\Interfaces\Image\ImageProcessorInterface;
@@ -13,7 +12,6 @@ use App\Services\Interfaces\Recipe\RelateIngredientsToRecipeInterface;
 class RecipeCreateOrUpdateService implements RecipeCreateOrUpdateInterface
 {
     protected $recipeRepository;
-    protected $ingredientRepository;
     protected $tagRepository;
     protected $relateIngredientsToRecipe;
     protected $imageParser;
@@ -22,13 +20,11 @@ class RecipeCreateOrUpdateService implements RecipeCreateOrUpdateInterface
 
     public function __construct(
         RecipeRepositoryInterface $recipeRepository,
-        IngredientRepositoryInterface $ingredientRepository,
         TagRepositoryInterface $tagRepository,
         RelateIngredientsToRecipeInterface $relateIngredientsToRecipe,
         ImageProcessorInterface $imageParser
     ) {
         $this->recipeRepository = $recipeRepository;
-        $this->ingredientRepository = $ingredientRepository;
         $this->tagRepository = $tagRepository;
         $this->relateIngredientsToRecipe = $relateIngredientsToRecipe;
         $this->imageParser = $imageParser;

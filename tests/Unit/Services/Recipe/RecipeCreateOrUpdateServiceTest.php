@@ -3,7 +3,6 @@
 namespace Tests\Unit\Services\Recipe;
 
 use App\Models\Recipe;
-use App\Repositories\Interfaces\IngredientRepositoryInterface;
 use App\Repositories\Interfaces\RecipeRepositoryInterface;
 use App\Repositories\Interfaces\TagRepositoryInterface;
 use App\Services\Interfaces\Image\ImageProcessorInterface;
@@ -18,7 +17,6 @@ class RecipeCreateOrUpdateServiceTest extends TestCase
     public $slug;
     public $recipe;
     public $recipeRepository;
-    public $ingredientRepository;
     public $tagRepository;
     public $relateIngredientsToRecipe;
     public $recipeCreateOrUpdateService;
@@ -47,14 +45,12 @@ class RecipeCreateOrUpdateServiceTest extends TestCase
         $this->recipe->slug = $this->slug;
 
         $this->recipeRepository = $this->createMock(RecipeRepositoryInterface::class);
-        $this->ingredientRepository = $this->createMock(IngredientRepositoryInterface::class);
         $this->tagRepository  = $this->createMock(TagRepositoryInterface::class);
         $this->relateIngredientsToRecipe = $this->createMock(RelateIngredientsToRecipeInterface::class);
         $this->imageParser = $this->createMock(ImageProcessorInterface::class);
 
         $this->recipeCreateOrUpdateService = new RecipeCreateOrUpdateService(
             $this->recipeRepository,
-            $this->ingredientRepository,
             $this->tagRepository,
             $this->relateIngredientsToRecipe,
             $this->imageParser
