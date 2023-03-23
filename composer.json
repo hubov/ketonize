@@ -16,7 +16,8 @@
         "laravel/tinker": "^2.7",
         "laravel/ui": "^4.0",
         "symfony/http-client": "^6.1",
-        "symfony/postmark-mailer": "^6.1"
+        "symfony/postmark-mailer": "^6.1",
+        "tectalic/openai": "^1.4"
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "^3.7",
@@ -66,7 +67,8 @@
         "preferred-install": "dist",
         "sort-packages": true,
         "allow-plugins": {
-            "pestphp/pest-plugin": true
+            "pestphp/pest-plugin": true,
+            "php-http/discovery": true
         }
     },
     "minimum-stability": "stable",
