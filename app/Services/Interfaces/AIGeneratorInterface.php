@@ -4,6 +4,7 @@ namespace App\Services\Interfaces;
 
 interface AIGeneratorInterface
 {
-    public function prompt(string $text): self;
-    public function return(): string;
+    public function settings(array $attributes): self;
+    public function execute(): self;
+    public function return(): string|array;
 }

@@ -2,7 +2,7 @@
 
 namespace App\Providers;
 
-use App\Services\GPTService;
+use App\Services\GPT\GPTService;
 use App\Services\Interfaces\AIGeneratorInterface;
 use Illuminate\Support\ServiceProvider;
 use Symfony\Component\HttpClient\Psr18Client;
@@ -30,7 +30,6 @@ class GPTServiceProvider extends ServiceProvider
             $auth = $this->app->makeWith(Authentication::class, getenv('OPENAI_API_KEY'));
             $httpClient = $this->app->make(Psr18Client::class);
 
-//            $client = new Client($httpClient, $auth, Manager::BASE_URI);
             $client = $this->app->makeWith(Client::class, [$httpClient, $auth, Manager::BASE_URI]);
 
             return new GPTService($client);
