@@ -2,10 +2,9 @@
 
 namespace App\Providers;
 
-use App\Services\GPT\GPTService;
-use App\Services\Interfaces\AIGeneratorInterface;
+use App\Services\GPT\CompletionsGPTService;
+use App\Services\Interfaces\AITextGeneratorInterface;
 use Illuminate\Support\ServiceProvider;
-use Symfony\Component\HttpClient\Psr18Client;
 use Tectalic\OpenAi\Authentication;
 use Tectalic\OpenAi\Client;
 use Tectalic\OpenAi\Manager;
@@ -17,7 +16,17 @@ class GPTServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->singleton(Client::class, function($app) {
+            if (Manager::isGlobal()) {
+                return Manager::access();
+            }
+
+            $auth = new Authentication(getenv('OPENAI_API_KEY'));
+            $httpClient = new \GuzzleHttp\Client();
+            return Manager::build($httpClient, $auth);
+        });
+
+        $this->app->bind(AITextGeneratorInterface::class, CompletionsGPTService::class);
     }
 
     /**
@@ -25,14 +34,6 @@ class GPTServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        $this->app->bind(AIGeneratorInterface::class, function()
-        {
-            $auth = $this->app->makeWith(Authentication::class, getenv('OPENAI_API_KEY'));
-            $httpClient = $this->app->make(Psr18Client::class);
-
-            $client = $this->app->makeWith(Client::class, [$httpClient, $auth, Manager::BASE_URI]);
-
-            return new GPTService($client);
-        });
+        //
     }
 }
