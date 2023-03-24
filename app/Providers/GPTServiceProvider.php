@@ -21,7 +21,7 @@ class GPTServiceProvider extends ServiceProvider
                 return Manager::access();
             }
 
-            $auth = new Authentication(getenv('OPENAI_API_KEY'));
+            $auth = new Authentication(config('services.openai.token'));
             $httpClient = new \GuzzleHttp\Client();
             return Manager::build($httpClient, $auth);
         });
