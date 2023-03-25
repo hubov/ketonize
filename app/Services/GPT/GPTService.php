@@ -15,6 +15,9 @@ abstract class GPTService implements AIGeneratorInterface
     public function __construct(Client $client)
     {
         $this->client = $client;
+        $this->attributes = [
+            'max_tokens' => 2000,
+        ];
     }
 
     public function settings(array $attributes): AIGeneratorInterface
