@@ -4,13 +4,9 @@ namespace Tests\Feature\User;
 
 use App\Services\GPT\CompletionsGPTService;
 use DG\BypassFinals;
-use Illuminate\Support\Facades\App;
-use Illuminate\Support\Facades\Http;
-use Mockery\MockInterface;
-use Nyholm\Psr7\Factory\Psr17Factory;
-use Nyholm\Psr7\Request;
+use Http\Mock\Client;
 use Psr\Http\Message\ResponseInterface;
-use Tectalic\OpenAi\Client;
+use Tectalic\OpenAi\Authentication;
 use Tests\TestCase;
 
 class CompletionsGPTServiceTest extends TestCase
@@ -47,22 +43,29 @@ class CompletionsGPTServiceTest extends TestCase
     {
         BypassFinals::enable();
 
-        $responseObj = $this->createPartialMock(ResponseInterface::class, ['getBody', 'getStatusCode']);
+        $responseObj = $this->createMock(ResponseInterface::class);
         $responseObj
-            ->expects($this->once())
+            ->expects($this->exactly(2))
             ->method('getStatusCode')
             ->willReturn(200);
+        $responseObj
+            ->expects($this->once())
+            ->method('getHeaderLine')
+            ->with('Content-Type')
+            ->willReturn('application/json');
         $responseObj
             ->expects($this->once())
             ->method('getBody')
             ->willReturn($this->response);
 
-        $client = $this->createPartialMock(Client::class, ['sendRequest']);
-        $client
+        $httpClient = $this->createPartialMock(Client::class, ['sendRequest']);
+        $httpClient
             ->expects($this->once())
             ->method('sendRequest')
             ->withAnyParameters()
             ->willReturn($responseObj);
+
+        $client = new \Tectalic\OpenAi\Client($httpClient, new Authentication('token'), 'https://api.openai.com/v1/');
 
         $settings = ['prompt' => 'przepis na ketogeniczne wegańskie gołąbki z kapustą'];
 
@@ -72,6 +75,6 @@ class CompletionsGPTServiceTest extends TestCase
             ->execute()
             ->return();
 
-        dd($result);
+        $this->assertEquals('This is indeed a test', trim($result));
     }
 }
