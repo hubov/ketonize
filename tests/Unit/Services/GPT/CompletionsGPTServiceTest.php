@@ -6,47 +6,76 @@ use App\Services\GPT\CompletionsGPTService;
 use DG\BypassFinals;
 use PHPUnit\Framework\TestCase;
 use Tectalic\OpenAi\Client;
+use Tectalic\OpenAi\ClientException;
 use Tectalic\OpenAi\Handlers\Completions;
 
 class CompletionsGPTServiceTest extends TestCase
 {
-    /** @test */
-    public function returns_completion(): void
+    protected $completionsObj;
+    protected $response;
+    protected $client;
+
+    public function setUp(): void
     {
         BypassFinals::enable();
 
-        $completionsObj = $this->createMock(Completions::class);
+        $this->completionsObj = $this->createMock(Completions::class);
 
-        $result = new \StdClass();
-        $result->text = 'Test completion';
+        $returnResult = new \StdClass();
+        $returnResult->text = 'Test completion';
 
-        $response = new \StdClass();
-        $response->choices = [
-            $result
+        $this->response = new \StdClass();
+        $this->response->choices = [
+            $returnResult
         ];
 
-        $client = $this->createMock(Client::class);
-        $client
+        $this->client = $this->createMock(Client::class);
+        $this->client
             ->expects($this->once())
             ->method('completions')
-            ->willReturn($completionsObj);
-        $completionsObj
+            ->willReturn($this->completionsObj);
+    }
+
+    /** @test */
+    public function returns_completion(): void
+    {
+        $this->completionsObj
             ->expects($this->once())
             ->method('create')
             ->withAnyParameters()
             ->willReturnSelf();
-        $completionsObj->expects($this->once())
+        $this->completionsObj
+            ->expects($this->once())
             ->method('toModel')
-            ->willReturn($response);
+            ->willReturn($this->response);
 
         $settings = ['prompt' => 'test prompt'];
 
-        $completionsGptService = new CompletionsGPTService($client);
+        $completionsGptService = new CompletionsGPTService($this->client);
         $result = $completionsGptService
             ->settings($settings)
             ->execute()
             ->return();
 
         $this->assertEquals('Test completion', $result);
+    }
+
+    /** @test */
+    public function returns_exception_if_error_occurred()
+    {
+        $this->completionsObj
+            ->expects($this->once())
+            ->method('create')
+            ->withAnyParameters()
+            ->willThrowException(new ClientException());
+
+        $settings = ['prompt' => 'test prompt'];
+
+        $completionsGptService = new CompletionsGPTService($this->client);
+
+        $this->expectException(AIServiceUnavailable::class);
+        $completionsGptService
+            ->settings($settings)
+            ->execute();
     }
 }
