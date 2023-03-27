@@ -43,7 +43,6 @@ abstract class GPTService implements AIGeneratorInterface
             return $this;
         } catch (ClientException $e) {
             Log::error('GPT API error: ', ['message' => $e->getMessage()]);
-
             throw(new AIServiceUnavailableException());
         }
     }

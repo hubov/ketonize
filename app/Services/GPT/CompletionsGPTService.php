@@ -2,6 +2,8 @@
 
 namespace App\Services\GPT;
 
+use App\Exceptions\AIServiceUnavailableException;
+use Illuminate\Support\Facades\Log;
 use Tectalic\OpenAi\Client;
 
 class CompletionsGPTService extends GPTService
@@ -23,11 +25,16 @@ class CompletionsGPTService extends GPTService
 
     public function return(): string
     {
-        $result = '';
-        foreach ($this->resultModel->choices as $choice) {
-            $result .= $choice->text;
-        }
+        try {
+            $result = '';
+            foreach ($this->resultModel->choices as $choice) {
+                $result .= $choice->text;
+            }
 
-        return $result;
+            return $result;
+        } catch (\Exception $e) {
+            Log::error('GPT API response error: ', ['message' => $e->getMessage()]);
+            throw(new AIServiceUnavailableException());
+        }
     }
 }
