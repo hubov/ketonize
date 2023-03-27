@@ -2,8 +2,11 @@
 
 namespace App\Services\GPT;
 
+use App\Exceptions\AIServiceUnavailableException;
 use App\Services\Interfaces\AIGeneratorInterface;
+use Illuminate\Support\Facades\Log;
 use Tectalic\OpenAi\Client;
+use Tectalic\OpenAi\ClientException;
 
 abstract class GPTService implements AIGeneratorInterface
 {
@@ -31,12 +34,18 @@ abstract class GPTService implements AIGeneratorInterface
     {
         $strategy = $this->strategy;
 
-        $this->resultModel = $this->client
-            ->$strategy()
-            ->create($this->attributes)
-            ->toModel();
+        try {
+            $this->resultModel = $this->client
+                ->$strategy()
+                ->create($this->attributes)
+                ->toModel();
 
-        return $this;
+            return $this;
+        } catch (ClientException $e) {
+            Log::error('GPT API error: ', ['message' => $e->getMessage()]);
+
+            throw(new AIServiceUnavailableException());
+        }
     }
 
     public function return(): string|array

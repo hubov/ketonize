@@ -2,8 +2,10 @@
 
 namespace Tests\Unit\Services\GPT;
 
+use App\Exceptions\AIServiceUnavailableException;
 use App\Services\GPT\CompletionsGPTService;
 use DG\BypassFinals;
+use Illuminate\Support\Facades\Log;
 use PHPUnit\Framework\TestCase;
 use Tectalic\OpenAi\Client;
 use Tectalic\OpenAi\ClientException;
@@ -73,7 +75,9 @@ class CompletionsGPTServiceTest extends TestCase
 
         $completionsGptService = new CompletionsGPTService($this->client);
 
-        $this->expectException(AIServiceUnavailable::class);
+        $this->expectException(AIServiceUnavailableException::class);
+        Log::shouldReceive('error')
+            ->once();
         $completionsGptService
             ->settings($settings)
             ->execute();
