@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature\User;
+namespace Tests\Feature\User\GPT;
 
 use App\Services\GPT\CompletionsGPTService;
 use DG\BypassFinals;
