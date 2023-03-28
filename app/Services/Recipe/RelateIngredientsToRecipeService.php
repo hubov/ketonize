@@ -2,7 +2,7 @@
 
 namespace App\Services\Recipe;
 
-use App\Models\Recipe;
+use App\Models\Interfaces\RecipeModelInterface;
 use App\Repositories\Interfaces\IngredientRepositoryInterface;
 use App\Services\Interfaces\Recipe\RelateIngredientsToRecipeInterface;
 
@@ -20,7 +20,7 @@ class RelateIngredientsToRecipeService implements RelateIngredientsToRecipeInter
         return $this;
     }
 
-    public function setRecipe(Recipe $recipe): self
+    public function setRecipe(RecipeModelInterface $recipe): self
     {
         $this->recipe = $recipe;
 

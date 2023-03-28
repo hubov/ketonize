@@ -3,11 +3,12 @@
 namespace App\Models;
 
 use App\Http\Traits\WebpSupport;
+use App\Models\Interfaces\RecipeModelInterface;
 use GeneaLabs\LaravelPivotEvents\Traits\PivotEventTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Recipe extends Model
+class Recipe extends Model implements RecipeModelInterface
 {
     use HasFactory, PivotEventTrait, WebpSupport;
 
