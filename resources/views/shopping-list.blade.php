@@ -46,7 +46,7 @@
                             <div class="row">
                                 @csrf
                                 <div class="input-group">
-                                    <input type="text" class="form-control flex-grow-3 typeahead tt-hint" id="item_name" name="item_name" placeholder="item name">
+                                    <input type="text" class="form-control flex-grow-3 typeahead tt-hint" id="item_name" name="name" placeholder="item name">
                                     <input type="text" class="form-control flex-grow-2" id="amount" name="amount" placeholder="amount">
                                     <select class="form-select text-center flex-grow-1" id="unit" name="unit">
                                         @if (count($units) > 0)

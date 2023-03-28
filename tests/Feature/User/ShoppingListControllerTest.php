@@ -219,7 +219,7 @@ class ShoppingListControllerTest extends TestCase
             ->post(
                 'shopping-list/add',
                 [
-                    'item_name' => $input['attributes']['name'],
+                    'name' => $input['attributes']['name'],
                     'amount' => 100,
                     'unit' => $ingredient->unit->id
                 ]
@@ -260,7 +260,7 @@ class ShoppingListControllerTest extends TestCase
             ->post(
                 'shopping-list/add',
                 [
-                    'item_name' => $input['attributes']['name'],
+                    'name' => $input['attributes']['name'],
                     'amount' => 100,
                     'unit' => $ingredient->unit->id
                 ]
@@ -304,7 +304,7 @@ class ShoppingListControllerTest extends TestCase
             ->post(
                 'shopping-list/add',
                 [
-                    'item_name' => $input['attributes']['name'],
+                    'name' => $input['attributes']['name'],
                     'amount' => 100,
                     'unit' => $ingredient->unit->id
                 ]

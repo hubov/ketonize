@@ -11,7 +11,7 @@ class CustomIngredientRepository implements CustomIngredientRepositoryInterface
     {
         return CustomIngredient::firstOrCreate(
             [
-                'name' => $attributes['item_name'],
+                'name' => $attributes['name'],
                 'user_id' => $userId,
                 'unit_id' => $attributes['unit']
             ]

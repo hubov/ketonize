@@ -65,7 +65,7 @@ class UpdateShoppingListTest extends TestCase
         $result = $this->updateShoppingListService
             ->setUser(1)
             ->add([
-                'item_name' => 'Tomato',
+                'name' => 'Tomato',
                 'amount' => 100
             ]);
 
@@ -105,7 +105,7 @@ class UpdateShoppingListTest extends TestCase
         $result = $this->updateShoppingListService
             ->setUser(1)
             ->add([
-                'item_name' => 'Tomato',
+                'name' => 'Tomato',
                 'amount' => 100
             ]);
 
@@ -138,7 +138,7 @@ class UpdateShoppingListTest extends TestCase
         $result = $this->updateShoppingListService
             ->setUser(1)
             ->add([
-                'item_name' => 'Tomato',
+                'name' => 'Tomato',
                 'amount' => 100
             ]);
 
@@ -186,7 +186,7 @@ class UpdateShoppingListTest extends TestCase
         $result =$this->updateShoppingListService
                 ->setUser(1)
                 ->add([
-                    'item_name' => 'Tomato',
+                    'name' => 'Tomato',
                     'amount' => 100
             ]);
 
