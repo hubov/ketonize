@@ -4,6 +4,7 @@ namespace App\Services\ShoppingList;
 
 use App\Events\ShoppingList\ItemAdded;
 use App\Events\ShoppingList\ItemUpdated;
+use App\Http\Traits\UniversalIngredientPicker;
 use App\Models\Interfaces\IngredientModelInterface;
 use App\Models\ShoppingList;
 use App\Repositories\Interfaces\CustomIngredientRepositoryInterface;
@@ -15,6 +16,8 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class UpdateShoppingListService implements UpdateShoppingListInterface
 {
+    use UniversalIngredientPicker;
+
     protected $shoppingListRepository;
     protected $mealService;
     protected $ingredientRepository;
@@ -64,13 +67,10 @@ class UpdateShoppingListService implements UpdateShoppingListInterface
 
     public function add(array $attributes): ShoppingList
     {
-        try {
-            $ingredient = $this->ingredientRepository->getByName($attributes['item_name']);
-        } catch (ModelNotFoundException) {
-            $ingredient = $this->customIngredientRepository->getOrCreateForUserByName($this->userId, $attributes);
-        }
-
-        return $this->addIngredient($ingredient, $attributes);
+        return $this->addIngredient(
+                $this->getOrCreateIngredientByName($attributes),
+                $attributes
+            );
     }
 
     protected function addIngredient(IngredientModelInterface $ingredient, array $attributes): ShoppingList

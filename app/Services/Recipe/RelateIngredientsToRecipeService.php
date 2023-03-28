@@ -2,15 +2,19 @@
 
 namespace App\Services\Recipe;
 
+use App\Http\Traits\UniversalIngredientPicker;
 use App\Models\Interfaces\RecipeModelInterface;
 use App\Repositories\Interfaces\IngredientRepositoryInterface;
 use App\Services\Interfaces\Recipe\RelateIngredientsToRecipeInterface;
 
 class RelateIngredientsToRecipeService implements RelateIngredientsToRecipeInterface
 {
+    use UniversalIngredientPicker;
+
     protected $ingredientRepository;
     protected $recipe;
     protected $ingredients = [];
+    protected $customIngredients = [];
 
     public function __construct(
         IngredientRepositoryInterface $ingredientRepository
@@ -38,6 +42,11 @@ class RelateIngredientsToRecipeService implements RelateIngredientsToRecipeInter
         }
 
         return $this;
+    }
+
+    public function addIngredientByName(string $ingredientName, int $amount): self
+    {
+        // ...
     }
 
     public function sync() : void
