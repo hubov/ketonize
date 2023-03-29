@@ -94,6 +94,7 @@ Węglowodany netto: 4g
 
         if (count($aiResultArray) == 4) {
             $this->parsedAiResult['name'] = $this->parseTitle($aiResultArray);
+            $this->parsedAiResult['ingredients'] = $this->parseIngredients($aiResultArray);
         } else {
 
         }
@@ -109,6 +110,12 @@ Węglowodany netto: 4g
 
         return $title;
     }
+
+    protected function parseIngredients(array $aiResultArray): array
+    {
+        return [];
+    }
+
     public function return(): RecipeIdea
     {
         $recipeIdea = new RecipeIdea();

@@ -5,6 +5,7 @@ namespace Tests\Unit\Services\RecipeIdea;
 use App\Models\RecipeIdea;
 use App\Services\Interfaces\AITextGeneratorInterface;
 use App\Services\RecipeIdea\CreateService;
+use Illuminate\Support\Collection;
 use PHPUnit\Framework\TestCase;
 
 class CreateServiceTest extends TestCase
@@ -115,6 +116,26 @@ Węglowodany netto: 8g';
             ->return();
 
         $this->assertEquals($expectedResult['name'], $result->name);
+    }
+
+    /**
+     * @test
+     * @dataProvider aiResultsProvider
+     */
+    public function parses_ingredients($aiResult, $expectedResult): void
+    {
+        $this->chatCompletionsService
+            ->expects($this->once())
+            ->method('return')
+            ->willReturn($aiResult);
+
+        $createService = new CreateService($this->chatCompletionsService);
+        $result = $createService
+            ->setDiet(1, 1)
+            ->execute('gołąbki')
+            ->return();
+
+        $this->assertInstanceOf(Collection::class, $result->ingredients);
 
     }
 }

@@ -7,6 +7,7 @@ use App\Models\Interfaces\RecipeModelInterface;
 use GeneaLabs\LaravelPivotEvents\Traits\PivotEventTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Recipe extends Model implements RecipeModelInterface
 {
@@ -22,9 +23,14 @@ class Recipe extends Model implements RecipeModelInterface
         'image' => self::IMAGE_DEFAULT
     ];
 
-    public function ingredients()
+    public function ingredients(): BelongsToMany
     {
         return $this->belongsToMany(Ingredient::class)->withPivot('amount');
+    }
+
+    public function customIngredients(): BelongsToMany
+    {
+        return $this->belongsToMany(CustomIngredient::class)->withPivot('amount');
     }
 
     public function tags()
