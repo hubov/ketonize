@@ -5,6 +5,7 @@ namespace App\Services\RecipeIdea;
 use App\Models\RecipeIdea;
 use App\Services\Interfaces\AIGeneratorInterface;
 use App\Services\Interfaces\RecipeIdeaInterface;
+use Illuminate\Support\Str;
 
 class CreateService implements RecipeIdeaInterface
 {
@@ -101,6 +102,10 @@ Węglowodany netto: 4g
     protected function parseTitle(array $aiResultArray): string
     {
         $title = trim($aiResultArray[0]);
+
+        if (Str::contains($title, ':')) {
+            $title = trim(substr($title, (strpos($title, ':') + 1)));
+        }
 
         return $title;
     }
