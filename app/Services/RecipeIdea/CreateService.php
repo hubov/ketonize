@@ -86,9 +86,28 @@ Węglowodany netto: 4g
             ]
         ];
     }
+
+    protected function parseAiResult(): void
+    {
+        $aiResultArray = explode('~', $this->aiResult);
+
+        if (count($aiResultArray) == 4) {
+            $this->parsedAiResult['name'] = $this->parseTitle($aiResultArray);
+        } else {
+
+        }
+    }
+
+    protected function parseTitle(array $aiResultArray): string
+    {
+        $title = trim($aiResultArray[0]);
+
+        return $title;
+    }
     public function return(): RecipeIdea
     {
         $recipeIdea = new RecipeIdea();
+        $recipeIdea->name = $this->parsedAiResult['name'];
 
         return $recipeIdea;
     }

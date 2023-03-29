@@ -66,7 +66,18 @@ Węglowodany netto: 8g';
 
         $this->assertIsObject($result);
         $this->assertInstanceOf(RecipeIdea::class, $result);
+    }
 
+    /** @test */
+    public function parses_title(): void
+    {
+        $createService = new CreateService($this->chatCompletionsService);
+        $result = $createService
+            ->setDiet(1, 1)
+            ->execute('gołąbki')
+            ->return();
+
+        $this->assertEquals('Ketogeniczne wegańskie gołąbki', $result->name);
 
     }
 }
