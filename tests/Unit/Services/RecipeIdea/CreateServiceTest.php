@@ -136,6 +136,17 @@ Węglowodany netto: 8g';
             ->return();
 
         $this->assertInstanceOf(Collection::class, $result->ingredients);
+    }
 
+    public function aiResultsProvider(): array
+    {
+        $result = [
+            'name' => 'Ketogeniczne wegańskie gołąbki'
+        ];
+
+        return [
+            'short AI result' => [$this->aiResultShort, $result],
+            'long AI result' => [$this->aiResultLong, $result]
+        ];
     }
 }
