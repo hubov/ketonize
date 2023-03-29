@@ -13,6 +13,13 @@ class UnitRepository implements UnitRepositoryInterface
         return Unit::find($id);
     }
 
+    public function getBySymbolOrName(string $symbol): Unit
+    {
+        return Unit::where('symbol', $symbol)
+            ->orWhere('name', $symbol)
+            ->firstOrFail();
+    }
+
     public function getAll(): Collection
     {
         return Unit::all();

@@ -3,6 +3,8 @@
 namespace Tests\Unit\Services\RecipeIdea;
 
 use App\Models\RecipeIdea;
+use App\Models\Unit;
+use App\Repositories\Interfaces\UnitRepositoryInterface;
 use App\Services\Interfaces\AITextGeneratorInterface;
 use App\Services\RecipeIdea\CreateService;
 use Illuminate\Support\Collection;
@@ -62,6 +64,7 @@ Białko: 6g
 Tłuszcz: 7g
 Węglowodany netto: 8g';
     protected $chatCompletionsService;
+    protected $unitRepository;
 
     protected function setUp(): void
     {
@@ -75,6 +78,15 @@ Węglowodany netto: 8g';
             ->expects($this->once())
             ->method('execute')
             ->willReturnSelf();
+
+        $unit = new Unit();
+        $unit->id = 1;
+
+        $this->unitRepository = $this->createMock(UnitRepositoryInterface::class);
+        $this->unitRepository
+            ->method('getBySymbolOrName')
+            ->withAnyParameters()
+            ->willReturn($unit);
     }
 
     /**
@@ -88,7 +100,7 @@ Węglowodany netto: 8g';
             ->method('return')
             ->willReturn($aiResult);
 
-        $createService = new CreateService($this->chatCompletionsService);
+        $createService = new CreateService($this->chatCompletionsService, $this->unitRepository);
         $result = $createService
             ->setDiet(1, 1)
             ->execute('gołąbki')
@@ -109,7 +121,7 @@ Węglowodany netto: 8g';
             ->method('return')
             ->willReturn($aiResult);
 
-        $createService = new CreateService($this->chatCompletionsService);
+        $createService = new CreateService($this->chatCompletionsService, $this->unitRepository);
         $result = $createService
             ->setDiet(1, 1)
             ->execute('gołąbki')
@@ -129,7 +141,7 @@ Węglowodany netto: 8g';
             ->method('return')
             ->willReturn($aiResult);
 
-        $createService = new CreateService($this->chatCompletionsService);
+        $createService = new CreateService($this->chatCompletionsService, $this->unitRepository);
         $result = $createService
             ->setDiet(1, 1)
             ->execute('gołąbki')
