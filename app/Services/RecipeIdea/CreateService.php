@@ -127,12 +127,23 @@ Węglowodany netto: 4g
         $ingredients = explode("\n", trim($aiResultArray[1]));
 
         if (count($ingredients) > 0) {
+            $this->removeHeader($ingredients);
+
             foreach ($ingredients as $ingredient) {
                 $ingredientsList[] = $this->parseIngredientsListElement($ingredient);
             }
         }
 
         return $ingredientsList;
+    }
+
+    protected function removeHeader(array &$array)
+    {
+        if (!Str::startsWith(trim($array[0]), '1.')) {
+            if (Str::contains($array[0], ':')) {
+                unset($array[0]);
+            }
+        }
     }
 
     protected function parseIngredientsListElement(string $ingredient): array
