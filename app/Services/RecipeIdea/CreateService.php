@@ -104,7 +104,7 @@ Węglowodany netto: 4g
         if (count($aiResultArray) == 4) {
             $this->parsedAiResult['name'] = $this->parseTitle($aiResultArray);
             $this->parsedAiResult['ingredients'] = $this->parseIngredients($aiResultArray);
-
+            $this->parsedAiResult['description'] = $this->parseDescription($aiResultArray);
         } else {
             // THROW EXCEPTION wrong api result format
         }
@@ -132,6 +132,8 @@ Węglowodany netto: 4g
             foreach ($ingredients as $ingredient) {
                 $ingredientsList[] = $this->parseIngredientsListElement($ingredient);
             }
+        } else {
+            // THROW EXCEPTION missing ingredients
         }
 
         return $ingredientsList;
@@ -202,6 +204,20 @@ Węglowodany netto: 4g
         return trim($rawName);
     }
 
+    protected function parseDescription(array $aiResultArray)
+    {
+        $descriptionArray = explode("\n", trim($aiResultArray[2]));
+        if (count($descriptionArray) > 0) {
+            $this->removeHeader($descriptionArray);
+
+            $description = implode("\n", $descriptionArray);
+        } else {
+            // THROW EXCEPTION missing description
+        }
+
+        return $description;
+    }
+
     public function return(): RecipeIdea
     {
         return $this->recipeIdea;
@@ -222,6 +238,7 @@ Węglowodany netto: 4g
             $this->relateIngredientsToRecipe
                 ->addIngredientByName($ingredient['name'], $ingredient['amount'], $ingredient['unit']);
         }
+        $this->recipeIdea->description = $this->parsedAiResult['description'];
 
     }
 }

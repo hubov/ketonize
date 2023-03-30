@@ -8,7 +8,6 @@ use App\Repositories\Interfaces\UnitRepositoryInterface;
 use App\Services\Interfaces\AITextGeneratorInterface;
 use App\Services\Interfaces\Recipe\RelateIngredientsToRecipeInterface;
 use App\Services\RecipeIdea\CreateService;
-use Illuminate\Support\Collection;
 use PHPUnit\Framework\TestCase;
 
 class CreateServiceTest extends TestCase
@@ -142,13 +141,21 @@ Węglowodany netto: 8g';
             ->return();
 
         $this->assertEquals($expectedResult['name'], $result->name);
-//        $this->assertInstanceOf(Collection::class, $result->ingredients);
+        $this->assertEquals($expectedResult['description'], $result->description);
     }
 
     public function aiResultsProvider(): array
     {
         $result = [
-            'name' => 'Ketogeniczne wegańskie gołąbki'
+            'name' => 'Ketogeniczne wegańskie gołąbki',
+            'description' => '1. Kaszę ugotuj według instrukcji na opakowaniu.
+2. W międzyczasie, cebulę i czosnek posiekaj, a tofu posiekaj lub rozetrzyj widelcem.
+3. Na patelni rozgrzej olej kokosowy i podsmaż cebulę i czosnek przez około 2-3 minuty.
+4. Dodaj do patelni tofu i smaż przez kolejne 5 minut.
+5. Kapustę włoską poszatkuj i blanszuj przez około 3 minuty.
+6. Wszystkie składniki połącz i dopraw solą i pieprzem.
+7. Z powstałej masy formuj gołąbki.
+8. Gotuj gołąbki w osolonej wodzie przez 20-25 minut lub dopóki nie będą miękkie.',
         ];
 
         return [
