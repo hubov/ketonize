@@ -105,6 +105,7 @@ Węglowodany netto: 4g
             $this->parsedAiResult['name'] = $this->parseTitle($aiResultArray);
             $this->parsedAiResult['ingredients'] = $this->parseIngredients($aiResultArray);
             $this->parsedAiResult['description'] = $this->parseDescription($aiResultArray);
+            $this->parsedAiResult['kcal'] = $this->parseMacros($aiResultArray)['kcal'];
         } else {
             // THROW EXCEPTION wrong api result format
         }
@@ -204,7 +205,7 @@ Węglowodany netto: 4g
         return trim($rawName);
     }
 
-    protected function parseDescription(array $aiResultArray)
+    protected function parseDescription(array $aiResultArray): string
     {
         $descriptionArray = explode("\n", trim($aiResultArray[2]));
         if (count($descriptionArray) > 0) {
@@ -216,6 +217,26 @@ Węglowodany netto: 4g
         }
 
         return $description;
+    }
+
+    protected function parseMacros(array $aiResultArray): array
+    {
+        $macrosArray = explode("\n", trim($aiResultArray[3]));
+
+        $result = [];
+
+        if (count($macrosArray) > 3) {
+            foreach ($macrosArray as $singleMacro) {
+                if (preg_match('/\d+ kcal/u', trim($singleMacro), $parsedKcal)) {
+                    preg_match('/\d+/u', $parsedKcal[0], $parsedKcal);
+                    $result['kcal'] = $parsedKcal[0];
+                }
+            }
+        } else {
+            // THROW EXCEPTION wrong macros format
+        }
+
+        return $result;
     }
 
     public function return(): RecipeIdea
@@ -239,6 +260,7 @@ Węglowodany netto: 4g
                 ->addIngredientByName($ingredient['name'], $ingredient['amount'], $ingredient['unit']);
         }
         $this->recipeIdea->description = $this->parsedAiResult['description'];
+        $this->recipeIdea->kcal = $this->parsedAiResult['kcal'];
 
     }
 }

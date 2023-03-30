@@ -142,6 +142,7 @@ Węglowodany netto: 8g';
 
         $this->assertEquals($expectedResult['name'], $result->name);
         $this->assertEquals($expectedResult['description'], $result->description);
+        $this->assertEquals($expectedResult['kcal'], $result->kcal);
     }
 
     public function aiResultsProvider(): array
@@ -156,6 +157,7 @@ Węglowodany netto: 8g';
 6. Wszystkie składniki połącz i dopraw solą i pieprzem.
 7. Z powstałej masy formuj gołąbki.
 8. Gotuj gołąbki w osolonej wodzie przez 20-25 minut lub dopóki nie będą miękkie.',
+            'kcal' => 90,
         ];
 
         return [
