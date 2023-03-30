@@ -44,6 +44,12 @@ Węglowodany netto: 4g
     protected $aiResult;
     protected $parsedAiResult;
     protected $recipeIdea;
+    protected $macroLabels = [
+        'Białko' => 'protein',
+        'Tłuszcz' => 'fat',
+        'Węglowodany netto' => 'carbohydrate',
+        'Węglowodany' => 'carbohydrate',
+    ];
 
     public function __construct(AIGeneratorInterface $aiService, UnitRepositoryInterface $unitRepository, RelateIngredientsToRecipeInterface $relateIngredientsToRecipe)
     {
@@ -105,7 +111,11 @@ Węglowodany netto: 4g
             $this->parsedAiResult['name'] = $this->parseTitle($aiResultArray);
             $this->parsedAiResult['ingredients'] = $this->parseIngredients($aiResultArray);
             $this->parsedAiResult['description'] = $this->parseDescription($aiResultArray);
-            $this->parsedAiResult['kcal'] = $this->parseMacros($aiResultArray)['kcal'];
+            $macros = $this->parseMacros($aiResultArray);
+            $this->parsedAiResult['kcal'] = $macros['kcal'];
+            $this->parsedAiResult['protein'] = $macros['protein'];
+            $this->parsedAiResult['fat'] = $macros['fat'];
+            $this->parsedAiResult['carbohydrate'] = $macros['carbohydrate'];
         } else {
             // THROW EXCEPTION wrong api result format
         }
@@ -227,16 +237,76 @@ Węglowodany netto: 4g
 
         if (count($macrosArray) > 3) {
             foreach ($macrosArray as $singleMacro) {
-                if (preg_match('/\d+ kcal/u', trim($singleMacro), $parsedKcal)) {
-                    preg_match('/\d+/u', $parsedKcal[0], $parsedKcal);
-                    $result['kcal'] = $parsedKcal[0];
-                }
+                $singleMacro = trim($singleMacro);
+                $result = array_merge($result, $this->retrieveMacro($singleMacro));
             }
         } else {
             // THROW EXCEPTION wrong macros format
         }
 
+        if (count($result) != 4) {
+            // THROW EXCEPTION missing macros
+        }
+
         return $result;
+    }
+
+    protected function retrieveMacro(string $row): array
+    {
+        $result = [];
+
+        if ($parsedKcal = $this->findKcal($row)) {
+            $result['kcal'] = $this->retrieveKcal($parsedKcal);
+        } else {
+            $result = array_merge($result, $this->retrieveSingleMacro($row));
+        }
+
+        return $result;
+    }
+
+    protected function findKcal(string $row): string|bool
+    {
+        if (preg_match('/\d+ kcal/u', $row, $parsedKcal)) {
+            return $parsedKcal[0];
+        }
+
+        return false;
+    }
+
+    protected function retrieveKcal(string $haystack): int
+    {
+        preg_match('/\d+/u', $haystack, $parsedKcal);
+
+        return $parsedKcal[0];
+    }
+
+    protected function retrieveSingleMacro(string $haystack): array
+    {
+        $result = [];
+
+        foreach ($this->macroLabels as $label => $macroType) {
+            if ($parsedMacro = $this->findMacro($haystack, $label)) {
+                $result[$macroType] = $this->retrieveMacroValue($parsedMacro);
+            }
+        }
+
+        return $result;
+    }
+
+    protected function findMacro(string $haystack, string $label): string|bool
+    {
+        if (preg_match('/'. $label . ': \d+g/u', $haystack, $parsedMacro)) {
+            return $parsedMacro[0];
+        }
+
+        return false;
+    }
+
+    protected function retrieveMacroValue(string $parsedMacro)
+    {
+        preg_match('/\d+/u', $parsedMacro, $retrievedMacro);
+
+        return $retrievedMacro[0];
     }
 
     public function return(): RecipeIdea
@@ -261,6 +331,9 @@ Węglowodany netto: 4g
         }
         $this->recipeIdea->description = $this->parsedAiResult['description'];
         $this->recipeIdea->kcal = $this->parsedAiResult['kcal'];
+        $this->recipeIdea->protein = $this->parsedAiResult['protein'];
+        $this->recipeIdea->fat = $this->parsedAiResult['fat'];
+        $this->recipeIdea->carbohydrate = $this->parsedAiResult['carbohydrate'];
 
     }
 }
