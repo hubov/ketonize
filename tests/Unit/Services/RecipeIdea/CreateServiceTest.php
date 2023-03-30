@@ -6,6 +6,7 @@ use App\Models\RecipeIdea;
 use App\Models\Unit;
 use App\Repositories\Interfaces\UnitRepositoryInterface;
 use App\Services\Interfaces\AITextGeneratorInterface;
+use App\Services\Interfaces\Recipe\RelateIngredientsToRecipeInterface;
 use App\Services\RecipeIdea\CreateService;
 use Illuminate\Support\Collection;
 use PHPUnit\Framework\TestCase;
@@ -65,6 +66,8 @@ Tłuszcz: 7g
 Węglowodany netto: 8g';
     protected $chatCompletionsService;
     protected $unitRepository;
+    protected $relateIngredientsToRecipe;
+    protected $createService;
 
     protected function setUp(): void
     {
@@ -87,6 +90,19 @@ Węglowodany netto: 8g';
             ->method('getBySymbolOrName')
             ->withAnyParameters()
             ->willReturn($unit);
+
+        $this->relateIngredientsToRecipe = $this->createMock(RelateIngredientsToRecipeInterface::class);
+        $this->relateIngredientsToRecipe
+            ->expects($this->once())
+            ->method('setRecipe')
+            ->withAnyParameters()
+            ->willReturnSelf();
+        $this->relateIngredientsToRecipe
+            ->expects($this->atLeastOnce())
+            ->method('addIngredientByName')
+            ->withAnyParameters();
+
+        $this->createService = new CreateService($this->chatCompletionsService, $this->unitRepository, $this->relateIngredientsToRecipe);
     }
 
     /**
@@ -100,8 +116,7 @@ Węglowodany netto: 8g';
             ->method('return')
             ->willReturn($aiResult);
 
-        $createService = new CreateService($this->chatCompletionsService, $this->unitRepository);
-        $result = $createService
+        $result = $this->createService
             ->setDiet(1, 1)
             ->execute('gołąbki')
             ->return();
@@ -114,40 +129,20 @@ Węglowodany netto: 8g';
      * @test
      * @dataProvider aiResultsProvider
      */
-    public function parses_title($aiResult, $expectedResult): void
+    public function parses_api_result($aiResult, $expectedResult): void
     {
         $this->chatCompletionsService
             ->expects($this->once())
             ->method('return')
             ->willReturn($aiResult);
 
-        $createService = new CreateService($this->chatCompletionsService, $this->unitRepository);
-        $result = $createService
+        $result = $this->createService
             ->setDiet(1, 1)
             ->execute('gołąbki')
             ->return();
 
         $this->assertEquals($expectedResult['name'], $result->name);
-    }
-
-    /**
-     * @test
-     * @dataProvider aiResultsProvider
-     */
-    public function parses_ingredients($aiResult, $expectedResult): void
-    {
-        $this->chatCompletionsService
-            ->expects($this->once())
-            ->method('return')
-            ->willReturn($aiResult);
-
-        $createService = new CreateService($this->chatCompletionsService, $this->unitRepository);
-        $result = $createService
-            ->setDiet(1, 1)
-            ->execute('gołąbki')
-            ->return();
-
-        $this->assertInstanceOf(Collection::class, $result->ingredients);
+//        $this->assertInstanceOf(Collection::class, $result->ingredients);
     }
 
     public function aiResultsProvider(): array

@@ -5,6 +5,7 @@ namespace App\Services\RecipeIdea;
 use App\Models\RecipeIdea;
 use App\Repositories\Interfaces\UnitRepositoryInterface;
 use App\Services\Interfaces\AIGeneratorInterface;
+use App\Services\Interfaces\Recipe\RelateIngredientsToRecipeInterface;
 use App\Services\Interfaces\RecipeIdeaInterface;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Str;
@@ -13,6 +14,7 @@ class CreateService implements RecipeIdeaInterface
 {
     protected $aiService;
     protected $unitRepository;
+    protected $relateIngredientsToRecipe;
     protected $settings;
     protected $context = [
         'start' => 'napisz przepis na ',
@@ -41,11 +43,13 @@ Węglowodany netto: 4g
     ];
     protected $aiResult;
     protected $parsedAiResult;
+    protected $recipeIdea;
 
-    public function __construct(AIGeneratorInterface $aiService, UnitRepositoryInterface $unitRepository)
+    public function __construct(AIGeneratorInterface $aiService, UnitRepositoryInterface $unitRepository, RelateIngredientsToRecipeInterface $relateIngredientsToRecipe)
     {
         $this->aiService = $aiService;
         $this->unitRepository = $unitRepository;
+        $this->relateIngredientsToRecipe = $relateIngredientsToRecipe;
     }
 
     public function setDiet(int $carbsId, int $dietTypeId): self
@@ -74,6 +78,7 @@ Węglowodany netto: 4g
             ->return();
 
         $this->parseAiResult();
+        $this->createIdea();
 
         return $this;
     }
@@ -188,9 +193,24 @@ Węglowodany netto: 4g
 
     public function return(): RecipeIdea
     {
-        $recipeIdea = new RecipeIdea();
-        $recipeIdea->name = $this->parsedAiResult['name'];
+        return $this->recipeIdea;
+    }
 
-        return $recipeIdea;
+    public function recipeIdeaModel()
+    {
+        return new RecipeIdea();
+    }
+
+    public function createIdea()
+    {
+        $this->recipeIdea = $this->recipeIdeaModel();
+        $this->recipeIdea->name = $this->parsedAiResult['name'];
+        $this->relateIngredientsToRecipe
+            ->setRecipe($this->recipeIdea);
+        foreach ($this->parsedAiResult['ingredients'] as $ingredient) {
+            $this->relateIngredientsToRecipe
+                ->addIngredientByName($ingredient['name'], $ingredient['amount'], $ingredient['unit']);
+        }
+
     }
 }
