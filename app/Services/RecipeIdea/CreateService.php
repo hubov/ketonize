@@ -2,6 +2,7 @@
 
 namespace App\Services\RecipeIdea;
 
+use App\Exceptions\ApiResultMissingPartException;
 use App\Models\RecipeIdea;
 use App\Repositories\Interfaces\UnitRepositoryInterface;
 use App\Services\Interfaces\AIGeneratorInterface;
@@ -117,7 +118,7 @@ Węglowodany netto: 4g
             $this->parsedAiResult['fat'] = $macros['fat'];
             $this->parsedAiResult['carbohydrate'] = $macros['carbohydrate'];
         } else {
-            // THROW EXCEPTION wrong api result format
+            throw new ApiResultMissingPartException();
         }
     }
 
@@ -135,7 +136,6 @@ Węglowodany netto: 4g
     protected function parseIngredients(array $aiResultArray): array
     {
         $ingredientsList = [];
-        $ingredients = explode("\n", trim($aiResultArray[1]));
 
         if (count($ingredients) > 0) {
             $this->removeHeader($ingredients);

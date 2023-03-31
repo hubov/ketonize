@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Services\RecipeIdea;
 
+use App\Exceptions\ApiResultMissingPartException;
 use App\Models\RecipeIdea;
 use App\Models\Unit;
 use App\Repositories\Interfaces\UnitRepositoryInterface;
@@ -148,6 +149,27 @@ Węglowodany netto: 8g';
         $this->assertEquals($expectedResult['carbohydrate'], $result->carbohydrate);
     }
 
+    /**
+     * @test
+     * @dataProvider aiResultsProvider
+     */
+    public function parseApiResult_incompleteApiResult_throwsException($aiResult, $expectedResult)
+    {
+        $aiResultArr = explode("~", $aiResult);
+        array_pop($aiResultArr);
+        $corruptedAiResult = implode("~", $aiResultArr);
+
+        $this->chatCompletionsService
+            ->expects($this->once())
+            ->method('return')
+            ->willReturn($corruptedAiResult);
+
+        $this->expectException(ApiResultMissingPartException::class);
+        $result = $this->createService
+            ->setDiet(1, 1)
+            ->execute('gołąbki')
+            ->return();
+    }
     public function aiResultsProvider(): array
     {
         $result = [
