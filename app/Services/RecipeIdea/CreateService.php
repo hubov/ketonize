@@ -261,7 +261,7 @@ Węglowodany netto: 4g
         }
 
         if (count($result) != 4) {
-            // THROW EXCEPTION missing macros
+            throw new ApiResultMacrosInvalidException();
         }
 
         return $result;

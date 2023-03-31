@@ -357,6 +357,35 @@ Węglowodany netto: 8g';
             ->return();
     }
 
+    /**
+     * @test
+     * @dataProvider aiResultsProvider
+     */
+    public function parseApiResult_macroMissing_throwsException($aiResult, $expectedResult)
+    {
+        $aiResultArr = explode("~", $aiResult);
+        $macros = explode("\n", $aiResultArr[3]);
+        unset($macros[floor(count($macros) / 2)]);
+        $aiResultArr[3] = implode("\n", $macros);
+        $corruptedAiResult = implode("~", $aiResultArr);
+
+        $this->chatCompletionsService
+            ->expects($this->once())
+            ->method('return')
+            ->willReturn($corruptedAiResult);
+
+        $this->unitRepository
+            ->method('getBySymbolOrName')
+            ->withAnyParameters()
+            ->willReturn($this->unit);
+
+        $this->expectException(ApiResultMacrosInvalidException::class);
+        $result = $this->createService
+            ->setDiet(1, 1)
+            ->execute('gołąbki')
+            ->return();
+    }
+
     public function aiResultsProvider(): array
     {
         $result = [
