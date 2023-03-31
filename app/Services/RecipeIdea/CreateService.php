@@ -5,6 +5,7 @@ namespace App\Services\RecipeIdea;
 use App\Exceptions\ApiResultIngredientAmountInvalidException;
 use App\Exceptions\ApiResultIngredientItemInvalidException;
 use App\Exceptions\ApiResultIngredientMissingException;
+use App\Exceptions\ApiResultIngredientUnitInvalidException;
 use App\Exceptions\ApiResultMissingPartException;
 use App\Models\RecipeIdea;
 use App\Repositories\Interfaces\UnitRepositoryInterface;
@@ -198,12 +199,10 @@ Węglowodany netto: 4g
         if (preg_match('/\d+\s*\pL+\.?/', trim($rawAmount), $unitOutput)) {
             preg_match('/\pL+\.?/', trim($unitOutput[0]), $unitOutput);
         } else {
-            // THROW EXCEPTION wrong ingredient amount format
+            throw new ApiResultIngredientUnitInvalidException();
         }
         if (isset($unitOutput[0])) {
             return $this->retrieveUnit(trim($unitOutput[0]));
-        } else {
-            // THROW EXCEPTION wrong ingredient amount format
         }
     }
 
