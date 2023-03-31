@@ -2,6 +2,7 @@
 
 namespace App\Services\RecipeIdea;
 
+use App\Exceptions\ApiResultDescriptionMissingException;
 use App\Exceptions\ApiResultIngredientAmountInvalidException;
 use App\Exceptions\ApiResultIngredientItemInvalidException;
 use App\Exceptions\ApiResultIngredientMissingException;
@@ -225,13 +226,19 @@ Węglowodany netto: 4g
 
     protected function parseDescription(array $aiResultArray): string
     {
-        $descriptionArray = explode("\n", trim($aiResultArray[2]));
-        if (count($descriptionArray) > 0) {
-            $this->removeHeader($descriptionArray);
+        $description = trim($aiResultArray[2]);
 
-            $description = implode("\n", $descriptionArray);
-        } else {
-            // THROW EXCEPTION missing description
+        if (Str::length($description) > 0) {
+            $descriptionArray = explode("\n", $description);
+            if (count($descriptionArray) > 0) {
+                $this->removeHeader($descriptionArray);
+
+                $description = implode("\n", $descriptionArray);
+            }
+        }
+
+        if (Str::length($description) == 0) {
+            throw new ApiResultDescriptionMissingException();
         }
 
         return $description;
@@ -342,6 +349,5 @@ Węglowodany netto: 4g
         $this->recipeIdea->protein = $this->parsedAiResult['protein'];
         $this->recipeIdea->fat = $this->parsedAiResult['fat'];
         $this->recipeIdea->carbohydrate = $this->parsedAiResult['carbohydrate'];
-
     }
 }
