@@ -2,6 +2,7 @@
 
 namespace App\Services\RecipeIdea;
 
+use App\Exceptions\ApiResultIngredientAmountInvalidException;
 use App\Exceptions\ApiResultIngredientItemInvalidException;
 use App\Exceptions\ApiResultIngredientMissingException;
 use App\Exceptions\ApiResultMissingPartException;
@@ -188,7 +189,7 @@ Węglowodany netto: 4g
         if (isset($amountOutput[0])) {
             return (int)$amountOutput[0];
         } else {
-            // THROW EXCEPTION wrong ingredient amount format
+            throw new ApiResultIngredientAmountInvalidException();
         }
     }
 
