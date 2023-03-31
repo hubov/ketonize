@@ -93,15 +93,6 @@ Węglowodany netto: 8g';
             ->willReturn($unit);
 
         $this->relateIngredientsToRecipe = $this->createMock(RelateIngredientsToRecipeInterface::class);
-        $this->relateIngredientsToRecipe
-            ->expects($this->once())
-            ->method('setRecipe')
-            ->withAnyParameters()
-            ->willReturnSelf();
-        $this->relateIngredientsToRecipe
-            ->expects($this->atLeastOnce())
-            ->method('addIngredientByName')
-            ->withAnyParameters();
 
         $this->createService = new CreateService($this->chatCompletionsService, $this->unitRepository, $this->relateIngredientsToRecipe);
     }
@@ -136,6 +127,21 @@ Węglowodany netto: 8g';
             ->expects($this->once())
             ->method('return')
             ->willReturn($aiResult);
+
+        $this->relateIngredientsToRecipe
+            ->expects($this->once())
+            ->method('setRecipe')
+            ->withAnyParameters()
+            ->willReturnSelf();
+        $this->relateIngredientsToRecipe
+            ->expects($this->atLeastOnce())
+            ->method('addIngredientByName')
+            ->withAnyParameters();
+
+        $this->unitRepository
+            ->method('getBySymbolOrName')
+            ->withAnyParameters()
+            ->willReturn($this->unit);
 
         $result = $this->createService
             ->setDiet(1, 1)
