@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Services\RecipeIdea;
 
+use App\Exceptions\ApiResultIngredientItemInvalidException;
 use App\Exceptions\ApiResultIngredientMissingException;
 use App\Exceptions\ApiResultMissingPartException;
 use App\Models\RecipeIdea;
@@ -194,6 +195,28 @@ Węglowodany netto: 8g';
             ->willReturn($corruptedAiResult);
 
         $this->expectException(ApiResultIngredientMissingException::class);
+        $result = $this->createService
+            ->setDiet(1, 1)
+            ->execute('gołąbki')
+            ->return();
+    }
+
+    /**
+     * @test
+     * @dataProvider aiResultsProvider
+     */
+    public function parseApiResult_invalidIngredientFormat_throwsException($aiResult, $expectedResult)
+    {
+        $aiResultArr = explode("~", $aiResult);
+        $aiResultArr[1] = 'Some unexpected value';
+        $corruptedAiResult = implode("~", $aiResultArr);
+
+        $this->chatCompletionsService
+            ->expects($this->once())
+            ->method('return')
+            ->willReturn($corruptedAiResult);
+
+        $this->expectException(ApiResultIngredientItemInvalidException::class);
         $result = $this->createService
             ->setDiet(1, 1)
             ->execute('gołąbki')

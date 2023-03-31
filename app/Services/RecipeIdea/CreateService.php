@@ -2,6 +2,7 @@
 
 namespace App\Services\RecipeIdea;
 
+use App\Exceptions\ApiResultIngredientItemInvalidException;
 use App\Exceptions\ApiResultIngredientMissingException;
 use App\Exceptions\ApiResultMissingPartException;
 use App\Models\RecipeIdea;
@@ -169,8 +170,6 @@ Węglowodany netto: 4g
 
     protected function parseIngredientsListElement(string $ingredient): array
     {
-        $result = [];
-
         $ingredientExploded = explode('-', $ingredient);
         if (count($ingredientExploded) == 2) {
             return [
@@ -179,7 +178,7 @@ Węglowodany netto: 4g
                 'unit' => $this->parseIngredientUnit($ingredientExploded[0])
             ];
         } else {
-            // THROW EXCEPTION wrong ingredients list element format
+            throw new ApiResultIngredientItemInvalidException();
         }
     }
 
