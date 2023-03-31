@@ -8,6 +8,7 @@ use App\Exceptions\ApiResultIngredientItemInvalidException;
 use App\Exceptions\ApiResultIngredientMissingException;
 use App\Exceptions\ApiResultIngredientUnitInvalidException;
 use App\Exceptions\ApiResultIngredientUnitNonExistingException;
+use App\Exceptions\ApiResultMacrosInvalidException;
 use App\Exceptions\ApiResultMissingPartException;
 use App\Models\RecipeIdea;
 use App\Models\Unit;
@@ -328,6 +329,34 @@ Węglowodany netto: 8g';
             ->execute('gołąbki')
             ->return();
     }
+
+    /**
+     * @test
+     * @dataProvider aiResultsProvider
+     */
+    public function parseApiResult_macrosFormatInvalid_throwsException($aiResult, $expectedResult)
+    {
+        $aiResultArr = explode("~", $aiResult);
+        $aiResultArr[3] = '';
+        $corruptedAiResult = implode("~", $aiResultArr);
+
+        $this->chatCompletionsService
+            ->expects($this->once())
+            ->method('return')
+            ->willReturn($corruptedAiResult);
+
+        $this->unitRepository
+            ->method('getBySymbolOrName')
+            ->withAnyParameters()
+            ->willReturn($this->unit);
+
+        $this->expectException(ApiResultMacrosInvalidException::class);
+        $result = $this->createService
+            ->setDiet(1, 1)
+            ->execute('gołąbki')
+            ->return();
+    }
+
     public function aiResultsProvider(): array
     {
         $result = [

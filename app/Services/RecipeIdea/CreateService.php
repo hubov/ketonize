@@ -8,6 +8,7 @@ use App\Exceptions\ApiResultIngredientItemInvalidException;
 use App\Exceptions\ApiResultIngredientMissingException;
 use App\Exceptions\ApiResultIngredientUnitInvalidException;
 use App\Exceptions\ApiResultIngredientUnitNonExistingException;
+use App\Exceptions\ApiResultMacrosInvalidException;
 use App\Exceptions\ApiResultMissingPartException;
 use App\Models\RecipeIdea;
 use App\Repositories\Interfaces\UnitRepositoryInterface;
@@ -256,7 +257,7 @@ Węglowodany netto: 4g
                 $result = array_merge($result, $this->retrieveMacro($singleMacro));
             }
         } else {
-            // THROW EXCEPTION wrong macros format
+            throw new ApiResultMacrosInvalidException();
         }
 
         if (count($result) != 4) {
