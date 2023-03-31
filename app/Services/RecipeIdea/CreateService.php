@@ -6,6 +6,7 @@ use App\Exceptions\ApiResultIngredientAmountInvalidException;
 use App\Exceptions\ApiResultIngredientItemInvalidException;
 use App\Exceptions\ApiResultIngredientMissingException;
 use App\Exceptions\ApiResultIngredientUnitInvalidException;
+use App\Exceptions\ApiResultIngredientUnitNonExistingException;
 use App\Exceptions\ApiResultMissingPartException;
 use App\Models\RecipeIdea;
 use App\Repositories\Interfaces\UnitRepositoryInterface;
@@ -213,7 +214,7 @@ Węglowodany netto: 4g
 
             return $unit->id;
         } catch (ModelNotFoundException $e) {
-            // THROW EXCEPTION symbol not found
+            throw new ApiResultIngredientUnitNonExistingException();
         }
     }
 

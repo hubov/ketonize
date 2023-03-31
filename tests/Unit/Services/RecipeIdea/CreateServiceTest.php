@@ -6,6 +6,7 @@ use App\Exceptions\ApiResultIngredientAmountInvalidException;
 use App\Exceptions\ApiResultIngredientItemInvalidException;
 use App\Exceptions\ApiResultIngredientMissingException;
 use App\Exceptions\ApiResultIngredientUnitInvalidException;
+use App\Exceptions\ApiResultIngredientUnitNonExistingException;
 use App\Exceptions\ApiResultMissingPartException;
 use App\Models\RecipeIdea;
 use App\Models\Unit;
@@ -13,6 +14,7 @@ use App\Repositories\Interfaces\UnitRepositoryInterface;
 use App\Services\Interfaces\AITextGeneratorInterface;
 use App\Services\Interfaces\Recipe\RelateIngredientsToRecipeInterface;
 use App\Services\RecipeIdea\CreateService;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use PHPUnit\Framework\TestCase;
 
 class CreateServiceTest extends TestCase
@@ -71,6 +73,7 @@ Węglowodany netto: 8g';
     protected $chatCompletionsService;
     protected $unitRepository;
     protected $relateIngredientsToRecipe;
+    protected $unit;
     protected $createService;
 
     protected function setUp(): void
@@ -86,14 +89,10 @@ Węglowodany netto: 8g';
             ->method('execute')
             ->willReturnSelf();
 
-        $unit = new Unit();
-        $unit->id = 1;
+        $this->unit = new Unit();
+        $this->unit->id = 1;
 
         $this->unitRepository = $this->createMock(UnitRepositoryInterface::class);
-        $this->unitRepository
-            ->method('getBySymbolOrName')
-            ->withAnyParameters()
-            ->willReturn($unit);
 
         $this->relateIngredientsToRecipe = $this->createMock(RelateIngredientsToRecipeInterface::class);
 
@@ -110,6 +109,11 @@ Węglowodany netto: 8g';
             ->expects($this->once())
             ->method('return')
             ->willReturn($aiResult);
+
+        $this->unitRepository
+            ->method('getBySymbolOrName')
+            ->withAnyParameters()
+            ->willReturn($this->unit);
 
         $result = $this->createService
             ->setDiet(1, 1)
@@ -263,6 +267,34 @@ Węglowodany netto: 8g';
             ->willReturn($corruptedAiResult);
 
         $this->expectException(ApiResultIngredientUnitInvalidException::class);
+        $result = $this->createService
+            ->setDiet(1, 1)
+            ->execute('gołąbki')
+            ->return();
+    }
+
+    /**
+     * @test
+     * @dataProvider aiResultsProvider
+     */
+    public function parseApiResult_nonExistingUnit_throwsException($aiResult, $expectedResult)
+    {
+        $aiResultArr = explode("~", $aiResult);
+        $aiResultArr[1] = '1 xyz - Tomato';
+        $corruptedAiResult = implode("~", $aiResultArr);
+
+        $this->chatCompletionsService
+            ->expects($this->once())
+            ->method('return')
+            ->willReturn($corruptedAiResult);
+
+        $this->unitRepository
+            ->expects($this->once())
+            ->method('getBySymbolOrName')
+            ->withAnyParameters()
+            ->willThrowException(new ModelNotFoundException());
+
+        $this->expectException(ApiResultIngredientUnitNonExistingException::class);
         $result = $this->createService
             ->setDiet(1, 1)
             ->execute('gołąbki')
