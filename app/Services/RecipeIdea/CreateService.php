@@ -2,6 +2,7 @@
 
 namespace App\Services\RecipeIdea;
 
+use App\Exceptions\ApiResultIngredientMissingException;
 use App\Exceptions\ApiResultMissingPartException;
 use App\Models\RecipeIdea;
 use App\Repositories\Interfaces\UnitRepositoryInterface;
@@ -136,15 +137,22 @@ Węglowodany netto: 4g
     protected function parseIngredients(array $aiResultArray): array
     {
         $ingredientsList = [];
+        $ingredients = trim($aiResultArray[1]);
 
-        if (count($ingredients) > 0) {
-            $this->removeHeader($ingredients);
+        if (Str::length($ingredients) > 0) {
+            $ingredients = explode("\n", trim($aiResultArray[1]));
 
-            foreach ($ingredients as $ingredient) {
-                $ingredientsList[] = $this->parseIngredientsListElement($ingredient);
+            if (count($ingredients) > 0) {
+                $this->removeHeader($ingredients);
+
+                foreach ($ingredients as $ingredient) {
+                    $ingredientsList[] = $this->parseIngredientsListElement($ingredient);
+                }
             }
-        } else {
-            // THROW EXCEPTION missing ingredients
+        }
+
+        if (count($ingredientsList) == 0) {
+            throw new ApiResultIngredientMissingException();
         }
 
         return $ingredientsList;
